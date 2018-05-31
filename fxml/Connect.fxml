@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="controller.ConnectController">
+  <children>
+    <GridPane id="responseText" alignment="CENTER" hgap="10.0" layoutX="28.0" layoutY="14.0" prefWidth="289.0" vgap="10.0">
+      <children>
+        <Label text="IP" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextField fx:id="ip" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <Label text="Port" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <Button mnemonicParsing="false" onAction="#connect" text="Connect" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to Noughts" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+          <font>
+            <Font size="20.0" fx:id="x1" />
+          </font>
+        </Text>
+        <Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" text="and Crosses" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Connect to a server" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+        <TextField fx:id="port" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="115.0" minWidth="10.0" prefWidth="115.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="114.0" minWidth="10.0" prefWidth="114.0" />
+      </columnConstraints>
+      <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+      </padding>
+      <rowConstraints>
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+  </children>
+</AnchorPane>
