@@ -36,9 +36,7 @@ public class ConnectController {
 	 */
 	@FXML
 	protected void connect(ActionEvent event) throws IOException {
-		client.setHost(ip.toString());
-		client.setPort(Integer.parseInt(port.toString()));
-		
+		client = new Client(ip.getText(), Integer.parseInt(port.getText()));
 		response = client.connect();
 		
 		if (response.length > 0 && response[0].equals("true")) {

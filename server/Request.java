@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -18,13 +17,13 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 25 May 2018
+ * @version 1 June 2018
  *
  */
 class Request implements Task {
 	private Socket clientSocket;
 	private Protocol protocol;
-	private String success, message, output;
+	private String output;
 	private String[] outArr;
 	private static Map<String, Profile> users = Server.getUsers();
 	private static Map<String, LinkedList<Game>> games = Server.getGames();
@@ -37,19 +36,30 @@ class Request implements Task {
 	 */
 	Request(Socket clientSocket) {
 		this.clientSocket = clientSocket;
+		this.protocol = new Protocol();
+		this.outArr = new String[2];
+	}
+	
+	/**
+	 * Tests the connection.
+	 * 
+	 * @return output stating that the connection has been successful
+	 */
+	private String connect() {
+		outArr[0] = "true";
+		outArr[1] = "Connection test successful.";
 		
-		outArr = new String[2];
-		outArr[0] = success;
-		outArr[1] = message;
+		return protocol.transmit("connect", outArr);
 	}
 	
 	/**
 	 * Sign-up method.
 	 * 
 	 * @param input [0] = username; [1] = password; [2] = security question; [3] = security answer
+	 * @return output indicating whether sign-up has been successful
 	 * @throws NoSuchAlgorithmException if password hashing algorithm unavailable
 	 */
-	private void signup(String[] input) throws NoSuchAlgorithmException {
+	private String signup(String[] input) throws NoSuchAlgorithmException {
 		String username = input[0];
 		String password = input[1];
 		short securityQ = Short.parseShort(input[2]);
@@ -62,29 +72,29 @@ class Request implements Task {
 		Pattern p = Pattern.compile("[a-zA-Z0-9]+");
 		
 		if (users.containsKey(username)) {
-			success = "false";
-			message = "Sorry that username has been taken.";
+			outArr[0] = "false";
+			outArr[1] = "Sorry that username has been taken.";
 		} else if (username.equals(p.toString())) {
-			success = "false";
-			message = "Please ensure your username has only alphabetic or numeric characters.";
+			outArr[0] = "false";
+			outArr[1] = "Please ensure your username has only alphabetic or numeric characters.";
 		} else if (usernameLength > 12) {
-			success = "false";
-			message = "Your username cannot be more than 12 characters long.";
+			outArr[0] = "false";
+			outArr[1] = "Your username cannot be more than 12 characters long.";
 		} else if (usernameLength == 0) {
-			success = "false";
-			message = "Your username cannot be empty!";
+			outArr[0] = "false";
+			outArr[1] = "Your username cannot be empty!";
 		} else if (passwordLength < 6 || passwordLength > 15) {
-			success = "false";
-			message = "Your password must be between 6 and 15 characters long.";
+			outArr[0] = "false";
+			outArr[1] = "Your password must be between 6 and 15 characters long.";
 		} else {
 			Profile newUser = new Profile(username, getMD5(password), securityQ, securityA);
 			users.put(username, newUser);
 			
-			success = "true";
-			message = "Sign-up successful. Welcome!";
+			outArr[0] = "true";
+			outArr[1] = "Sign-up successful. Welcome!";
 		}
 		
-		output = protocol.transmit("signup", outArr);
+		return protocol.transmit("signup", outArr);
 	}
 	
 	/**
@@ -103,42 +113,52 @@ class Request implements Task {
 		return md.digest();
 	}
 	
-	private void signin(String[] input) throws NoSuchAlgorithmException {
+	/**
+	 * Sign-in method.
+	 * 
+	 * @param input username and password
+	 * @return output indicating whether sign-in has been successful
+	 * @throws NoSuchAlgorithmException
+	 */
+	private String signin(String[] input) throws NoSuchAlgorithmException {
 		String username = input[0];
 		String password = input[1];
 		
 		if (!users.containsKey(username)) {
-			success = "false";
+			outArr[0] = "false";
 		} else if (!(users.get(username).getPassword() == getMD5(password))) {
-			success = "false";
+			outArr[0] = "false";
 		} else {
 			users.get(username).leftGame();
 			
-			success = "true";
-			message = "Welcome back!";
+			outArr[0] = "true";
+			outArr[1] = "Welcome back!";
 		}
 		
-		if (success.equals("false")) {
-			message = "Your username and/or password were incorrect.";
+		if (outArr[0].equals("false")) {
+			outArr[1] = "Your username and/or password were incorrect.";
 		}
 		
-		output = protocol.transmit("signin", outArr);
+		return protocol.transmit("signin", outArr);
 	}
 	
 	/**
 	 * Forgot password, step 1.
 	 * Checks if username exists.
+	 * 
+	 * @param input username
+	 * @return output indicating whether username has been found
 	 */
-	private void forgotPasswordRequest(String[] input) {
+	private String forgotPasswordRequest(String[] input) {
 		if (users.containsKey(input[0])) {
-			success = "true";
-			message = securityQuestions.get(users.get(input[0]).getSecurityQuestion());
+			outArr[0] = "true";
+			outArr[1] = securityQuestions.get(users.get(input[0]).getSecurityQuestion());
 		} else {
-			success = "false";
-			message = "Username not found.";
+			outArr[0] = "false";
+			outArr[1] = "Username not found.";
 		}
 		
-		output = protocol.transmit("forgot", outArr);
+		return protocol.transmit("forgot", outArr);
 	}
 	
 	/**
@@ -146,42 +166,46 @@ class Request implements Task {
 	 * Checks if the user's answer matches their records.
 	 * 
 	 * @param input [0] = username; [1] = answer
+	 * @return output indicating whether the user has successfully answered the security question
 	 */
-	private void forgotPassword(String[] input) {
+	private String forgotPassword(String[] input) {
 		if (users.get(input[0]).getSecurityAnswer().equals(input[1])) {
-			success = "true";
-			message = "Enter your new password:";
+			outArr[0] = "true";
+			outArr[1] = "Enter your new password:";
 		} else {
-			success = "false";
-			message = "Sorry, the answer you gave did not match our records.";
+			outArr[0] = "false";
+			outArr[1] = "Sorry, the answer you gave did not match our records.";
 		}
 		
-		output = protocol.transmit("forgot", outArr);
+		return protocol.transmit("forgot", outArr);
 	}
 	
 	/**
 	 * Builds a String of online users.
+	 * 
+	 * @return output containing information of all online users
 	 */
-	private void requestUsers() {
+	private String requestUsers() {
 		StringBuilder sb = new StringBuilder();
 		
 		for (Profile p : users.values()) {
 			sb.append(p.toString());
 		}
 		
-		output = protocol.transmit("requestusers", sb.toString());
+		return protocol.transmit("requestusers", sb.toString());
 	}
 	
 	/**
 	 * Creates a new game, first checking that both users are available.
 	 * 
 	 * @param input users who want to play
+	 * @return output indicating whether the new game has been successfully initiated
 	 */
-	private void newGame(String[] input) {
+	private String newGame(String[] input) {
 		if (!(users.get(input[0]).isAvailable()) && 
 				users.get(input[1]).isAvailable()) {
-			success = "false";
-			message = "This user isn't available.";
+			outArr[0] = "false";
+			outArr[1] = "This user isn't available.";
 		} else {
 			String key = input[0] + "/" + input[1];
 			
@@ -195,32 +219,33 @@ class Request implements Task {
 				games.get(key).add(new Game(input[0], input[1]));
 			}
 			
-			success = "true";
+			outArr[0] = "true";
 		}
 		
-		output = protocol.transmit("newgame", outArr);
+		return protocol.transmit("newgame", outArr);
 	}
 	
 	/**
 	 * Add a character to a game.
 	 * 
 	 * @param input [0] = position on board; [1] = o or x
+	 * @return output indicating whether character input has been successful
 	 */
-	private void addChar(String[] input) {
+	private String addChar(String[] input) {
 		Game currentGame = games.get(input[0] + "/" + input[1]).getLast();
 		char[] board = currentGame.getBoard();
 		int position = Integer.parseInt(input[2]) - 1;
 		
 		if (!(board[position] == ' ')) {
-			success = "false";
-			message = "Space already taken";
+			outArr[0] = "false";
+			outArr[1] = "Space already taken";
 		} else {
 			currentGame.addChar(position, input[3].charAt(0));
 			
-			success = "true";
+			outArr[0] = "true";
 		}
 		
-		output = protocol.transmit("addchar", outArr);
+		return protocol.transmit("addchar", outArr);
 	}
 	
 	/**
@@ -241,26 +266,30 @@ class Request implements Task {
 				String[] input;
 				
 				while((s = in.readLine()) != null) {
+					System.out.println("Input: " + s);
+					
 					action = protocol.getAction(s);
 					input = protocol.receive(s);
 					
 					if (action.equals("connect")) {
-						success = "true";
+						output = connect();
 					} else if (action.equals("signup")) {
-						signup(input);
+						output = signup(input);
 					} else if (action.equals("signin")) {
-						signin(input);
+						output = signin(input);
 					} else if (action.equals("forgotReq")) {
-						forgotPasswordRequest(input);
+						output = forgotPasswordRequest(input);
 					} else if (action.equals("forgot")) {
-						forgotPassword(input);
+						output = forgotPassword(input);
 					} else if (action.equals("requestusers")) {
-						requestUsers();
+						output = requestUsers();
 					} else if (action.equals("newgame")) {
-						newGame(input);
+						output = newGame(input);
 					} else if (action.equals("addchar")) {
-						addChar(input);
+						output = addChar(input);
 					}
+					
+					System.out.println("Output: " + output);
 					
 					out.println(output);
 				}

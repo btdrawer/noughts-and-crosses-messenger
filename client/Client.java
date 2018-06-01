@@ -1,9 +1,9 @@
 package client;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -14,14 +14,13 @@ import protocol.Protocol;
  * Sends messages to the server and receives responses from it.
  * 
  * @author Ben Drawer
+ * @version 1 June 2018
  *
  */
 public class Client {
-	private String host;
-	private int port;
 	private Socket clientSocket;
 	private BufferedReader in;
-	private PrintWriter out;
+	private DataOutputStream out;
 	private Protocol protocol;
 	
 	/**
@@ -33,24 +32,9 @@ public class Client {
 	 * @throws IOException
 	 */
 	public Client(String host, int port) throws UnknownHostException, IOException {
-		this.host = host;
-		this.port = port;
-		
 		clientSocket = new Socket(host, port);
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		out = new PrintWriter(clientSocket.getOutputStream(), true);
-		protocol = new Protocol();
-	}
-	
-	/**
-	 * Empty constructor.
-	 * 
-	 * @throws IOException
-	 */
-	public Client() throws IOException {
-		clientSocket = new Socket();
-		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		out = new PrintWriter(clientSocket.getOutputStream(), true);
+		out = new DataOutputStream(clientSocket.getOutputStream());
 		protocol = new Protocol();
 	}
 	
@@ -64,24 +48,6 @@ public class Client {
 	}
 	
 	/**
-	 * Sets the IP address the client listens on.
-	 * 
-	 * @param host new IP address
-	 */
-	public void setHost(String host) {
-		this.host = host;
-	}
-	
-	/**
-	 * Sets the port number the client listens on.
-	 * 
-	 * @param port new port number
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
-	
-	/**
 	 * Tests the connection
 	 * 
 	 * @return response from server
@@ -89,7 +55,7 @@ public class Client {
 	 */
 	public String[] connect() throws IOException {
 		String[] outArr = {};
-		out.write(protocol.transmit("connect", outArr));
+		out.writeBytes(protocol.transmit("connect", outArr));
 		return this.getResponse();
 	}
 	
@@ -106,7 +72,7 @@ public class Client {
 	public String[] signup(String username, String password, int securityQ, 
 			String securityA) throws IOException {
 		String[] outArr = {username, password, securityQ + "", securityA};
-		out.write(protocol.transmit("signup", outArr));
+		out.writeBytes(protocol.transmit("signup", outArr));
 		return this.getResponse();
 	}
 	
@@ -120,7 +86,7 @@ public class Client {
 	 */
 	public String[] signin(String username, String password) throws IOException {
 		String[] outArr = {username, password};
-		out.write(protocol.transmit("signin", outArr));
+		out.writeBytes(protocol.transmit("signin", outArr));
 		return this.getResponse();
 	}
 	
@@ -136,7 +102,7 @@ public class Client {
 	public String[] forgotPassword(String username, int securityQ, String securityA) 
 			throws IOException {
 		String[] outArr = {username, securityQ + "", securityA};
-		out.write(protocol.transmit("forgot", outArr));
+		out.writeBytes(protocol.transmit("forgot", outArr));
 		return this.getResponse();
 	}
 	
@@ -150,7 +116,26 @@ public class Client {
 	 */
 	public String[] newGame(String opponent, boolean timed) throws IOException {
 		String[] outArr = {opponent, timed + ""};
-		out.write(protocol.transmit("newgame", outArr));
+		out.writeBytes(protocol.transmit("newgame", outArr));
 		return this.getResponse();
+	}
+	
+	/**
+	 * Main method.
+	 * Use for testing communications with the server.
+	 * 
+	 * @param args
+	 * @throws IOException 
+	 * @throws UnknownHostException 
+	 */
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		Client client = new Client("127.0.0.1", 8080);
+		String[] input;
+		
+		input = client.connect();
+		System.out.println("Connect" + "/" + input.length + "/" + input[0] + "/" + input[1]);
+		
+		input = client.signin("a", "asdf");
+		System.out.println("Sign-in" + "/" + input.length + "/" + input[0] + "/" + input[1]);
 	}
 }

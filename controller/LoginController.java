@@ -5,10 +5,12 @@ import java.io.IOException;
 import client.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.fxml.FXMLLoader;
 import view.Main;
 
 /**
@@ -38,7 +40,7 @@ public class LoginController {
 		if (response[0].equals("false")) {
 			responseText.setText(response[1]);
 		} else {
-			//TODO move to next panel
+			//TODO home panel
 		}
 	}
 	
