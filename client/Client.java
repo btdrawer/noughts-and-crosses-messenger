@@ -44,7 +44,9 @@ public class Client {
 	 * @throws IOException
 	 */
 	public String[] getResponse() throws IOException {
-		return protocol.receive(in.readLine());
+		String s = in.readLine();
+		System.out.println("Input: " + s);
+		return protocol.receive(s);
 	}
 	
 	/**

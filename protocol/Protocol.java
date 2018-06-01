@@ -15,7 +15,7 @@ public class Protocol {
 	 * @return action word (e.g., signup, signin, etc.)
 	 */
 	public String getAction(String a) {
-		return a.split("/")[0];
+		return a.split("//")[0];
 	}
 	
 	/**
@@ -29,10 +29,10 @@ public class Protocol {
 		StringBuilder sb = new StringBuilder();
 		
 		for(String s : a) {
-			sb.append(s + "/");
+			sb.append(s + "//");
 		}
 		
-		return action + "/" + sb.toString() + "\n";
+		return action + "//" + sb.toString() + "\n";
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class Protocol {
 	 * @return String containing the action word and other information
 	 */
 	public String transmit(String action, String a) {
-		return action + "/" + a + "\n";
+		return action + "//" + a + "\n";
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class Protocol {
 	 * @return String array of same information, excluding the action word
 	 */
 	public String[] receive(String a) {
-		String[] s0 = a.split("/");
+		String[] s0 = a.split("//");
 		int length = s0.length-1;
 		String[] s1 = new String[length];
 		
