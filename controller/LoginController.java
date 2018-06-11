@@ -5,11 +5,14 @@ import java.io.IOException;
 import client.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import view.Main;
 
@@ -17,11 +20,12 @@ import view.Main;
  * Controller for the login pane.
  * 
  * @author Ben Drawer
- * @version 30 May 2018
+ * @version 11 June 2018
  *
  */
 public class LoginController {
 	private static Client client = Main.getClient();
+	private Stage primaryStage;
 	@FXML protected TextField username;
 	@FXML protected PasswordField password;
 	private String[] response;
@@ -40,7 +44,11 @@ public class LoginController {
 		if (response[0].equals("false")) {
 			responseText.setText(response[1]);
 		} else {
-			//TODO home panel
+			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Leaderboard.fxml"));
+			
+			primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+			primaryStage.setScene(new Scene(root, 400, 550));
+			primaryStage.show();
 		}
 	}
 	

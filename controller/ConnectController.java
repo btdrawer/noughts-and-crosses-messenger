@@ -5,6 +5,7 @@ import java.io.IOException;
 import client.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -22,7 +23,7 @@ import view.Main;
  */
 public class ConnectController {
 	private static Client client = Main.getClient();
-	private static Stage primaryStage = Main.getPrimaryStage();
+	private Stage primaryStage;
 	@FXML protected TextField ip;
 	@FXML protected TextField port;
 	private String[] response;
@@ -42,6 +43,7 @@ public class ConnectController {
 		if (response.length > 0 && response[0].equals("true")) {
 			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
 			
+			primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 			primaryStage.setScene(new Scene(root, 350, 300));
 			primaryStage.show();
 		} else {
