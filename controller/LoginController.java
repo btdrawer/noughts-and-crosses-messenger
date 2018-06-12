@@ -20,7 +20,7 @@ import view.Main;
  * Controller for the login pane.
  * 
  * @author Ben Drawer
- * @version 11 June 2018
+ * @version 12 June 2018
  *
  */
 public class LoginController {
@@ -39,16 +39,22 @@ public class LoginController {
 	 */
 	@FXML
 	protected void signInButton(ActionEvent event) throws IOException {
-		response = client.signin(username.toString(), password.toString());
+		String usernameStr = username.getText(), passwordStr = password.getText();
 		
-		if (response[0].equals("false")) {
-			responseText.setText(response[1]);
+		if (usernameStr.isEmpty() || passwordStr.isEmpty()) {
+			responseText.setText("Username and/or password\ncannot be left blank.");
 		} else {
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Leaderboard.fxml"));
+			this.response = client.signin(usernameStr, passwordStr);
 			
-			primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-			primaryStage.setScene(new Scene(root, 400, 550));
-			primaryStage.show();
+			if (response[0].equals("false")) {
+				responseText.setText(Main.twoLines(response[1]));
+			} else {
+				Parent root = FXMLLoader.load(getClass().getResource("/fxml/Leaderboard.fxml"));
+				
+				primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+				primaryStage.setScene(new Scene(root, 400, 550));
+				primaryStage.show();
+			}
 		}
 	}
 	
@@ -56,10 +62,15 @@ public class LoginController {
 	 * Listener for sign-up button.
 	 * 
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	protected void signUpButton(ActionEvent event) {
-		//TODO sign up panel
+	protected void signUpButton(ActionEvent event) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Signup.fxml"));
+		
+		primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+		primaryStage.setScene(new Scene(root, 350, 300));
+		primaryStage.show();
 	}
 	
 	@FXML
