@@ -20,7 +20,7 @@ import view.Main;
  * Controller for the signup pane.
  * 
  * @author Ben Drawer
- * @version 12 June 2018
+ * @version 13 June 2018
  *
  */
 public class SignupController {
@@ -68,14 +68,15 @@ public class SignupController {
 			//TODO get number from menu item
 			response = client.signup(usernameStr, passwordStr, 
 					0, answerStr);
+			client.setUsername(usernameStr);
 			
 			if (response[0].equals("false")) {
-				responseText.setText(response[1]);
+				responseText.setText(Main.twoLines(response[1]));
 			} else {
 				Parent root = FXMLLoader.load(getClass().getResource("/fxml/Leaderboard.fxml"));
 				
 				primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				primaryStage.setScene(new Scene(root, 400, 550));
+				primaryStage.setScene(new Scene(root, 575, 425));
 				primaryStage.show();
 			}
 		}

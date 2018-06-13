@@ -22,6 +22,7 @@ public class Client {
 	private BufferedReader in;
 	private DataOutputStream out;
 	private Protocol protocol;
+	private String username;
 	
 	/**
 	 * Constructor.
@@ -36,6 +37,22 @@ public class Client {
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		out = new DataOutputStream(clientSocket.getOutputStream());
 		protocol = new Protocol();
+	}
+	
+	/**
+	 * 
+	 * @return username of current user
+	 */
+	public String getUsername() {
+		return username;
+	}
+	
+	/**
+	 * 
+	 * @param username new username
+	 */
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	/**
@@ -119,6 +136,19 @@ public class Client {
 	public String[] newGame(String opponent, boolean timed) throws IOException {
 		String[] outArr = {opponent, timed + ""};
 		out.writeBytes(protocol.transmit("newgame", outArr));
+		return this.getResponse();
+	}
+	
+	/**
+	 * Sign out method.
+	 * 
+	 * @param username
+	 * @return response from server
+	 * @throws IOException
+	 */
+	public String[] signOut(String username) throws IOException {
+		String[] outArr = {username};
+		out.writeBytes(protocol.transmit("signout", outArr));
 		return this.getResponse();
 	}
 	

@@ -49,10 +49,12 @@ public class LoginController {
 			if (response[0].equals("false")) {
 				responseText.setText(Main.twoLines(response[1]));
 			} else {
+				client.setUsername(usernameStr);
+				
 				Parent root = FXMLLoader.load(getClass().getResource("/fxml/Leaderboard.fxml"));
 				
 				primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				primaryStage.setScene(new Scene(root, 400, 550));
+				primaryStage.setScene(new Scene(root, 575, 425));
 				primaryStage.show();
 			}
 		}
@@ -69,7 +71,7 @@ public class LoginController {
 		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Signup.fxml"));
 		
 		primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		primaryStage.setScene(new Scene(root, 350, 300));
+		primaryStage.setScene(new Scene(root, 350, 325));
 		primaryStage.show();
 	}
 	

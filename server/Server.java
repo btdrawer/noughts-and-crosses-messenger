@@ -25,7 +25,7 @@ class Server {
 	private static Map<String, Profile> users = new HashMap<>();
 	private static Map<String, LinkedList<Game>> games = new HashMap<>();
 	private static Map<Short, String> securityQuestions = new HashMap<>();
-	private static int quantity, port;
+	private static int quantity, port, numberOfOnlineUsers;
 	private static String ip;
 	
 	/**
@@ -58,6 +58,21 @@ class Server {
 	 */
 	static Map<Short, String> getSecurityQuestions() {
 		return securityQuestions;
+	}
+	
+	/**
+	 * 
+	 * @return number of online users
+	 */
+	static int getNumberOfOnlineUsers() {
+		return numberOfOnlineUsers;
+	}
+	
+	/**
+	 * Decrements the number of online users when one leaves.
+	 */
+	static void leftServer() {
+		numberOfOnlineUsers -= 1;
 	}
 	
 	/**
@@ -141,13 +156,15 @@ class Server {
 			serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip));
 			
 			ThreadPool threadPool = new ThreadPool(quantity);
-			threadPool.add(new Writer(500000));
+			threadPool.add(new Writer(50000));
 			
 			System.out.println("Server is up and running!");
 			
 			while(true) {
-				Socket clientSocket = serverSocket.accept();
-				threadPool.add(new Request(clientSocket));
+				if (numberOfOnlineUsers < quantity) {
+					Socket clientSocket = serverSocket.accept();
+					threadPool.add(new Request(clientSocket));
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

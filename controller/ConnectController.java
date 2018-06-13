@@ -19,7 +19,7 @@ import view.Main;
  * Controller for the Connect view.
  * 
  * @author Ben Drawer
- * @version 12 June 2018
+ * @version 13 June 2018
  *
  */
 public class ConnectController {
@@ -27,6 +27,8 @@ public class ConnectController {
 	@FXML protected TextField ip;
 	@FXML protected TextField port;
 	@FXML protected Text responseText;
+	private static Client client;
+	private String[] response;
 	
 	/**
 	 * Event handler for when the connect button is pressed.
@@ -43,12 +45,18 @@ public class ConnectController {
 		} else {
 			try {
 				Main.setClient(new Client(ipStr, Integer.parseInt(portStr)));
+				client = Main.getClient();
+				response = client.connect();
 				
-				Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-				
-				primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				primaryStage.setScene(new Scene(root, 315, 350));
-				primaryStage.show();
+				if (response.length > 0) {
+					Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
+					
+					primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+					primaryStage.setScene(new Scene(root, 315, 350));
+					primaryStage.show();
+				} else {
+					responseText.setText("Unable to join server.\nPlease try again later.");
+				}
 			} catch (ConnectException e) {
 				responseText.setText("Could not find server.");
 			}

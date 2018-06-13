@@ -14,7 +14,7 @@ import java.util.Map;
  * This thread reads usernames from a data file and periodically writes to it.
  * 
  * @author Ben Drawer
- * @version 30 May 2018
+ * @version 13 June 2018
  *
  */
 class Writer implements Task {
@@ -43,7 +43,6 @@ class Writer implements Task {
 		try {
 			File dataFile = new File("src/server/data");
 			BufferedReader in = new BufferedReader(new FileReader(dataFile));
-			PrintWriter out = new PrintWriter(new FileWriter(dataFile, true));
 			
 			String s;
 			String[] sArr;
@@ -58,6 +57,8 @@ class Writer implements Task {
 						Integer.parseInt(sArr[5])));
 			}
 			
+			in.close();
+			
 			in = new BufferedReader(new FileReader("src/server/securityQuestions"));
 			
 			System.out.println("Getting security questions...");
@@ -68,14 +69,19 @@ class Writer implements Task {
 				securityQuestions.put(Short.parseShort(sArr[0]), sArr[1]);
 			}
 			
+			in.close();
+			
 			while(true) {
 				System.out.println("Backing up data...");
+				PrintWriter out = new PrintWriter(new FileWriter(dataFile, true));
 				
 				for (Profile p : users.values()) {
 					out.println(p.getUsername() + "/" + p.getPassword() + "/" +
 							p.getSecurityQuestion() + "/" + p.getSecurityAnswer() + "/" +
 							p.getWins() + "/" + p.getLosses());
 				}
+				
+				out.close();
 				
 				Thread.sleep(interval);
 			}

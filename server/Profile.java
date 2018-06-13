@@ -6,15 +6,14 @@ package server;
  * and scores to date.
  * 
  * @author Ben Drawer
- * @version 16 May 2018
+ * @version 13 June 2018
  *
  */
 class Profile implements Comparable<Profile> {
-	private String username, securityAnswer;
-	byte[] password;
+	private String username, password, securityAnswer;
 	private short securityQuestion;
 	private int wins, losses, total;
-	private boolean available;
+	private boolean online, available;
 	
 	/**
 	 * Constructor.
@@ -25,13 +24,14 @@ class Profile implements Comparable<Profile> {
 	 * @param securityQuestion number representing security question
 	 * @param securityAnswer answer to security question
 	 */
-	Profile(String username, byte[] password, short securityQuestion, 
+	Profile(String username, String password, short securityQuestion, 
 			String securityAnswer) {
 		this.username = username;
 		this.password = password;
 		this.securityQuestion = securityQuestion;
 		this.securityAnswer = securityAnswer;
-		this.available = false;
+		this.online = true;
+		this.available = true;
 		
 		this.wins = 0;
 		this.losses = 0;
@@ -49,13 +49,14 @@ class Profile implements Comparable<Profile> {
 	 * @param wins number of games the user has won
 	 * @param losses number of games the user has lost
 	 */
-	Profile(String username, byte[] password, short securityQuestion, 
+	Profile(String username, String password, short securityQuestion, 
 			String securityAnswer, int wins, int losses) {
 		this.username = username;
 		this.password = password;
 		this.securityQuestion = securityQuestion;
 		this.securityAnswer = securityAnswer;
-		this.available = false;
+		this.online = true;
+		this.available = true;
 		
 		this.wins = wins;
 		this.losses = losses;
@@ -74,7 +75,7 @@ class Profile implements Comparable<Profile> {
 	 * 
 	 * @return password
 	 */
-	byte[] getPassword() {
+	String getPassword() {
 		return password;
 	}
 	
@@ -143,17 +144,28 @@ class Profile implements Comparable<Profile> {
 	}
 	
 	/**
-	 * Sets the user's availability to false.
+	 * Sets the user's online status.
+	 * It also sets the user's availability status, since this will also be
+	 * true as soon as the user comes online, and will of course be false once
+	 * the user is offline.
+	 * 
+	 * @param online new online status
 	 */
-	void joinedGame() {
-		available = false;
+	void setOnlineStatus(boolean online) {
+		this.online = online;
+		this.available = online;
 	}
 	
 	/**
-	 * Sets the user's availability to true.
+	 * Sets the user's availability to join a new game.
+	 * When the user joins a new game, their availability is set to false,
+	 * indicating that they can't join another game yet.
+	 * When the game is finished, their availability status is set to false.
+	 * 
+	 * @param available new availability status
 	 */
-	void leftGame() {
-		available = true;
+	void setAvailabilityStatus(boolean available) {
+		this.available = available;
 	}
 	
 	/**
@@ -175,6 +187,7 @@ class Profile implements Comparable<Profile> {
 	 * toString() method.
 	 */
 	public String toString() {
-		return username + "/" + available + "/" + wins + "/" + losses + "/" + total;
+		return username + "/" + online + "/" + available + "/" + wins + "/" 
+				+ losses + "/" + total;
 	}
 }

@@ -18,7 +18,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 1 June 2018
+ * @version 13 June 2018
  *
  */
 class Request implements Task {
@@ -105,13 +105,19 @@ class Request implements Task {
 	 * @return MD5 password hash
 	 * @throws NoSuchAlgorithmException if hashing algorithm is unavailable
 	 */
-	static byte[] getMD5(String input) 
-			throws NoSuchAlgorithmException {
+	static String getMD5(String input) throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		md.reset();
 		md.update(input.getBytes());
+		byte[] digest = md.digest();
 		
-		return md.digest();
+		StringBuilder s = new StringBuilder();
+		
+		for (byte b : digest) {
+			s.append(b);
+		}
+		
+		return s.toString();
 	}
 	
 	/**
@@ -127,10 +133,10 @@ class Request implements Task {
 		
 		if (!users.containsKey(username)) {
 			outArr[0] = "false";
-		} else if (!(users.get(username).getPassword() == getMD5(password))) {
+		} else if (!(users.get(username).getPassword().equals(getMD5(password)))) {
 			outArr[0] = "false";
 		} else {
-			users.get(username).leftGame();
+			users.get(username).setOnlineStatus(true);
 			
 			outArr[0] = "true";
 			outArr[1] = "Welcome back!";
@@ -220,6 +226,9 @@ class Request implements Task {
 				games.get(key).add(new Game(input[0], input[1]));
 			}
 			
+			users.get(outArr[0]).setAvailabilityStatus(false);
+			users.get(outArr[1]).setAvailabilityStatus(false);
+			
 			outArr[0] = "true";
 		}
 		
@@ -247,6 +256,43 @@ class Request implements Task {
 		}
 		
 		return protocol.transmit("addchar", outArr);
+	}
+	
+	/**
+	 * Is called when a game finishes.
+	 * 
+	 * @param input [0] = winning player, [1] = losing player, [2] = time (if applicable)
+	 * @return output indicating whether game was saved successfully
+	 */
+	private String leftGame(String[] input) {
+		//TODO timedGame implementation
+		Game currentGame = games.get(input[0] + "/" + input[1]).getLast();
+		String[] newPlayers = {input[0], input[1]};
+		currentGame.setPlayers(newPlayers);
+		currentGame.finished();
+		
+		users.get(input[0]).setAvailabilityStatus(true);
+		users.get(input[1]).setAvailabilityStatus(true);
+		
+		outArr[0] = "true";
+		outArr[1] = "Game finished.";
+		
+		return protocol.transmit("leftGame", outArr);
+	}
+	
+	/**
+	 * Signs the user out.
+	 * 
+	 * @param input [0] = username
+	 * @return output indicating that the sign out has been successful
+	 */
+	private String signout(String[] input) {
+		users.get(input[0]).setOnlineStatus(false);
+		
+		outArr[0] = "true";
+		outArr[1] = "Signed out. See you soon!";
+		
+		return protocol.transmit("signout", outArr);
 	}
 	
 	/**
@@ -288,6 +334,10 @@ class Request implements Task {
 						output = newGame(input);
 					} else if (action.equals("addchar")) {
 						output = addChar(input);
+					} else if (action.equals("leftgame")) {
+						output = leftGame(input);
+					} else if (action.equals("signout")) {
+						output = signout(input);
 					}
 					
 					System.out.println("Output: " + output);
@@ -299,6 +349,13 @@ class Request implements Task {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				clientSocket.close();
+				Server.leftServer();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
