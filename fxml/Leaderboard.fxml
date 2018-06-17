@@ -7,15 +7,11 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="controller.LeaderboardController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="client.LeaderboardController">
   <children>
     <ScrollPane layoutX="14.0" layoutY="60.0" prefHeight="307.0" prefWidth="200.0">
       <content>
-        <ScrollPane prefHeight="306.0" prefWidth="200.0">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-          </content>
-        </ScrollPane>
+        <ListView fx:id="onlineUsers" prefHeight="307.0" prefWidth="200.0" />
       </content>
     </ScrollPane>
     <GridPane layoutX="250.0" layoutY="61.0">
@@ -55,12 +51,12 @@
     <Label layoutX="15.0" layoutY="24.0" text="Online users" />
     <Label layoutX="250.0" layoutY="24.0" text="High scores" />
     <Label layoutX="250.0" layoutY="223.0" text="Shortest times taken" />
-    <Button fx:id="playRandom" layoutX="14.0" layoutY="373.0" mnemonicParsing="false" text="Play a random opponent" onAction="#playRandom">
+    <Button fx:id="playRandom" layoutX="14.0" layoutY="373.0" mnemonicParsing="false" onAction="#playRandom" text="Play a random opponent">
       <font>
         <Font size="13.0" />
       </font>
     </Button>
-    <Button fx:id="settings" layoutX="394.0" layoutY="26.0" mnemonicParsing="false" text="Settings" onAction="#settings" />
-    <Button fx:id="signout" layoutX="474.0" layoutY="26.0" mnemonicParsing="false" text="Sign out" onAction="#signOut" />
+    <Button fx:id="editProfile" layoutX="374.0" layoutY="26.0" mnemonicParsing="false" onAction="#editProfileButton" text="Edit profile" />
+    <Button fx:id="signout" layoutX="474.0" layoutY="26.0" mnemonicParsing="false" onAction="#signOutButton" text="Sign out" />
   </children>
 </AnchorPane>

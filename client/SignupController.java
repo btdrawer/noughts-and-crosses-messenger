@@ -1,37 +1,58 @@
-package controller;
+package client;
 
 import java.io.IOException;
 
-import client.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import view.Main;
 
 /**
  * Controller for the signup pane.
  * 
  * @author Ben Drawer
- * @version 13 June 2018
+ * @version 17 June 2018
  *
  */
-public class SignupController {
-	private static Client client = Main.getClient();
-	private Stage primaryStage;
+public class SignupController extends Controller {
 	@FXML protected TextField username;
 	@FXML protected PasswordField password;
 	@FXML protected MenuButton questions;
 	@FXML protected TextField answer;
 	private String[] response;
 	@FXML protected Text responseText;
+	private ActionEvent currentEvent;
+	
+	/**
+	 * Receives input, and if the action is "signup", calls the
+	 * sign up method to process the input from the server.
+	 * 
+	 * @param action action to be undertaken
+	 * @param input information associated with action
+	 */
+	@Override
+	void processInput(String action, String[] input) {
+		if (action.equals("signup"))
+			signUp(input);
+	}
+	
+	/**
+	 * If the server returns to the client that the sign up has been successful,
+	 * this method changes the scene to the Leaderboard pane.
+	 * Otherwise, it prints a message saying sign up wasn't successful.
+	 * 
+	 * @param input information from server
+	 */
+	private void signUp(String[] input) {
+		if (input[0].equals("false")) {
+			responseText.setText(Main.twoLines(response[1]));
+		} else {
+			super.setUsername(input[1]);
+			Main.changeScene("Leaderboard", 575, 425, currentEvent);
+		}
+	}
 	
 	/**
 	 * Method for the back button, which takes the user back to the login pane.
@@ -41,11 +62,8 @@ public class SignupController {
 	 */
 	@FXML
 	protected void backButton(ActionEvent event) throws IOException {
-		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-		
-		primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		primaryStage.setScene(new Scene(root, 325, 350));
-		primaryStage.show();
+		this.currentEvent = event;
+		Main.changeScene("Login", 325, 350, currentEvent);
 	}
 	
 	/**
@@ -66,19 +84,8 @@ public class SignupController {
 			responseText.setText("Please ensure all fields are completed.");
 		} else {
 			//TODO get number from menu item
-			response = client.signup(usernameStr, passwordStr, 
-					0, answerStr);
-			client.setUsername(usernameStr);
-			
-			if (response[0].equals("false")) {
-				responseText.setText(Main.twoLines(response[1]));
-			} else {
-				Parent root = FXMLLoader.load(getClass().getResource("/fxml/Leaderboard.fxml"));
-				
-				primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				primaryStage.setScene(new Scene(root, 575, 425));
-				primaryStage.show();
-			}
+			String[] outArr = {usernameStr, passwordStr, 0 + "", answerStr};
+			super.sendMessage("signup", outArr);
 		}
 	}
 }

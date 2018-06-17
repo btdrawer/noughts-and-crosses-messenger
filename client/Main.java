@@ -1,9 +1,11 @@
-package view;
+package client;
 
 import java.io.IOException;
 
-import client.Client;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -17,24 +19,7 @@ import javafx.fxml.FXMLLoader;
  *
  */
 public class Main extends Application {
-	private static Client client;
-	
-	/**
-	 * 
-	 * @return current client
-	 */
-	public static Client getClient() {
-		return client;
-	}
-	
-	/**
-	 * Setter method for client.
-	 * 
-	 * @param newClient new client information
-	 */
-	public static void setClient(Client newClient) {
-		client = newClient;
-	}
+	private static Stage primaryStage;
 	
 	/**
 	 * Splits an input String into two lines separated by a newline character.
@@ -42,7 +27,7 @@ public class Main extends Application {
 	 * @param input input String
 	 * @return String with newline character inserted
 	 */
-	public static String twoLines(String input) {
+	static String twoLines(String input) {
 		String[] text = input.split(" ");
 		StringBuilder s = new StringBuilder();
 		
@@ -57,6 +42,31 @@ public class Main extends Application {
 		}
 		
 		return s.toString();
+	}
+	
+	/**
+	 * Changes the scene.
+	 * 
+	 * @param fxml name of FXML file (not including the extension)
+	 * @param x x number of pixels
+	 * @param y y number of pixels
+	 * @param event the current ActionEvent
+	 */
+	static void changeScene(String fxml, int x, int y, ActionEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Parent root = FXMLLoader.load(getClass().getResource("/fxml/" + fxml + ".fxml"));
+					
+					primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+					primaryStage.setScene(new Scene(root, x, y));
+					primaryStage.show();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	/**

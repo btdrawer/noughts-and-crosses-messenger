@@ -26,6 +26,8 @@ class Request implements Task {
 	private Protocol protocol;
 	private String output;
 	private String[] outArr;
+	private BufferedReader in;
+	private DataOutputStream out;
 	private static Map<String, Profile> users = Server.getUsers();
 	private static Map<String, LinkedList<Game>> games = Server.getGames();
 	private static Map<Short, String> securityQuestions = Server.getSecurityQuestions();
@@ -34,11 +36,31 @@ class Request implements Task {
 	 * Constructor.
 	 * 
 	 * @param clientSocket connecting socket
+	 * @throws IOException 
 	 */
-	Request(Socket clientSocket) {
+	Request(Socket clientSocket) throws IOException {
 		this.clientSocket = clientSocket;
 		this.protocol = new Protocol();
 		this.outArr = new String[2];
+		
+		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		this.out = new DataOutputStream(clientSocket.getOutputStream());
+	}
+	
+	/**
+	 * 
+	 * @return input from client
+	 */
+	BufferedReader getBufferedReader() {
+		return in;
+	}
+	
+	/**
+	 * 
+	 * @return output to client
+	 */
+	DataOutputStream getDataOutputStream() {
+		return out;
 	}
 	
 	/**
@@ -47,6 +69,10 @@ class Request implements Task {
 	 * @return output stating that the connection has been successful
 	 */
 	private String connect() {
+		Server.joinedServer();
+		System.out.println("Connection with client established.\n" +
+				"numberOfOnlineUsers: " + Server.getNumberOfOnlineUsers());
+		
 		outArr[0] = "true";
 		outArr[1] = "Connection test successful.";
 		
@@ -138,6 +164,9 @@ class Request implements Task {
 		} else {
 			users.get(username).setOnlineStatus(true);
 			
+			String[] notifyOnlineUsers = {"signedin", username};
+			Server.broadcastMessage(notifyOnlineUsers);
+			
 			outArr[0] = "true";
 			outArr[1] = "Welcome back!";
 		}
@@ -192,11 +221,15 @@ class Request implements Task {
 	 * 
 	 * @return output containing information of all online users
 	 */
-	private String requestUsers() {
+	private String requestUsers(String[] input) {
 		StringBuilder sb = new StringBuilder();
 		
 		for (Profile p : users.values()) {
-			sb.append(p.toString());
+			if (p.getUsername().equals((input[0]))) {
+				//do nothing
+			}
+			
+			sb.append(p.getUsername());
 		}
 		
 		return protocol.transmit("requestusers", sb.toString());
@@ -302,12 +335,6 @@ class Request implements Task {
 	 */
 	public synchronized void run() {
 		try {
-			BufferedReader in = new BufferedReader(new 
-					InputStreamReader(clientSocket.getInputStream()));
-			DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
-			
-			System.out.println("Connection with client established");
-			
 			while(true) {
 				String s, action;
 				String[] input;
@@ -329,7 +356,7 @@ class Request implements Task {
 					} else if (action.equals("forgot")) {
 						output = forgotPassword(input);
 					} else if (action.equals("requestusers")) {
-						output = requestUsers();
+						output = requestUsers(input);
 					} else if (action.equals("newgame")) {
 						output = newGame(input);
 					} else if (action.equals("addchar")) {

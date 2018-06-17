@@ -13,6 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import protocol.Protocol;
+
 /**
  * Server class.
  * 
@@ -25,6 +27,7 @@ class Server {
 	private static Map<String, Profile> users = new HashMap<>();
 	private static Map<String, LinkedList<Game>> games = new HashMap<>();
 	private static Map<Short, String> securityQuestions = new HashMap<>();
+	private static List<Request> requestHandlers = new LinkedList<>();
 	private static int quantity, port, numberOfOnlineUsers;
 	private static String ip;
 	
@@ -69,10 +72,41 @@ class Server {
 	}
 	
 	/**
+	 * Increments the number of online users when one joins.
+	 */
+	static void joinedServer() {
+		numberOfOnlineUsers += 1;
+	}
+	
+	/**
 	 * Decrements the number of online users when one leaves.
 	 */
 	static void leftServer() {
 		numberOfOnlineUsers -= 1;
+	}
+	
+	/**
+	 * Broadcasts message to all clients.
+	 * 
+	 * @param input
+	 */
+	static void broadcastMessage(String[] input) {
+		Thread broadcaster = new Thread() {
+			Protocol protocol = new Protocol();
+			
+			@Override
+			public void run() {
+				for (Request r : requestHandlers) {
+					try {
+						r.getDataOutputStream().writeBytes(protocol.transmit(input[0], input[1]));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		
+		broadcaster.start();
 	}
 	
 	/**
@@ -163,7 +197,9 @@ class Server {
 			while(true) {
 				if (numberOfOnlineUsers < quantity) {
 					Socket clientSocket = serverSocket.accept();
-					threadPool.add(new Request(clientSocket));
+					Request newRequest = new Request(clientSocket);
+					requestHandlers.add(newRequest);
+					threadPool.add(newRequest);
 				}
 			}
 		} catch (IOException e) {
