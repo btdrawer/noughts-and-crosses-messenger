@@ -4,11 +4,12 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 13 June 2018
+ * @version 21 June 2018
  *
  */
 class Request implements Task {
@@ -116,6 +117,9 @@ class Request implements Task {
 		} else {
 			Profile newUser = new Profile(username, getMD5(password), securityQ, securityA);
 			users.put(username, newUser);
+			
+			String[] notifyOnlineUsers = {"signedin", username};
+			Server.broadcastMessage(notifyOnlineUsers);
 			
 			outArr[0] = "true";
 			outArr[1] = "Sign-up successful. Welcome!";
@@ -225,14 +229,67 @@ class Request implements Task {
 		StringBuilder sb = new StringBuilder();
 		
 		for (Profile p : users.values()) {
-			if (p.getUsername().equals((input[0]))) {
-				//do nothing
+			if (!p.getUsername().equals((input[0])) && 
+					p.isOnline()) {
+				sb.append(p.getUsername() + "//");
 			}
-			
-			sb.append(p.getUsername());
 		}
 		
 		return protocol.transmit("requestusers", sb.toString());
+	}
+	
+	/**
+	 * Creates a String of details of a user's profile.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private String viewProfile(String[] input) {
+		Profile p = users.get(input[0]);
+		String[] outArr = {"true", p.getUsername(), p.isAvailable() + "", 
+				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
+		
+		return protocol.transmit("viewprofile", outArr);
+	}
+	
+	/**
+	 * Provides the usernames, gross wins and net wins of the n highest-achieving
+	 * users.
+	 * 
+	 * @param input input[0] gives the number of users needed
+	 * @return
+	 */
+	private String leaderboard(String[] input) {
+		ArrayList<Profile> userArrayList = new ArrayList<Profile>(users.values());
+		Collections.sort(userArrayList);
+		
+		int n = Integer.parseInt(input[0]);
+		int size = userArrayList.size();
+		String[] outArrS;
+		
+		if (size > 0) {
+			outArrS = new String[n * 3 + 1];
+			outArrS[0] = "true";
+			
+			for (int i = 1; i < outArrS.length / 3 - 1 && i < size; i += 3) {
+				Profile p = userArrayList.get(size - i);
+				
+				outArrS[i] = p.getUsername();
+				outArrS[i+1] = p.getWins() + "";
+				outArrS[i+2] = p.getTotal() + "";
+			}
+		} else {
+			outArrS = new String[2];
+			outArrS[0] = "false";
+			outArrS[1] = "It's lonely in here!";
+		}
+		
+		return protocol.transmit("leaderboard", outArrS);
+	}
+	
+	private String timedLeaderboard(String[] input) {
+		//TODO
+		return null;
 	}
 	
 	/**
@@ -322,6 +379,9 @@ class Request implements Task {
 	private String signout(String[] input) {
 		users.get(input[0]).setOnlineStatus(false);
 		
+		String[] notifyOnlineUsers = {"signedout", input[0]};
+		Server.broadcastMessage(notifyOnlineUsers);
+		
 		outArr[0] = "true";
 		outArr[1] = "Signed out. See you soon!";
 		
@@ -345,27 +405,32 @@ class Request implements Task {
 					action = protocol.getAction(s);
 					input = protocol.receive(s);
 					
-					if (action.equals("connect")) {
+					if (action.equals("connect"))
 						output = connect();
-					} else if (action.equals("signup")) {
+					else if (action.equals("signup"))
 						output = signup(input);
-					} else if (action.equals("signin")) {
+					else if (action.equals("signin"))
 						output = signin(input);
-					} else if (action.equals("forgotReq")) {
+					else if (action.equals("forgotReq"))
 						output = forgotPasswordRequest(input);
-					} else if (action.equals("forgot")) {
+					else if (action.equals("forgot"))
 						output = forgotPassword(input);
-					} else if (action.equals("requestusers")) {
+					else if (action.equals("requestusers"))
 						output = requestUsers(input);
-					} else if (action.equals("newgame")) {
+					else if (action.equals("viewprofile"))
+						output = viewProfile(input);
+					else if (action.equals("leaderboard"))
+						output = leaderboard(input);
+					else if (action.equals("timedlederboard"))
+						output = timedLeaderboard(input);
+					else if (action.equals("newgame"))
 						output = newGame(input);
-					} else if (action.equals("addchar")) {
+					else if (action.equals("addchar"))
 						output = addChar(input);
-					} else if (action.equals("leftgame")) {
+					else if (action.equals("leftgame"))
 						output = leftGame(input);
-					} else if (action.equals("signout")) {
+					else if (action.equals("signout"))
 						output = signout(input);
-					}
 					
 					System.out.println("Output: " + output);
 					

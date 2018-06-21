@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import protocol.Protocol;
 
@@ -27,7 +25,7 @@ class Server {
 	private static Map<String, Profile> users = new HashMap<>();
 	private static Map<String, LinkedList<Game>> games = new HashMap<>();
 	private static Map<Short, String> securityQuestions = new HashMap<>();
-	private static List<Request> requestHandlers = new LinkedList<>();
+	private static List<Socket> sockets = new LinkedList<>();
 	private static int quantity, port, numberOfOnlineUsers;
 	private static String ip;
 	
@@ -92,13 +90,14 @@ class Server {
 	 */
 	static void broadcastMessage(String[] input) {
 		Thread broadcaster = new Thread() {
-			Protocol protocol = new Protocol();
-			
 			@Override
 			public void run() {
-				for (Request r : requestHandlers) {
+				System.out.println("Broadcasting message to online clients...");
+				Protocol protocol = new Protocol();
+				
+				for (Socket s : sockets) {
 					try {
-						r.getDataOutputStream().writeBytes(protocol.transmit(input[0], input[1]));
+						s.getOutputStream().write(protocol.transmit(input[0], input[1]).getBytes());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -190,15 +189,15 @@ class Server {
 			serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip));
 			
 			ThreadPool threadPool = new ThreadPool(quantity);
-			threadPool.add(new Writer(50000));
+			threadPool.add(new Writer(500000));
 			
 			System.out.println("Server is up and running!");
 			
 			while(true) {
 				if (numberOfOnlineUsers < quantity) {
 					Socket clientSocket = serverSocket.accept();
+					sockets.add(clientSocket);
 					Request newRequest = new Request(clientSocket);
-					requestHandlers.add(newRequest);
 					threadPool.add(newRequest);
 				}
 			}

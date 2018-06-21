@@ -7,11 +7,11 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="client.LeaderboardController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="client.LeaderboardController">
   <children>
-    <ScrollPane layoutX="14.0" layoutY="60.0" prefHeight="307.0" prefWidth="200.0">
+    <ScrollPane layoutX="14.0" layoutY="60.0" prefHeight="436.0" prefWidth="200.0">
       <content>
-        <ListView fx:id="onlineUsers" prefHeight="307.0" prefWidth="200.0" />
+        <ListView fx:id="onlineUsers" onMouseClicked="#selectedProfile" prefHeight="439.0" prefWidth="200.0" />
       </content>
     </ScrollPane>
     <GridPane layoutX="250.0" layoutY="61.0">
@@ -19,6 +19,36 @@
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gross wins" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Net wins" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+        <fx:define>
+        	<ArrayList fx:id="username">
+		        <Text id="username0" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+		        <Text id="username1" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+		        <Text id="username2" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+		        <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+		        <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+		        <Text id="username5" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        	</ArrayList>
+        </fx:define>
+        <fx:define>
+        	<ArrayList fx:id="gross">
+		        <Text id="gross0" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Text id="gross1" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Text id="gross2" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <Text id="gross3" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Text id="gross4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <Text id="gross5" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        	</ArrayList>
+        </fx:define>
+        <fx:define>
+        	<ArrayList fx:id="net">
+		        <Text id="net0" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+		        <Text id="net1" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+		        <Text id="net2" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+		        <Text id="net3" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+		        <Text id="net4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+		        <Text id="net5" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+        	</ArrayList>
+        </fx:define>
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -30,9 +60,12 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
-    <GridPane layoutX="250.0" layoutY="261.0" prefWidth="300.0">
+    <GridPane layoutX="250.0" layoutY="319.0" prefWidth="300.0">
       <children>
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time" GridPane.columnIndex="1" GridPane.rowIndex="0" />
@@ -46,12 +79,14 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
     <Label layoutX="15.0" layoutY="24.0" text="Online users" />
     <Label layoutX="250.0" layoutY="24.0" text="High scores" />
-    <Label layoutX="250.0" layoutY="223.0" text="Shortest times taken" />
-    <Button fx:id="playRandom" layoutX="14.0" layoutY="373.0" mnemonicParsing="false" onAction="#playRandom" text="Play a random opponent">
+    <Label layoutX="248.0" layoutY="292.0" text="Shortest times taken" />
+    <Button fx:id="playRandom" layoutX="15.0" layoutY="511.0" mnemonicParsing="false" onAction="#playRandom" text="Play a random opponent">
       <font>
         <Font size="13.0" />
       </font>

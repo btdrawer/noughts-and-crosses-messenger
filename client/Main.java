@@ -5,9 +5,11 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 
@@ -70,7 +72,7 @@ public class Main extends Application {
 	 * @param y y number of pixels
 	 * @param event the current ActionEvent
 	 */
-	static void changeScene(String fxml, int x, int y, ActionEvent event) {
+	static void changeScene(String fxml, int x, int y, Event event) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {

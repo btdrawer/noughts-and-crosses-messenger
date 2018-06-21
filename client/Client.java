@@ -12,10 +12,11 @@ import javafx.collections.ObservableList;
 import protocol.Protocol;
 
 /**
- * Main controller class; superclass for all other controllers.
+ * Client class.
+ * Manages Socket connection to server, and data input and output streams.
  * 
  * @author Ben Drawer
- * @version 17 June 2018
+ * @version 21 June 2018
  *
  */
 class Client {
@@ -26,7 +27,6 @@ class Client {
 	private String username;
 	private String host;
 	private int port;
-	private ObservableList<String> onlineUserList;
 	private Listener listener;
 	private String[] input;
 	
@@ -44,7 +44,6 @@ class Client {
 		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		this.out = new DataOutputStream(clientSocket.getOutputStream());
 		this.protocol = new Protocol();
-		this.onlineUserList = FXCollections.observableArrayList();
 		
 		this.listener = new Listener(this);
 		listener.start();

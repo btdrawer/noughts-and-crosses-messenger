@@ -97,6 +97,14 @@ class Profile implements Comparable<Profile> {
 	
 	/**
 	 * 
+	 * @return whether the user is online or not
+	 */
+	boolean isOnline() {
+		return online;
+	}
+	
+	/**
+	 * 
 	 * @return whether the user is ready to play or not
 	 */
 	boolean isAvailable() {

@@ -49,8 +49,8 @@ public class SignupController extends Controller {
 		if (input[0].equals("false")) {
 			responseText.setText(Main.twoLines(response[1]));
 		} else {
-			client.setUsername(input[1]);
-			Main.changeScene("Leaderboard", 575, 425, currentEvent);
+			client.setUsername(username.getText());
+			Main.changeScene("Leaderboard", 575, 545, currentEvent);
 		}
 	}
 	
