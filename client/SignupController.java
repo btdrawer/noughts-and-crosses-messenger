@@ -34,8 +34,8 @@ public class SignupController extends Controller {
 	 * @param input information associated with action
 	 */
 	 void processInput(String action, String[] input) {
-		if (action.equals("signup"))
-			signUp(input);
+		 if (action.equals("signup"))
+			 signUp(input);
 	}
 	
 	/**
@@ -83,6 +83,7 @@ public class SignupController extends Controller {
 				answerStr.isEmpty()) {
 			responseText.setText("Please ensure all fields are completed.");
 		} else {
+			this.currentEvent = event;
 			//TODO get number from menu item
 			String[] outArr = {usernameStr, passwordStr, 0 + "", answerStr};
 			client.sendMessage("signup", outArr);

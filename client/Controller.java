@@ -1,9 +1,10 @@
 package client;
 
 abstract class Controller {
-	private static Client client = Main.getClient();
+	private static Client client;
 	
-	void initialize() {
+	public void initialize() {
+		client = Main.getClient();
 		client.getListener().setController(this);
 	}
 	
