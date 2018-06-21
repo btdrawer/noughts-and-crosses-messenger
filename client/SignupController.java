@@ -13,7 +13,7 @@ import javafx.scene.text.Text;
  * Controller for the signup pane.
  * 
  * @author Ben Drawer
- * @version 17 June 2018
+ * @version 21 June 2018
  *
  */
 public class SignupController extends Controller {
@@ -24,6 +24,7 @@ public class SignupController extends Controller {
 	private String[] response;
 	@FXML protected Text responseText;
 	private ActionEvent currentEvent;
+	private static Client client = Main.getClient();
 	
 	/**
 	 * Receives input, and if the action is "signup", calls the
@@ -32,8 +33,7 @@ public class SignupController extends Controller {
 	 * @param action action to be undertaken
 	 * @param input information associated with action
 	 */
-	@Override
-	void processInput(String action, String[] input) {
+	 void processInput(String action, String[] input) {
 		if (action.equals("signup"))
 			signUp(input);
 	}
@@ -49,7 +49,7 @@ public class SignupController extends Controller {
 		if (input[0].equals("false")) {
 			responseText.setText(Main.twoLines(response[1]));
 		} else {
-			super.setUsername(input[1]);
+			client.setUsername(input[1]);
 			Main.changeScene("Leaderboard", 575, 425, currentEvent);
 		}
 	}
@@ -85,7 +85,7 @@ public class SignupController extends Controller {
 		} else {
 			//TODO get number from menu item
 			String[] outArr = {usernameStr, passwordStr, 0 + "", answerStr};
-			super.sendMessage("signup", outArr);
+			client.sendMessage("signup", outArr);
 		}
 	}
 }

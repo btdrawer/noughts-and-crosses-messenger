@@ -12,7 +12,7 @@ import javafx.scene.text.Text;
  * Controller for the Connect view.
  * 
  * @author Ben Drawer
- * @version 17 June 2018
+ * @version 21 June 2018
  *
  */
 public class ConnectController extends Controller {
@@ -20,7 +20,12 @@ public class ConnectController extends Controller {
 	@FXML protected TextField port;
 	@FXML protected Text responseText;
 	private ActionEvent currentEvent;
+	private static Client client = Main.getClient();
 	
+	/**
+	 * The initialize method here is set to do nothing, as the
+	 * client's connection with a server has not yet been established.
+	 */
 	@Override
 	public void initialize() {
 		//do nothing
@@ -33,11 +38,9 @@ public class ConnectController extends Controller {
 	 * @param input information associated with action
 	 * @throws IOException
 	 */
-	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals("connect")) {
+		if (action.equals("connect"))
 			connect(input);
-		}
 	}
 	
 	/**
@@ -69,12 +72,16 @@ public class ConnectController extends Controller {
 			responseText.setText("IP address and/or port number\ncannot be left blank.");
 		} else {
 			try {
-				super.setHost(ipStr);
-				super.setPort(Integer.parseInt(portStr));
-				super.initialize();
+				Main.setClient(new Client());
+				client = Main.getClient();
+				
+				client.setHost(ipStr);
+				client.setPort(Integer.parseInt(portStr));
+				client.initialize();
+				client.getListener().setController(this);
 				
 				String[] outArr = {};
-				super.sendMessage("connect", outArr);
+				client.sendMessage("connect", outArr);
 			} catch (ConnectException e) {
 				responseText.setText("Could not find server.");
 			}

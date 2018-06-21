@@ -71,6 +71,7 @@ class Writer implements Task {
 			
 			in.close();
 			
+			//TODO prevent duplicate users from being added
 			while(true) {
 				System.out.println("Backing up data...");
 				PrintWriter out = new PrintWriter(new FileWriter(dataFile, true));

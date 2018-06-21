@@ -20,6 +20,24 @@ import javafx.fxml.FXMLLoader;
  */
 public class Main extends Application {
 	private static Stage primaryStage;
+	private static Client client;
+	
+	/**
+	 * 
+	 * @return Client class that manages Socket input and output streams
+	 */
+	static Client getClient() {
+		return client;
+	}
+	
+	/**
+	 * Sets the Client class.
+	 * 
+	 * @param newClient
+	 */
+	static void setClient(Client newClient) {
+		client = newClient;
+	}
 	
 	/**
 	 * Splits an input String into two lines separated by a newline character.

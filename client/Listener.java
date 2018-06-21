@@ -9,30 +9,32 @@ import protocol.Protocol;
  * This class creates a thread that listens for messages from the server.
  * 
  * @author Ben Drawer
- * @version 17 June 2018
+ * @version 21 June 2018
  *
  */
 class Listener extends Thread {
-	private Controller controller;
+	private Client client;
 	private String[] input;
 	private Protocol protocol;
+	private Controller controller;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param controller controller class for the client
 	 */
-	Listener(Controller controller) {
-		this.controller = controller;
-		this.protocol = controller.getProtocol();
+	Listener(Client client) {
+		this.client = client;
+		this.protocol = client.getProtocol();
 	}
 	
 	/**
+	 * Sets the controller that the Listener sends input to.
 	 * 
-	 * @return message from server
+	 * @param controller
 	 */
-	String[] getResponse() {
-		return input;
+	void setController(Controller controller) {
+		this.controller = controller;
 	}
 	
 	/**
@@ -41,7 +43,7 @@ class Listener extends Thread {
 	@Override
 	public void run() {
 		String s;
-		BufferedReader in = controller.getBufferedReader();
+		BufferedReader in = client.getBufferedReader();
 		
 		try {
 			while((s = in.readLine()) != null) {

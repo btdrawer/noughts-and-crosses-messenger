@@ -12,7 +12,7 @@ import javafx.scene.text.Text;
  * Controller for the login pane.
  * 
  * @author Ben Drawer
- * @version 17 June 2018
+ * @version 21 June 2018
  *
  */
 public class LoginController extends Controller {
@@ -20,6 +20,7 @@ public class LoginController extends Controller {
 	@FXML protected PasswordField password;
 	@FXML private Text responseText;
 	private ActionEvent currentEvent;
+	private static Client client = Main.getClient();
 	
 	/**
 	 * Processes input from server.
@@ -27,7 +28,6 @@ public class LoginController extends Controller {
 	 * @param action action to be undertaken
 	 * @param input information associated with action
 	 */
-	@Override
 	void processInput(String action, String[] input) {
 		if (action.equals("signin")) {
 			try {
@@ -51,7 +51,7 @@ public class LoginController extends Controller {
 		if (input[0].equals("false")) {
 			responseText.setText(Main.twoLines(input[1]));
 		} else {
-			super.setUsername(input[1]);
+			client.setUsername(input[1]);
 			Main.changeScene("Leaderboard", 575, 425, currentEvent);
 		}
 	}
@@ -71,7 +71,7 @@ public class LoginController extends Controller {
 			responseText.setText("Username and/or password\ncannot be left blank.");
 		} else {
 			String[] outArr = {usernameStr, passwordStr};
-			super.sendMessage("signin", outArr);
+			client.sendMessage("signin", outArr);
 		}
 	}
 	
@@ -84,7 +84,8 @@ public class LoginController extends Controller {
 	@FXML
 	protected void signUpButton(ActionEvent event) throws IOException {
 		this.currentEvent = event;
-		Main.changeScene("Signup", 350, 325, currentEvent);	}
+		Main.changeScene("Signup", 350, 325, currentEvent);	
+	}
 	
 	@FXML
 	protected void forgotPassword(ActionEvent event) {

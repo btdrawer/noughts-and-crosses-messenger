@@ -18,51 +18,55 @@ import javafx.stage.Stage;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 15 June 2018
+ * @version 21 June 2018
  *
  */
 public class LeaderboardController extends Controller {
-	private Stage primaryStage;
 	@FXML protected ListView<String> onlineUsers;
 	@FXML protected Button settings;
 	@FXML protected Button signout;
-	private String[] response;
 	private ObservableList<String> onlineUserList;
 	private ActionEvent currentEvent;
+	private static Client client = Main.getClient();
 	
 	/**
-	 * Constructor.
+	 * Initialize method.
 	 * Loads initial list of online users.
 	 * After this, it initialises a thread that continually listens
 	 * for new available users and game challenges.
 	 * 
 	 * @throws IOException
 	 */
-	public void initialize() throws IOException {
-		super.initialize();
-		
-		String[] outArr = {super.getUsername()};
-		super.sendMessage("requestusers", outArr);
-		this.response = super.getResponse();
-		this.onlineUserList = FXCollections.observableArrayList();
-		
-		for (String s : response) {
-			onlineUserList.add(s);
+	public void initialize() {
+		try {
+			String[] outArr = {client.getUsername()};
+			client.sendMessage("requestusers", outArr);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		onlineUsers.setItems(onlineUserList);
 	}
 	
-	@Override
+	/**
+	 * Processes input from server.
+	 * 
+	 * @param action action to be undertaken
+	 * @param input information associated with action
+	 * @throws IOException
+	 */
 	void processInput(String action, String[] input) {
-		super.processInput(action, input);
-		
-		if (action.equals("signout"))
+		if (action.equals("signedin"))
+			this.addToOnlineUserList(input[0]);
+		else if (action.equals("signedout"))
+			this.removeFromOnlineUserList(input[0]);
+		else if (action.equals("requestusers"))
+			compileUserList(input);
+		else if (action.equals("signout")) {
 			try {
 				signOut(input);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
 	}
 	
 	/**
@@ -71,9 +75,8 @@ public class LeaderboardController extends Controller {
 	 * 
 	 * @param username user to be added
 	 */
-	@Override
 	void addToOnlineUserList(String username) {
-		super.addToOnlineUserList(username);
+		onlineUserList.add(username);
 		onlineUsers.setItems(onlineUserList);
 	}
 	
@@ -83,9 +86,21 @@ public class LeaderboardController extends Controller {
 	 * 
 	 * @param username user to be removed
 	 */
-	@Override
 	void removeFromOnlineUserList(String username) {
-		super.removeFromOnlineUserList(username);
+		onlineUserList.remove(username);
+		onlineUsers.setItems(onlineUserList);
+	}
+	
+	/**
+	 * Compiles the list of online users present when the user signs in.
+	 * 
+	 * @param input list of online users
+	 */
+	void compileUserList(String[] input) {
+		for (String s : input) {
+			onlineUserList.add(s);
+		}
+		
 		onlineUsers.setItems(onlineUserList);
 	}
 	
@@ -96,14 +111,9 @@ public class LeaderboardController extends Controller {
 	 * @throws IOException
 	 */
 	private void signOut(String[] input) throws IOException {
-		if (response[0].equals("true")) {
-			super.setUsername("");
-			
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-			
-			primaryStage = (Stage) ((Node) currentEvent.getSource()).getScene().getWindow();
-			primaryStage.setScene(new Scene(root, 325, 350));
-			primaryStage.show();
+		if (input[0].equals("true")) {
+			client.setUsername("");
+			Main.changeScene("Login", 325, 350, currentEvent);
 		}
 	}
 	
@@ -126,8 +136,8 @@ public class LeaderboardController extends Controller {
 	@FXML
 	protected void signOutButton(ActionEvent event) throws IOException {
 		this.currentEvent = event;
-		String[] outArr = {super.getUsername()};
-		super.sendMessage("signout", outArr);
+		String[] outArr = {client.getUsername()};
+		client.sendMessage("signout", outArr);
 	}
 	
 	/**
