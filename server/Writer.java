@@ -1,100 +1,68 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 /**
- * This thread reads usernames from a data file and periodically writes to it.
+ * This class can be used to write a user profile to the data file.
  * 
  * @author Ben Drawer
- * @version 13 June 2018
+ * @version 24 June 2018
  *
  */
 class Writer implements Task {
-	private static Map<String, Profile> users = Server.getUsers();
-	private static Map<Short, String> securityQuestions = Server.getSecurityQuestions();
-	private int interval;
+	private Profile profile;
+	private Game game;
+	private TimedGame timedGame;
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param interval How frequently you want the data to be backed up.
+	 * @param profile profile to be backed up
 	 */
-	Writer(int interval) {
-		this.interval = interval;
+	Writer(Profile profile) {
+		this.profile = profile;
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param game game to be backed up
+	 */
+	Writer(Game game) {
+		this.game = game;
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param timedGame timed game to be backed up
+	 */
+	Writer(TimedGame timedGame) {
+		this.timedGame = timedGame;
 	}
 	
 	/**
 	 * Run method.
-	 * When initiated, the writer draws down the information from the
-	 * data and security files.
-	 * After this, it periodically backs up server data to the data file,
-	 * and goes to sleep in between for the allotted interval time.
 	 */
 	@Override
-	public void run() {
+	public synchronized void run() {
 		try {
-			File dataFile = new File("src/server/data");
-			BufferedReader in = new BufferedReader(new FileReader(dataFile));
+			System.out.println("Backing up data...");
+			PrintWriter out = new PrintWriter(new FileWriter("src/server/data", true));
 			
-			String s;
-			String[] sArr;
-			
-			System.out.println("Reading data file...");
-			
-			while((s = in.readLine()) != null) {
-				sArr = s.split("/");
-				
-				users.put(sArr[0], new Profile(sArr[0], Request.getMD5(sArr[1]), 
-						Short.parseShort(sArr[2]), sArr[3], Integer.parseInt(sArr[4]),
-						Integer.parseInt(sArr[5])));
+			if (profile != null) {
+				out.println("Profile//" + profile.getUsername() + "//" + profile.getPassword()
+						+ "//" + profile.getSecurityQuestion() + "//" + profile.getSecurityAnswer());
+			} else if (game != null) {
+				out.println("Game//" + game.toString());
+			} else if (timedGame != null) {
+				out.println("TimedGame//" + timedGame.toString());
 			}
 			
-			in.close();
-			
-			in = new BufferedReader(new FileReader("src/server/securityQuestions"));
-			
-			System.out.println("Getting security questions...");
-			
-			while((s = in.readLine()) != null) {
-				sArr = s.split("/");
-				
-				securityQuestions.put(Short.parseShort(sArr[0]), sArr[1]);
-			}
-			
-			in.close();
-			
-			//TODO prevent duplicate users from being added
-			while(true) {
-				System.out.println("Backing up data...");
-				PrintWriter out = new PrintWriter(new FileWriter(dataFile, true));
-				
-				for (Profile p : users.values()) {
-					out.println(p.getUsername() + "/" + p.getPassword() + "/" +
-							p.getSecurityQuestion() + "/" + p.getSecurityAnswer() + "/" +
-							p.getWins() + "/" + p.getLosses());
-				}
-				
-				out.close();
-				
-				Thread.sleep(interval);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			out.close();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 	}

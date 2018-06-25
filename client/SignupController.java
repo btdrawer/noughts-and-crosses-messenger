@@ -33,7 +33,8 @@ public class SignupController extends Controller {
 	 * @param action action to be undertaken
 	 * @param input information associated with action
 	 */
-	 void processInput(String action, String[] input) {
+	@Override
+	void processInput(String action, String[] input) {
 		 if (action.equals("signup"))
 			 signUp(input);
 	}

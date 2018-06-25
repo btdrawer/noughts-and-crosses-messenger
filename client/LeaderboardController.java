@@ -71,10 +71,10 @@ public class LeaderboardController extends HomeController {
 		if (input[0].equals("true")) {
 			int n = input.length / 3 - 1;
 			
-			for (int i = 1; i < n; i += 3) {
-				username.get(i).setText(input[i]);
-				gross.get(i).setText(input[i+1]);
-				net.get(i).setText(input[i+2]);
+			for (int i = 0; i < n; i += 3) {
+				username.get(i).setText(input[i+1]);
+				gross.get(i).setText(input[i+2]);
+				net.get(i).setText(input[i+3]);
 			}
 		}
 	}

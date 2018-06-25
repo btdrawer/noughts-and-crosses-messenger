@@ -55,6 +55,7 @@ public class HomeController extends Controller {
 	 * @param input information associated with action
 	 * @throws IOException
 	 */
+	@Override
 	void processInput(String action, String[] input) {
 		if (action.equals("signedin"))
 			this.addToOnlineUserList(input[0]);
@@ -154,7 +155,7 @@ public class HomeController extends Controller {
 		if (input[0].equals("true")) {
 			Main.changeScene("Login", 325, 350, currentEvent);
 		} else {
-			//Error occurred
+			//TODO Error occurred
 		}
 	}
 	

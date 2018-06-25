@@ -9,8 +9,6 @@ import java.sql.Timestamp;
  *
  */
 class TimedGame extends Game implements Comparable<TimedGame> {
-	private String[] players;
-	private char[] board;
 	private Timestamp time;
 	
 	/**
@@ -38,5 +36,9 @@ class TimedGame extends Game implements Comparable<TimedGame> {
 	@Override
 	public int compareTo(TimedGame o) {
 		return this.time.compareTo(o.getTime());
+	}
+	
+	public String toString() {
+		return super.toString() + "//" + time;
 	}
 }

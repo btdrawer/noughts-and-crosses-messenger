@@ -4,16 +4,17 @@ package server;
  * Game class.
  * 
  * @author Ben Drawer
- * @version 13 June 2018
+ * @version 25 June 2018
  *
  */
 class Game {
 	private String[] players;
 	private char[] board;
+	private int winner;
 	private boolean finished;
 	
 	/**
-	 * Constructor.
+	 * Constructor for new games.
 	 * 
 	 * @param player1
 	 * @param player2
@@ -29,6 +30,23 @@ class Game {
 	}
 	
 	/**
+	 * Constructor for finished games.
+	 * Used by the Reader class when reading in previous games from a text file.
+	 * 
+	 * @param player1
+	 * @param player2
+	 * @param winner
+	 */
+	Game(String player1, String player2, int winner) {
+		players = new String[2];
+		players[0] = player1;
+		players[1] = player2;
+		
+		this.winner = winner;
+		this.finished = true;
+	}
+	
+	/**
 	 * The two players are saved in an array.
 	 * If the game has finished, the order of the array indicates which
 	 * player won, with players[0] being the winning player.
@@ -37,6 +55,18 @@ class Game {
 	 */
 	String[] getPlayers() {
 		return players;
+	}
+	
+	/**
+	 * Key for winner value:
+	 * 0 = draw
+	 * 1 = player1
+	 * 2 = player2
+	 * 
+	 * @return winner
+	 */
+	int getWinner() {
+		return winner;
 	}
 	
 	/**
@@ -66,14 +96,15 @@ class Game {
 	}
 	
 	/**
-	 * Setter method for the players array.
-	 * To be called when a game is finished, as once this is the case the order
-	 * of the players in the array indicates who won.
+	 * Setter method for the winner value.
+	 * 0 = draw
+	 * 1 = player1
+	 * 2 = player2
 	 * 
 	 * @param players the new player array
 	 */
-	void setPlayers(String[] players) {
-		this.players = players;
+	void setWinner(int winner) {
+		this.winner = winner;
 	}
 	
 	/**
@@ -81,5 +112,9 @@ class Game {
 	 */
 	void finished() {
 		this.finished = true;
+	}
+	
+	public String toString() {
+		return players[0] + "//" + players[1] + "//" + winner;
 	}
 }

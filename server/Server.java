@@ -17,7 +17,7 @@ import protocol.Protocol;
  * Server class.
  * 
  * @author Ben Drawer
- * @version 30 May 2018
+ * @version 24 June 2018
  *
  */
 class Server {
@@ -188,8 +188,8 @@ class Server {
 		try {
 			serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip));
 			
-			ThreadPool threadPool = new ThreadPool(quantity);
-			threadPool.add(new Writer(500000));
+			ThreadPool threadPool = new ThreadPool(quantity * 2);
+			threadPool.add(new Reader());
 			
 			System.out.println("Server is up and running!");
 			

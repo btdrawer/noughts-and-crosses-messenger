@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
 import protocol.Protocol;
@@ -32,6 +33,7 @@ class Request implements Task {
 	private static Map<String, Profile> users = Server.getUsers();
 	private static Map<String, LinkedList<Game>> games = Server.getGames();
 	private static Map<Short, String> securityQuestions = Server.getSecurityQuestions();
+	private static LinkedBlockingQueue<Task> taskQueue = Server.getTaskQueue();
 	
 	/**
 	 * Constructor.
@@ -117,6 +119,7 @@ class Request implements Task {
 		} else {
 			Profile newUser = new Profile(username, getMD5(password), securityQ, securityA);
 			users.put(username, newUser);
+			taskQueue.add(new Writer(newUser));
 			
 			String[] notifyOnlineUsers = {"signedin", username};
 			Server.broadcastMessage(notifyOnlineUsers);
@@ -304,7 +307,7 @@ class Request implements Task {
 			outArr[0] = "false";
 			outArr[1] = "This user isn't available.";
 		} else {
-			String key = input[0] + "/" + input[1];
+			String key = input[0] + "//" + input[1];
 			
 			if (!games.containsKey(key)) {
 				games.put(key, new LinkedList<>());
@@ -357,8 +360,7 @@ class Request implements Task {
 	private String leftGame(String[] input) {
 		//TODO timedGame implementation
 		Game currentGame = games.get(input[0] + "/" + input[1]).getLast();
-		String[] newPlayers = {input[0], input[1]};
-		currentGame.setPlayers(newPlayers);
+		currentGame.setWinner(Integer.parseInt(input[2]));
 		currentGame.finished();
 		
 		users.get(input[0]).setAvailabilityStatus(true);
@@ -366,6 +368,8 @@ class Request implements Task {
 		
 		outArr[0] = "true";
 		outArr[1] = "Game finished.";
+		
+		taskQueue.add(new Writer(currentGame));
 		
 		return protocol.transmit("leftGame", outArr);
 	}
