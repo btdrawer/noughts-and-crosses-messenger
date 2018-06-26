@@ -11,9 +11,8 @@ package server;
  */
 class Profile implements Comparable<Profile> {
 	private String username, password, securityAnswer;
-	private short securityQuestion;
+	private short securityQuestion, status;
 	private int wins, losses, total;
-	private boolean online, available;
 	
 	/**
 	 * Constructor.
@@ -30,8 +29,7 @@ class Profile implements Comparable<Profile> {
 		this.password = password;
 		this.securityQuestion = securityQuestion;
 		this.securityAnswer = securityAnswer;
-		this.online = true;
-		this.available = true;
+		this.status = 2;
 		
 		this.wins = 0;
 		this.losses = 0;
@@ -55,8 +53,7 @@ class Profile implements Comparable<Profile> {
 		this.password = password;
 		this.securityQuestion = securityQuestion;
 		this.securityAnswer = securityAnswer;
-		this.online = true;
-		this.available = true;
+		this.status = 0;
 		
 		this.wins = wins;
 		this.losses = losses;
@@ -96,19 +93,15 @@ class Profile implements Comparable<Profile> {
 	}
 	
 	/**
+	 * Getter for user status.
+	 * 0 = offline;
+	 * 1 = online but unavailable;
+	 * 2 = available.
 	 * 
-	 * @return whether the user is online or not
+	 * @return user status
 	 */
-	boolean isOnline() {
-		return online;
-	}
-	
-	/**
-	 * 
-	 * @return whether the user is ready to play or not
-	 */
-	boolean isAvailable() {
-		return available;
+	short getStatus() {
+		return status;
 	}
 	
 	/**
@@ -152,28 +145,19 @@ class Profile implements Comparable<Profile> {
 	}
 	
 	/**
-	 * Sets the user's online status.
-	 * It also sets the user's availability status, since this will also be
-	 * true as soon as the user comes online, and will of course be false once
-	 * the user is offline.
+	 * Sets the user's status.
+	 * 0 = offline;
+	 * 1 = online but unavailable;
+	 * 2 = available.
 	 * 
-	 * @param online new online status
+	 * @param online new status
 	 */
-	void setOnlineStatus(boolean online) {
-		this.online = online;
-		this.available = online;
-	}
-	
-	/**
-	 * Sets the user's availability to join a new game.
-	 * When the user joins a new game, their availability is set to false,
-	 * indicating that they can't join another game yet.
-	 * When the game is finished, their availability status is set to false.
-	 * 
-	 * @param available new availability status
-	 */
-	void setAvailabilityStatus(boolean available) {
-		this.available = available;
+	void setStatus(short status) {
+		if (status < 0 || status > 2) {
+			throw new IllegalArgumentException("Player status must be between 0 and 2.");
+		} else {
+			this.status = status;
+		}
 	}
 	
 	/**
@@ -195,7 +179,7 @@ class Profile implements Comparable<Profile> {
 	 * toString() method.
 	 */
 	public String toString() {
-		return username + "/" + online + "/" + available + "/" + wins + "/" 
-				+ losses + "/" + total;
+		return username + "//" + status + "//" + wins + "//" 
+				+ losses + "//" + total;
 	}
 }

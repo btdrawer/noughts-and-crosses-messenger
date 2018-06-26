@@ -169,7 +169,7 @@ class Request implements Task {
 		} else if (!(users.get(username).getPassword().equals(getMD5(password)))) {
 			outArr[0] = "false";
 		} else {
-			users.get(username).setOnlineStatus(true);
+			users.get(username).setStatus((short) 2);
 			
 			String[] notifyOnlineUsers = {"signedin", username};
 			Server.broadcastMessage(notifyOnlineUsers);
@@ -233,7 +233,7 @@ class Request implements Task {
 		
 		for (Profile p : users.values()) {
 			if (!p.getUsername().equals((input[0])) && 
-					p.isOnline()) {
+					p.getStatus() > 0) {
 				sb.append(p.getUsername() + "//");
 			}
 		}
@@ -249,7 +249,7 @@ class Request implements Task {
 	 */
 	private String viewProfile(String[] input) {
 		Profile p = users.get(input[0]);
-		String[] outArr = {"true", p.getUsername(), p.isAvailable() + "", 
+		String[] outArr = {"true", p.getUsername(), p.getStatus() + "", 
 				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
 		
 		return protocol.transmit("viewprofile", outArr);
@@ -302,8 +302,8 @@ class Request implements Task {
 	 * @return output indicating whether the new game has been successfully initiated
 	 */
 	private String newGame(String[] input) {
-		if (!(users.get(input[0]).isAvailable()) && 
-				users.get(input[1]).isAvailable()) {
+		if (users.get(input[0]).getStatus() == 0 || 
+				users.get(input[1]).getStatus() == 0) {
 			outArr[0] = "false";
 			outArr[1] = "This user isn't available.";
 		} else {
@@ -319,8 +319,8 @@ class Request implements Task {
 				games.get(key).add(new Game(input[0], input[1]));
 			}
 			
-			users.get(outArr[0]).setAvailabilityStatus(false);
-			users.get(outArr[1]).setAvailabilityStatus(false);
+			users.get(outArr[0]).setStatus((short) 1);
+			users.get(outArr[1]).setStatus((short) 1);
 			
 			outArr[0] = "true";
 		}
@@ -363,8 +363,8 @@ class Request implements Task {
 		currentGame.setWinner(Integer.parseInt(input[2]));
 		currentGame.finished();
 		
-		users.get(input[0]).setAvailabilityStatus(true);
-		users.get(input[1]).setAvailabilityStatus(true);
+		users.get(input[0]).setStatus((short) 2);
+		users.get(input[1]).setStatus((short) 2);
 		
 		outArr[0] = "true";
 		outArr[1] = "Game finished.";
@@ -381,7 +381,7 @@ class Request implements Task {
 	 * @return output indicating that the sign out has been successful
 	 */
 	private String signout(String[] input) {
-		users.get(input[0]).setOnlineStatus(false);
+		users.get(input[0]).setStatus((short) 0);
 		
 		String[] notifyOnlineUsers = {"signedout", input[0]};
 		Server.broadcastMessage(notifyOnlineUsers);

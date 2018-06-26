@@ -153,7 +153,7 @@ public class HomeController extends Controller {
 	
 	private void viewProfile(String[] input) {
 		if (input[0].equals("true")) {
-			Main.changeScene("Login", 325, 350, currentEvent);
+			Main.changeScene("Login", 325, 350, currentEvent, input);
 		} else {
 			//TODO Error occurred
 		}

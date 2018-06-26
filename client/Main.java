@@ -23,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 public class Main extends Application {
 	private static Stage primaryStage;
 	private static Client client;
+	private static String[] data;
 	
 	/**
 	 * 
@@ -39,6 +40,14 @@ public class Main extends Application {
 	 */
 	static void setClient(Client newClient) {
 		client = newClient;
+	}
+	
+	static String[] getData() {
+		return data;
+	}
+	
+	static void setData(String[] newData) {
+		data = newData;
 	}
 	
 	/**
@@ -87,6 +96,21 @@ public class Main extends Application {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * Changes the scene and sets the data String array to an input String array,
+	 * so that the controller of the new scene can access necessary data.
+	 * 
+	 * @param fxml name of FXML file (not including the extension)
+	 * @param x x number of pixels
+	 * @param y y number of pixels
+	 * @param event the current ActionEvent
+	 * @param input data to be passed
+	 */
+	static void changeScene(String fxml, int x, int y, Event event, String[] input) {
+		changeScene(fxml, x, y, event);
+		setData(input);
 	}
 	
 	/**
