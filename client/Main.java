@@ -4,12 +4,10 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 
@@ -42,10 +40,20 @@ public class Main extends Application {
 		client = newClient;
 	}
 	
+	/**
+	 * 
+	 * @return data to be passed to a particular scene
+	 */
 	static String[] getData() {
 		return data;
 	}
 	
+	/**
+	 * Set the data String array to information that a particular scene
+	 * needs from another.
+	 * 
+	 * @param newData
+	 */
 	static void setData(String[] newData) {
 		data = newData;
 	}

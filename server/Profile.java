@@ -1,5 +1,7 @@
 package server;
 
+import java.io.DataOutputStream;
+
 /**
  * Profile class.
  * Keeps details of a user's username, security question,
@@ -13,6 +15,7 @@ class Profile implements Comparable<Profile> {
 	private String username, password, securityAnswer;
 	private short securityQuestion, status;
 	private int wins, losses, total;
+	private DataOutputStream dataOutputStream;
 	
 	/**
 	 * Constructor.
@@ -158,6 +161,14 @@ class Profile implements Comparable<Profile> {
 		} else {
 			this.status = status;
 		}
+	}
+	
+	DataOutputStream getDataOutputStream() {
+		return dataOutputStream;
+	}
+	
+	void setDataOutputStream(DataOutputStream dataOutputStream) {
+		this.dataOutputStream = dataOutputStream;
 	}
 	
 	/**

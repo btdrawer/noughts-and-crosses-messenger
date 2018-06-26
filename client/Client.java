@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Scanner;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import protocol.Protocol;
 
 /**

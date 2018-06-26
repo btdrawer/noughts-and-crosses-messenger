@@ -28,6 +28,15 @@ class Server {
 	private static List<Socket> sockets = new LinkedList<>();
 	private static int quantity, port, numberOfOnlineUsers;
 	private static String ip;
+	private static Protocol protocol;
+	
+	/**
+	 * Constructor.
+	 * Initialises the protocol.
+	 */
+	Server() {
+		protocol = new Protocol();
+	}
 	
 	/**
 	 * 
@@ -70,6 +79,14 @@ class Server {
 	}
 	
 	/**
+	 * 
+	 * @return protocol
+	 */
+	static Protocol getProtocol() {
+		return protocol;
+	}
+	
+	/**
 	 * Increments the number of online users when one joins.
 	 */
 	static void joinedServer() {
@@ -93,7 +110,6 @@ class Server {
 			@Override
 			public void run() {
 				System.out.println("Broadcasting message to online clients...");
-				Protocol protocol = new Protocol();
 				
 				for (Socket s : sockets) {
 					try {

@@ -20,7 +20,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 26 June 2018
  *
  */
 class Request implements Task {
@@ -30,10 +30,10 @@ class Request implements Task {
 	private String[] outArr;
 	private BufferedReader in;
 	private DataOutputStream out;
-	private static Map<String, Profile> users = Server.getUsers();
-	private static Map<String, LinkedList<Game>> games = Server.getGames();
-	private static Map<Short, String> securityQuestions = Server.getSecurityQuestions();
-	private static LinkedBlockingQueue<Task> taskQueue = Server.getTaskQueue();
+	private static Map<String, Profile> users;
+	private static Map<String, LinkedList<Game>> games;
+	private static Map<Short, String> securityQuestions;
+	private static LinkedBlockingQueue<Task> taskQueue;
 	
 	/**
 	 * Constructor.
@@ -43,11 +43,16 @@ class Request implements Task {
 	 */
 	Request(Socket clientSocket) throws IOException {
 		this.clientSocket = clientSocket;
-		this.protocol = new Protocol();
+		this.protocol = Server.getProtocol();
 		this.outArr = new String[2];
 		
 		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		this.out = new DataOutputStream(clientSocket.getOutputStream());
+		
+		users = Server.getUsers();
+		games = Server.getGames();
+		securityQuestions = Server.getSecurityQuestions();
+		taskQueue = Server.getTaskQueue();
 	}
 	
 	/**
@@ -120,6 +125,7 @@ class Request implements Task {
 			Profile newUser = new Profile(username, getMD5(password), securityQ, securityA);
 			users.put(username, newUser);
 			taskQueue.add(new Writer(newUser));
+			users.get(username).setDataOutputStream(out);
 			
 			String[] notifyOnlineUsers = {"signedin", username};
 			Server.broadcastMessage(notifyOnlineUsers);
@@ -170,6 +176,7 @@ class Request implements Task {
 			outArr[0] = "false";
 		} else {
 			users.get(username).setStatus((short) 2);
+			users.get(username).setDataOutputStream(out);
 			
 			String[] notifyOnlineUsers = {"signedin", username};
 			Server.broadcastMessage(notifyOnlineUsers);
@@ -293,6 +300,12 @@ class Request implements Task {
 	private String timedLeaderboard(String[] input) {
 		//TODO
 		return null;
+	}
+	
+	private void sendChallenge(String[] input) throws IOException {
+		String[] outArr = {input[0]};
+		users.get(input[1]).getDataOutputStream().write(
+				protocol.transmit("sendChallenge", outArr).getBytes());
 	}
 	
 	/**
@@ -427,6 +440,8 @@ class Request implements Task {
 						output = leaderboard(input);
 					else if (action.equals("timedlederboard"))
 						output = timedLeaderboard(input);
+					else if (action.equals("sendchallenge"))
+						sendChallenge(input);
 					else if (action.equals("newgame"))
 						output = newGame(input);
 					else if (action.equals("addchar"))

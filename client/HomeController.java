@@ -65,6 +65,8 @@ public class HomeController extends Controller {
 			compileUserList(input);
 		else if (action.equals("viewprofile"))
 			viewProfile(input);
+		else if (action.equals("receivechallenge"))
+			receiveChallenge(input);
 		else if (action.equals("signout")) {
 			try {
 				signOut(input);
@@ -137,6 +139,10 @@ public class HomeController extends Controller {
 		}
 	}
 	
+	private void receiveChallenge(String[] input) {
+		//TODO dialog box asking the user if they wish to accept the challenge
+	}
+	
 	/**
 	 * When a person's username is clicked, this method will be called,
 	 * which sends a message to the server requesting the selected user's profile.
@@ -151,9 +157,15 @@ public class HomeController extends Controller {
 		client.sendMessage("viewprofile", outArr);
 	}
 	
+	/**
+	 * Called by the processInput method.
+	 * Changes the scene to a user's profile.
+	 * 
+	 * @param input data for the user's profile
+	 */
 	private void viewProfile(String[] input) {
 		if (input[0].equals("true")) {
-			Main.changeScene("Login", 325, 350, currentEvent, input);
+			Main.changeScene("Profile", 575, 545, currentEvent, input);
 		} else {
 			//TODO Error occurred
 		}
