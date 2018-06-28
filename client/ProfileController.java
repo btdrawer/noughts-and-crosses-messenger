@@ -10,14 +10,16 @@ import javafx.scene.text.Text;
  * Controller for the Profile scene.
  * 
  * @author Ben Drawer
- * @version 26 June 2018
+ * @version 28 June 2018
  *
  */
 public class ProfileController extends HomeController {
-	@FXML protected Text username, wins, losses, net, shortestTime, status;
+	@FXML protected Text username, wins, losses, net, shortestTime, 
+			status, responseText;
 	private String[] profileData;
 	private Client client;
 	private String statusStr;
+	private ActionEvent currentEvent;
 	
 	/**
 	 * Initialize method.
@@ -49,13 +51,45 @@ public class ProfileController extends HomeController {
 		}
 	}
 	
+	@Override
+	void processInput(String action, String[] input) {
+		if (action.equals("challengeresponse"))
+			challengeResponseHandler(input);
+		else
+			super.processInput(action, input);
+	}
+	
+	/**
+	 * Handler for the "play" button, which sends a challenge to the
+	 * owner of the profile.
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	protected void playButton(ActionEvent event) throws IOException {
+		this.currentEvent = event;
+		
 		if (statusStr.equals("0") || statusStr.equals("1")) {
-			//TODO response text
+			responseText.setText("This player is currently not available.");
 		} else {
 			String[] outArr = {client.getUsername()};
 			client.sendMessage("sendchallenge", outArr);
 		}
+	}
+	
+	/**
+	 * Handles the response received from the server after a player
+	 * has been challenged.
+	 * 
+	 * @param input
+	 */
+	private void challengeResponseHandler(String[] input) {
+		String[] user = {input[1]};
+		
+		if (input[0].equals("true"))
+			Main.changeScene("Board", 575, 545, currentEvent, user);
+		else
+			responseText.setText(input[2]);
 	}
 }

@@ -51,6 +51,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
-    <Button layoutX="227.0" layoutY="227.0" mnemonicParsing="false" text="Play" onAction="#playButton" />
+    <Button layoutX="227.0" layoutY="227.0" mnemonicParsing="false" onAction="#playButton" text="Play" />
+    <Text fx:id="responseText" layoutX="227.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
   </children>
 </AnchorPane>

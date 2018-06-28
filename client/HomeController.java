@@ -8,7 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
@@ -16,7 +19,7 @@ import javafx.scene.input.MouseEvent;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 28 June 2018
  *
  */
 public class HomeController extends Controller {
@@ -65,8 +68,12 @@ public class HomeController extends Controller {
 			compileUserList(input);
 		else if (action.equals("viewprofile"))
 			viewProfile(input);
-		else if (action.equals("receivechallenge"))
-			receiveChallenge(input);
+		else if (action.equals("challenge"))
+			try {
+				receiveChallenge(input);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		else if (action.equals("signout")) {
 			try {
 				signOut(input);
@@ -139,8 +146,22 @@ public class HomeController extends Controller {
 		}
 	}
 	
-	private void receiveChallenge(String[] input) {
-		//TODO dialog box asking the user if they wish to accept the challenge
+	private void receiveChallenge(String[] input) throws IOException {
+		String user = input[0];
+		String[] outArr = new String[2];
+		outArr[1] = user;
+		
+		Alert alert = new Alert(AlertType.CONFIRMATION, user + "has challenged you." +
+				" Accept?", ButtonType.YES, ButtonType.NO);
+		
+		ButtonType result = alert.getResult();
+		
+		if (result == ButtonType.YES)
+			outArr[0] = "true";
+		else if (result == ButtonType.NO)
+			outArr[0] = "false";
+		
+		client.sendMessage("challengeresponse", outArr);
 	}
 	
 	/**

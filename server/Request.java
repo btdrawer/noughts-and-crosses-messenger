@@ -20,7 +20,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 26 June 2018
+ * @version 28 June 2018
  *
  */
 class Request implements Task {
@@ -305,7 +305,19 @@ class Request implements Task {
 	private void sendChallenge(String[] input) throws IOException {
 		String[] outArr = {input[0]};
 		users.get(input[1]).getDataOutputStream().write(
-				protocol.transmit("sendChallenge", outArr).getBytes());
+				protocol.transmit("challenge", outArr).getBytes());
+	}
+	
+	private void challengeResponse(String[] input) throws IOException {
+		String[] outArr = new String[3];
+		outArr[0] = input[0];
+		outArr[1] = input[1];
+		
+		if (input[0].equals("false"))
+			outArr[2] = "Sorry, this user declined your challenge.";
+		
+		users.get(input[1]).getDataOutputStream().write(
+				protocol.transmit("challengeresponse", outArr).getBytes());
 	}
 	
 	/**
@@ -440,8 +452,10 @@ class Request implements Task {
 						output = leaderboard(input);
 					else if (action.equals("timedlederboard"))
 						output = timedLeaderboard(input);
-					else if (action.equals("sendchallenge"))
+					else if (action.equals("challenge"))
 						sendChallenge(input);
+					else if (action.equals("challengeresponse"))
+						challengeResponse(input);
 					else if (action.equals("newgame"))
 						output = newGame(input);
 					else if (action.equals("addchar"))
