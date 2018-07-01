@@ -24,7 +24,7 @@ public class SignupController extends Controller {
 	private String[] response;
 	@FXML protected Text responseText;
 	private ActionEvent currentEvent;
-	private static Client client = Main.getClient();
+	private static final Client client = Main.getClient();
 	
 	/**
 	 * Receives input, and if the action is "signup", calls the

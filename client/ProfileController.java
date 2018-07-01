@@ -17,7 +17,7 @@ public class ProfileController extends HomeController {
 	@FXML protected Text username, wins, losses, net, shortestTime, 
 			status, responseText;
 	private String[] profileData;
-	private Client client;
+	private static Client client = Main.getClient();
 	private String statusStr;
 	private ActionEvent currentEvent;
 	
@@ -73,8 +73,8 @@ public class ProfileController extends HomeController {
 		if (statusStr.equals("0") || statusStr.equals("1")) {
 			responseText.setText("This player is currently not available.");
 		} else {
-			String[] outArr = {client.getUsername()};
-			client.sendMessage("sendchallenge", outArr);
+			String[] outArr = {client.getUsername(), username.getText()};
+			client.sendMessage("challenge", outArr);
 		}
 	}
 	
@@ -85,11 +85,10 @@ public class ProfileController extends HomeController {
 	 * @param input
 	 */
 	private void challengeResponseHandler(String[] input) {
-		String[] user = {input[1]};
-		
-		if (input[0].equals("true"))
-			Main.changeScene("Board", 575, 545, currentEvent, user);
-		else
+		if (input[0].equals("true")) {
+			String[] data = {client.getUsername(), input[1], 0 + ""};
+			Main.changeScene("Board", 575, 545, currentEvent, data);
+		} else
 			responseText.setText(input[2]);
 	}
 }

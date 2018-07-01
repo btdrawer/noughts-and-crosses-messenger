@@ -1,6 +1,7 @@
 package client;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,7 +20,7 @@ import javafx.scene.input.MouseEvent;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 28 June 2018
+ * @version 1 July 2018
  *
  */
 public class HomeController extends Controller {
@@ -69,11 +70,7 @@ public class HomeController extends Controller {
 		else if (action.equals("viewprofile"))
 			viewProfile(input);
 		else if (action.equals("challenge"))
-			try {
-				receiveChallenge(input);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			receiveChallenge(input);
 		else if (action.equals("signout")) {
 			try {
 				signOut(input);
@@ -146,22 +143,42 @@ public class HomeController extends Controller {
 		}
 	}
 	
-	private void receiveChallenge(String[] input) throws IOException {
-		String user = input[0];
-		String[] outArr = new String[2];
-		outArr[1] = user;
+	/**
+	 * Called when a client receives a challenge.
+	 * 
+	 * @param input
+	 * @throws IOException
+	 */
+	private void receiveChallenge(String[] input) {
+		String challenger = input[0];
+		String recipient = client.getUsername();
 		
-		Alert alert = new Alert(AlertType.CONFIRMATION, user + "has challenged you." +
-				" Accept?", ButtonType.YES, ButtonType.NO);
+		String[] outArr = new String[4];
+		outArr[1] = challenger;
+		outArr[2] = recipient;
 		
-		ButtonType result = alert.getResult();
-		
-		if (result == ButtonType.YES)
-			outArr[0] = "true";
-		else if (result == ButtonType.NO)
-			outArr[0] = "false";
-		
-		client.sendMessage("challengeresponse", outArr);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Alert alert = new Alert(AlertType.CONFIRMATION, challenger + " has challenged you." +
+						" Accept?", ButtonType.YES, ButtonType.NO);
+				Optional<ButtonType> result = alert.showAndWait();
+				
+				if (result.isPresent() && result.get() == ButtonType.YES) {
+					outArr[0] = "true";
+					
+					String[] data = {recipient, challenger, 1 + ""};
+					Main.changeScene("Board", 575, 545, currentEvent, data);
+				} else if (result.isPresent() && result.get() == ButtonType.NO)
+					outArr[0] = "false";
+				
+				try {
+					client.sendMessage("challengeresponse", outArr);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	/**
@@ -175,7 +192,9 @@ public class HomeController extends Controller {
 	protected void selectedProfile(MouseEvent event) throws IOException {
 		this.currentEvent = event;
 		String[] outArr = {onlineUsers.getSelectionModel().getSelectedItem()};
-		client.sendMessage("viewprofile", outArr);
+		
+		if (event.getClickCount() > 1)
+			client.sendMessage("viewprofile", outArr);
 	}
 	
 	/**

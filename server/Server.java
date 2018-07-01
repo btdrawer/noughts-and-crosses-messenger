@@ -31,14 +31,6 @@ class Server {
 	private static Protocol protocol;
 	
 	/**
-	 * Constructor.
-	 * Initialises the protocol.
-	 */
-	Server() {
-		protocol = new Protocol();
-	}
-	
-	/**
 	 * 
 	 * @return request queue
 	 */
@@ -203,7 +195,7 @@ class Server {
 		
 		try {
 			serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip));
-			
+			protocol = new Protocol();
 			ThreadPool threadPool = new ThreadPool(quantity * 2);
 			threadPool.add(new Reader());
 			

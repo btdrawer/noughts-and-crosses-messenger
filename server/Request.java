@@ -27,7 +27,7 @@ class Request implements Task {
 	private Socket clientSocket;
 	private Protocol protocol;
 	private String output;
-	private String[] outArr;
+	private String[] outArr, outputArr;
 	private BufferedReader in;
 	private DataOutputStream out;
 	private static Map<String, Profile> users;
@@ -302,22 +302,44 @@ class Request implements Task {
 		return null;
 	}
 	
-	private void sendChallenge(String[] input) throws IOException {
-		String[] outArr = {input[0]};
-		users.get(input[1]).getDataOutputStream().write(
-				protocol.transmit("challenge", outArr).getBytes());
+	/**
+	 * Sends a challenge to the chosen recipient.
+	 * 
+	 * Input:
+	 * 0 = user sending the challenge
+	 * 1 = challenge recipient
+	 * 
+	 * @param input
+	 * @throws IOException
+	 */
+	private String[] sendChallenge(String[] input) throws IOException {
+		String[] outArr = {protocol.transmit("challenge", input[0]), input[1]};
+		
+		return outArr;
 	}
 	
-	private void challengeResponse(String[] input) throws IOException {
-		String[] outArr = new String[3];
-		outArr[0] = input[0];
-		outArr[1] = input[1];
+	/**
+	 * Sends the user's response to the challenge.
+	 * 
+	 * Input:
+	 * 0 = "true" if challenge accepted, "false" if rejected
+	 * 1 = recipient's username
+	 * 2 = challenger's username 
+	 * 
+	 * @param input
+	 * @throws IOException
+	 */
+	private String[] challengeResponse(String[] input) throws IOException {
+		String[] outArrS = new String[3];
+		outArrS[0] = input[0];
+		outArrS[1] = input[1];
 		
 		if (input[0].equals("false"))
-			outArr[2] = "Sorry, this user declined your challenge.";
+			outArrS[2] = "Sorry, this user declined your challenge.";
 		
-		users.get(input[1]).getDataOutputStream().write(
-				protocol.transmit("challengeresponse", outArr).getBytes());
+		String[] outArr = {protocol.transmit("challengeresponse", outArrS), input[2]};
+		
+		return outArr;
 	}
 	
 	/**
@@ -453,9 +475,9 @@ class Request implements Task {
 					else if (action.equals("timedlederboard"))
 						output = timedLeaderboard(input);
 					else if (action.equals("challenge"))
-						sendChallenge(input);
+						outputArr = sendChallenge(input);
 					else if (action.equals("challengeresponse"))
-						challengeResponse(input);
+						outputArr = challengeResponse(input);
 					else if (action.equals("newgame"))
 						output = newGame(input);
 					else if (action.equals("addchar"))
@@ -467,7 +489,10 @@ class Request implements Task {
 					
 					System.out.println("Output: " + output);
 					
-					out.writeBytes(output);
+					if (action.equals("challenge") || action.equals("challengeresponse"))
+						users.get(outputArr[1]).getDataOutputStream().write(outputArr[0].getBytes());
+					else
+						out.writeBytes(output);
 				}
 			}
 		} catch (IOException e) {
