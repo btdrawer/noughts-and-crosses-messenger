@@ -323,8 +323,8 @@ class Request implements Task {
 	 * 
 	 * Input:
 	 * 0 = "true" if challenge accepted, "false" if rejected
-	 * 1 = recipient's username
-	 * 2 = challenger's username 
+	 * 1 = challenger's username
+	 * 2 = recipient's username 
 	 * 
 	 * @param input
 	 * @throws IOException
@@ -332,12 +332,12 @@ class Request implements Task {
 	private String[] challengeResponse(String[] input) throws IOException {
 		String[] outArrS = new String[3];
 		outArrS[0] = input[0];
-		outArrS[1] = input[1];
+		outArrS[1] = input[2];
 		
 		if (input[0].equals("false"))
 			outArrS[2] = "Sorry, this user declined your challenge.";
 		
-		String[] outArr = {protocol.transmit("challengeresponse", outArrS), input[2]};
+		String[] outArr = {protocol.transmit("challengeresponse", outArrS), input[1]};
 		
 		return outArr;
 	}

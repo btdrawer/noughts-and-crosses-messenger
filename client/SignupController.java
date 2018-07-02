@@ -23,8 +23,7 @@ public class SignupController extends Controller {
 	@FXML protected TextField answer;
 	private String[] response;
 	@FXML protected Text responseText;
-	private ActionEvent currentEvent;
-	private static final Client client = Main.getClient();
+	private static Client client = Main.getClient();
 	
 	/**
 	 * Receives input, and if the action is "signup", calls the
@@ -51,7 +50,7 @@ public class SignupController extends Controller {
 			responseText.setText(Main.twoLines(response[1]));
 		} else {
 			client.setUsername(username.getText());
-			Main.changeScene("Leaderboard", 575, 545, currentEvent);
+			Main.changeScene("Leaderboard", 575, 545);
 		}
 	}
 	
@@ -63,8 +62,7 @@ public class SignupController extends Controller {
 	 */
 	@FXML
 	protected void backButton(ActionEvent event) throws IOException {
-		this.currentEvent = event;
-		Main.changeScene("Login", 325, 350, currentEvent);
+		Main.changeScene("Login", 325, 350);
 	}
 	
 	/**
@@ -84,7 +82,6 @@ public class SignupController extends Controller {
 				answerStr.isEmpty()) {
 			responseText.setText("Please ensure all fields are completed.");
 		} else {
-			this.currentEvent = event;
 			//TODO get number from menu item
 			String[] outArr = {usernameStr, passwordStr, 0 + "", answerStr};
 			client.sendMessage("signup", outArr);

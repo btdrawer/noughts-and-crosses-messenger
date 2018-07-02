@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -28,7 +27,6 @@ public class HomeController extends Controller {
 	@FXML protected Button settings;
 	@FXML protected Button signout;
 	private ObservableList<String> onlineUserList;
-	private Event currentEvent;
 	private static Client client = Main.getClient();
 	
 	/**
@@ -139,7 +137,7 @@ public class HomeController extends Controller {
 	private void signOut(String[] input) throws IOException {
 		if (input[0].equals("true")) {
 			client.setUsername("");
-			Main.changeScene("Login", 325, 350, currentEvent);
+			Main.changeScene("Login", 325, 350);
 		}
 	}
 	
@@ -168,7 +166,7 @@ public class HomeController extends Controller {
 					outArr[0] = "true";
 					
 					String[] data = {recipient, challenger, 1 + ""};
-					Main.changeScene("Board", 575, 545, currentEvent, data);
+					Main.changeScene("Board", 575, 545, data);
 				} else if (result.isPresent() && result.get() == ButtonType.NO)
 					outArr[0] = "false";
 				
@@ -190,7 +188,6 @@ public class HomeController extends Controller {
 	 */
 	@FXML
 	protected void selectedProfile(MouseEvent event) throws IOException {
-		this.currentEvent = event;
 		String[] outArr = {onlineUsers.getSelectionModel().getSelectedItem()};
 		
 		if (event.getClickCount() > 1)
@@ -205,7 +202,7 @@ public class HomeController extends Controller {
 	 */
 	private void viewProfile(String[] input) {
 		if (input[0].equals("true")) {
-			Main.changeScene("Profile", 575, 545, currentEvent, input);
+			Main.changeScene("Profile", 575, 545, input);
 		} else {
 			//TODO Error occurred
 		}
@@ -229,7 +226,6 @@ public class HomeController extends Controller {
 	 */
 	@FXML
 	protected void signOutButton(ActionEvent event) throws IOException {
-		this.currentEvent = event;
 		String[] outArr = {client.getUsername()};
 		client.sendMessage("signout", outArr);
 	}

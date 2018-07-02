@@ -19,7 +19,6 @@ public class ProfileController extends HomeController {
 	private String[] profileData;
 	private static Client client = Main.getClient();
 	private String statusStr;
-	private ActionEvent currentEvent;
 	
 	/**
 	 * Initialize method.
@@ -68,8 +67,6 @@ public class ProfileController extends HomeController {
 	 */
 	@FXML
 	protected void playButton(ActionEvent event) throws IOException {
-		this.currentEvent = event;
-		
 		if (statusStr.equals("0") || statusStr.equals("1")) {
 			responseText.setText("This player is currently not available.");
 		} else {
@@ -87,7 +84,7 @@ public class ProfileController extends HomeController {
 	private void challengeResponseHandler(String[] input) {
 		if (input[0].equals("true")) {
 			String[] data = {client.getUsername(), input[1], 0 + ""};
-			Main.changeScene("Board", 575, 545, currentEvent, data);
+			Main.changeScene("Board", 575, 545, data);
 		} else
 			responseText.setText(input[2]);
 	}

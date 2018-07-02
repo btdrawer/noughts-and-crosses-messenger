@@ -12,14 +12,13 @@ import javafx.scene.text.Text;
  * Controller for the login pane.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 2 July 2018
  *
  */
 public class LoginController extends Controller {
 	@FXML protected TextField username;
 	@FXML protected PasswordField password;
 	@FXML private Text responseText;
-	private ActionEvent currentEvent;
 	private static Client client = Main.getClient();
 	
 	/**
@@ -52,7 +51,7 @@ public class LoginController extends Controller {
 			responseText.setText(Main.twoLines(input[1]));
 		} else {
 			client.setUsername(username.getText());
-			Main.changeScene("Leaderboard", 575, 545, currentEvent);
+			Main.changeScene("Leaderboard", 575, 545);
 		}
 	}
 	
@@ -65,7 +64,6 @@ public class LoginController extends Controller {
 	@FXML
 	protected void signInButton(ActionEvent event) throws IOException {
 		String usernameStr = username.getText(), passwordStr = password.getText();
-		this.currentEvent = event;
 		
 		if (usernameStr.isEmpty() || passwordStr.isEmpty()) {
 			responseText.setText("Username and/or password\ncannot be left blank.");
@@ -83,8 +81,7 @@ public class LoginController extends Controller {
 	 */
 	@FXML
 	protected void signUpButton(ActionEvent event) throws IOException {
-		this.currentEvent = event;
-		Main.changeScene("Signup", 350, 325, currentEvent);	
+		Main.changeScene("Signup", 350, 325);	
 	}
 	
 	@FXML

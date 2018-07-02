@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,7 +13,7 @@ import javafx.fxml.FXMLLoader;
  * This class provides the GUI for connecting to a server.
  * 
  * @author Ben Drawer
- * @version 12 June 2018
+ * @version 2 July 2018
  *
  */
 public class Main extends Application {
@@ -87,16 +85,14 @@ public class Main extends Application {
 	 * @param fxml name of FXML file (not including the extension)
 	 * @param x x number of pixels
 	 * @param y y number of pixels
-	 * @param event the current ActionEvent
 	 */
-	static void changeScene(String fxml, int x, int y, Event event) {
+	static void changeScene(String fxml, int x, int y) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					Parent root = FXMLLoader.load(getClass().getResource("/fxml/" + fxml + ".fxml"));
 					
-					primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 					primaryStage.setScene(new Scene(root, x, y));
 					primaryStage.show();
 				} catch (IOException e) {
@@ -113,11 +109,10 @@ public class Main extends Application {
 	 * @param fxml name of FXML file (not including the extension)
 	 * @param x x number of pixels
 	 * @param y y number of pixels
-	 * @param event the current ActionEvent
 	 * @param input data to be passed
 	 */
-	static void changeScene(String fxml, int x, int y, Event event, String[] input) {
-		changeScene(fxml, x, y, event);
+	static void changeScene(String fxml, int x, int y, String[] input) {
+		changeScene(fxml, x, y);
 		setData(input);
 	}
 	
@@ -126,6 +121,7 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage stage) throws IOException {
+		primaryStage = stage;
 		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Connect.fxml"));
 		
 		stage.setTitle("Noughts and Crosses");

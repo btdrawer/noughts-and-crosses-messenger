@@ -19,7 +19,6 @@ public class ConnectController extends Controller {
 	@FXML protected TextField ip;
 	@FXML protected TextField port;
 	@FXML protected Text responseText;
-	private ActionEvent currentEvent;
 	private static Client client = Main.getClient();
 	
 	/**
@@ -51,7 +50,7 @@ public class ConnectController extends Controller {
 	 */
 	private void connect(String[] input) {
 		if (input.length > 0)
-			Main.changeScene("Login", 315, 350, currentEvent);
+			Main.changeScene("Login", 315, 350);
 		else
 			responseText.setText("Unable to join server.\nPlease try again later.");
 	}
@@ -65,7 +64,6 @@ public class ConnectController extends Controller {
 	@FXML
 	protected void connectButton(ActionEvent event) throws IOException {
 		String ipStr = ip.getText(), portStr = port.getText();
-		this.currentEvent = event;
 		
 		if (ipStr.isEmpty() || portStr.isEmpty()) {
 			responseText.setText("IP address and/or port number\ncannot be left blank.");
