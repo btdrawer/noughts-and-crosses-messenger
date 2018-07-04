@@ -158,6 +158,17 @@ class Client {
 	}
 	
 	/**
+	 * Sends a message to the server and returns the response.
+	 * 
+	 * @param action action to be undertaken - e.g., 'signup', 'signin', etc.
+	 * @param input information associated with action
+	 * @throws IOException
+	 */
+	void sendMessage(String action, String input) throws IOException {
+		out.writeBytes(protocol.transmit(action, input));
+	}
+	
+	/**
 	 * Main method.
 	 * Used for testing.
 	 * 

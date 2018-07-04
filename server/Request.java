@@ -20,7 +20,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 28 June 2018
+ * @version 5 July 2018
  *
  */
 class Request implements Task {
@@ -251,11 +251,25 @@ class Request implements Task {
 	/**
 	 * Creates a String of details of a user's profile.
 	 * 
-	 * @param input
-	 * @return
+	 * @param input input array (the method takes the 0th element)
+	 * @return String with user's details
 	 */
 	private String viewProfile(String[] input) {
 		Profile p = users.get(input[0]);
+		String[] outArr = {"true", p.getUsername(), p.getStatus() + "", 
+				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
+		
+		return protocol.transmit("viewprofile", outArr);
+	}
+	
+	/**
+	 * Creates a String of details of a user's profile.
+	 * 
+	 * @param input username String
+	 * @return String with user's details
+	 */
+	private String viewProfile(String input) {
+		Profile p = users.get(input);
 		String[] outArr = {"true", p.getUsername(), p.getStatus() + "", 
 				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
 		
@@ -399,26 +413,23 @@ class Request implements Task {
 	}
 	
 	/**
-	 * Is called when a game finishes.
+	 * Is called when a player quits a game.
 	 * 
-	 * @param input [0] = winning player, [1] = losing player, [2] = time (if applicable)
+	 * @param input [0] = quitting player; [1] = other player
 	 * @return output indicating whether game was saved successfully
+	 * @throws IOException 
 	 */
-	private String leftGame(String[] input) {
+	private String leftGame(String[] input) throws IOException {
 		//TODO timedGame implementation
-		Game currentGame = games.get(input[0] + "/" + input[1]).getLast();
-		currentGame.setWinner(Integer.parseInt(input[2]));
-		currentGame.finished();
-		
 		users.get(input[0]).setStatus((short) 2);
 		users.get(input[1]).setStatus((short) 2);
 		
-		outArr[0] = "true";
-		outArr[1] = "Game finished.";
+		String[] otherUsersProfile = protocol.receive(viewProfile(input[0]));
 		
-		taskQueue.add(new Writer(currentGame));
+		users.get(input[1]).getDataOutputStream().write(
+				protocol.transmit("leavegame", otherUsersProfile).getBytes());
 		
-		return protocol.transmit("leftGame", outArr);
+		return viewProfile(input[1]);
 	}
 	
 	/**
@@ -482,7 +493,7 @@ class Request implements Task {
 						output = newGame(input);
 					else if (action.equals("addchar"))
 						output = addChar(input);
-					else if (action.equals("leftgame"))
+					else if (action.equals("leavegame"))
 						output = leftGame(input);
 					else if (action.equals("signout"))
 						output = signout(input);

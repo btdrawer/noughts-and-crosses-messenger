@@ -56,6 +56,14 @@ class Listener extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				//Signs the user out if they close the application
+				//TODO currently not working
+				client.sendMessage("signout", client.getUsername());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

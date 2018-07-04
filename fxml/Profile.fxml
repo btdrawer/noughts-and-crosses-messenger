@@ -9,13 +9,13 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="client.ProfileController">
   <children>
-    <ScrollPane layoutX="14.0" layoutY="60.0" prefHeight="307.0" prefWidth="200.0">
+    <ScrollPane layoutX="14.0" layoutY="60.0" prefHeight="436.0" prefWidth="200.0">
       <content>
-        <ListView fx:id="onlineUsers" onMouseClicked="#selectedProfile" prefHeight="307.0" prefWidth="200.0" />
+        <ListView fx:id="onlineUsers" onMouseClicked="#selectedProfile" prefHeight="439.0" prefWidth="200.0" />
       </content>
     </ScrollPane>
     <Label layoutX="15.0" layoutY="24.0" text="Online users" />
-    <Button fx:id="playRandom" layoutX="14.0" layoutY="373.0" mnemonicParsing="false" onAction="#playRandom" text="Play a random opponent">
+    <Button fx:id="playRandom" layoutX="14.0" layoutY="511.0" mnemonicParsing="false" onAction="#playRandom" text="Play a random opponent">
       <font>
         <Font size="13.0" />
       </font>
