@@ -9,7 +9,7 @@ package server;
  */
 class Game {
 	private String[] players;
-	private char[] board;
+	private char[][] board;
 	private int winner;
 	private boolean finished;
 	
@@ -24,7 +24,7 @@ class Game {
 		players[0] = player1;
 		players[1] = player2;
 		
-		board = new char[9];
+		board = new char[3][3];
 		
 		this.finished = false;
 	}
@@ -81,7 +81,7 @@ class Game {
 	 * 
 	 * @return array representing the board
 	 */
-	char[] getBoard() {
+	char[][] getBoard() {
 		return board;
 	}
 	
@@ -91,8 +91,8 @@ class Game {
 	 * @param position
 	 * @param x character to be added
 	 */
-	void addChar(int position, char x) {
-		board[position - 1] = x;
+	void addChar(int x, int y, char c) {
+		board[x][y] = c;
 	}
 	
 	/**

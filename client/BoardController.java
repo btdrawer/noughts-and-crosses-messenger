@@ -27,18 +27,32 @@ public class BoardController extends Controller {
 	@FXML protected GridPane board;
 	private static Client client = Main.getClient();
 	private static String[] data;
+	private String opponent;
+	private boolean turn;
+	private char c;
 	
 	@Override
 	public void initialize() {
 		super.initialize();
 		
 		data = Main.getData();
-		username.setText(data[1]);
+		this.opponent = data[1];
+		username.setText(opponent);
+		
+		if (Short.parseShort(data[2]) == 0) {
+			this.turn = true;
+			this.c = 'O';
+		} else {
+			this.turn = false;
+			this.c = 'X';
+		}
 	}
 	
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals("leavegame"))
+		if (action.equals("addchar"))
+			receiveChar(input);
+		else if (action.equals("leavegame"))
 			leftGame(input);
 		else if (action.equals("viewprofile"))
 			viewProfile(input);
@@ -122,9 +136,32 @@ public class BoardController extends Controller {
 	protected void selectedCell(MouseEvent event) throws IOException {
 		Node source = (Node) event.getSource();
 		Text text = (Text) source.lookup("#text");
-		text.setText("X");
-		String[] outArr = {GridPane.getColumnIndex(source) + "", GridPane.getRowIndex(source) + "",
-				"X"};
-		client.sendMessage("addchar", outArr);
+		
+		if (turn && text.getText().isEmpty()) {
+			text.setText(c + "");
+			String[] outArr = {client.getUsername(), opponent, 
+					GridPane.getColumnIndex(source) + "", GridPane.getRowIndex(source) + "",
+					c + ""};
+			client.sendMessage("addchar", outArr);
+			turn = false;
+		}
+	}
+	
+	/**
+	 * Called when an "addchar" message appears from the server.
+	 * Displays it on the user's board.
+	 * 
+	 * @param input [0] = x-coordinate, [1] = y-coordinate, [2] = O or X
+	 */
+	private void receiveChar(String[] input) {
+		if (input[0].equals("true")) {
+			int x = Integer.parseInt(input[1]);
+			int y = Integer.parseInt(input[2]);
+			int index = x + (y * 3);
+			Node source = (Node) board.getChildren().get(index);
+			Text text = (Text) source.lookup("#text");
+			text.setText(input[3]);
+			turn = true;
+		}
 	}
 }

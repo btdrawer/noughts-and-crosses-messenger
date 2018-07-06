@@ -22,14 +22,14 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 5 July 2018
+ * @version 6 July 2018
  *
  */
 class Request implements Task {
 	private Socket clientSocket;
 	private Protocol protocol;
 	private String output;
-	private String[] outArr, outputArr;
+	private String[] outArr;
 	private BufferedReader in;
 	private DataOutputStream out;
 	private static Map<String, Profile> users;
@@ -47,7 +47,6 @@ class Request implements Task {
 		this.clientSocket = clientSocket;
 		this.protocol = Server.getProtocol();
 		this.outArr = new String[2];
-		
 		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		this.out = new DataOutputStream(clientSocket.getOutputStream());
 		
@@ -83,6 +82,7 @@ class Request implements Task {
 		System.out.println("Connection with client established.\n" +
 				"numberOfOnlineUsers: " + Server.getNumberOfOnlineUsers());
 		
+		outArr = new String[2];
 		outArr[0] = "true";
 		outArr[1] = "Connection test successful.";
 		
@@ -107,6 +107,8 @@ class Request implements Task {
 		
 		//TODO regex pattern for password
 		Pattern p = Pattern.compile("[a-zA-Z0-9]+");
+		
+		outArr = new String[2];
 		
 		if (users.containsKey(username)) {
 			outArr[0] = "false";
@@ -172,6 +174,8 @@ class Request implements Task {
 		String username = input[0];
 		String password = input[1];
 		
+		outArr = new String[2];
+		
 		if (!users.containsKey(username)) {
 			outArr[0] = "false";
 		} else if (!(users.get(username).getPassword().equals(getMD5(password)))) {
@@ -202,9 +206,11 @@ class Request implements Task {
 	 * @return output indicating whether username has been found
 	 */
 	private String forgotPasswordRequest(String[] input) {
+		outArr = new String[2];
+		
 		if (users.containsKey(input[0])) {
 			outArr[0] = "true";
-			outArr[1] = securityQuestions.get(users.get(input[0]).getSecurityQuestion());
+			outArr[1] = securityQuestions.get((short) users.get(input[0]).getSecurityQuestion());
 		} else {
 			outArr[0] = "false";
 			outArr[1] = "Username not found.";
@@ -221,6 +227,8 @@ class Request implements Task {
 	 * @return output indicating whether the user has successfully answered the security question
 	 */
 	private String forgotPassword(String[] input) {
+		outArr = new String[2];
+		
 		if (users.get(input[0]).getSecurityAnswer().equals(input[1])) {
 			outArr[0] = "true";
 			outArr[1] = "Enter your new password:";
@@ -291,26 +299,25 @@ class Request implements Task {
 		
 		int n = Integer.parseInt(input[0]);
 		int size = userArrayList.size();
-		String[] outArrS;
 		
 		if (size > 0) {
-			outArrS = new String[n * 3 + 1];
-			outArrS[0] = "true";
+			outArr = new String[n * 3 + 1];
+			outArr[0] = "true";
 			
-			for (int i = 1; i < outArrS.length / 3 - 1 && i < size; i += 3) {
+			for (int i = 1; i < outArr.length / 3 - 1 && i < size; i += 3) {
 				Profile p = userArrayList.get(size - i);
 				
-				outArrS[i] = p.getUsername();
-				outArrS[i+1] = p.getWins() + "";
-				outArrS[i+2] = p.getTotal() + "";
+				outArr[i] = p.getUsername();
+				outArr[i+1] = p.getWins() + "";
+				outArr[i+2] = p.getTotal() + "";
 			}
 		} else {
-			outArrS = new String[2];
-			outArrS[0] = "false";
-			outArrS[1] = "It's lonely in here!";
+			outArr = new String[2];
+			outArr[0] = "false";
+			outArr[1] = "It's lonely in here!";
 		}
 		
-		return protocol.transmit("leaderboard", outArrS);
+		return protocol.transmit("leaderboard", outArr);
 	}
 	
 	private String timedLeaderboard(String[] input) {
@@ -346,14 +353,15 @@ class Request implements Task {
 	 * @throws IOException
 	 */
 	private String[] challengeResponse(String[] input) throws IOException {
-		String[] outArrS = new String[3];
-		outArrS[0] = input[0];
-		outArrS[1] = input[2];
+		outArr = new String[3];
+		outArr[0] = input[0];
+		outArr[1] = input[2];
 		
 		if (input[0].equals("false"))
-			outArrS[2] = "Sorry, this user declined your challenge.";
+			outArr[2] = "Sorry, this user declined your challenge.";
 		
-		String[] outArr = {protocol.transmit("challengeresponse", outArrS), input[1]};
+		outArr[0] = protocol.transmit("challengeresponse", outArr);
+		outArr[1] = input[1];
 		
 		return outArr;
 	}
@@ -365,6 +373,8 @@ class Request implements Task {
 	 * @return output indicating whether the new game has been successfully initiated
 	 */
 	private String newGame(String[] input) {
+		outArr = new String[2];
+		
 		if (users.get(input[0]).getStatus() == 0 || 
 				users.get(input[1]).getStatus() == 0) {
 			outArr[0] = "false";
@@ -384,8 +394,8 @@ class Request implements Task {
 				games.get(key).add(new Game(input[0], input[1]));
 			}
 			
-			users.get(outArr[0]).setStatus((short) 1);
-			users.get(outArr[1]).setStatus((short) 1);
+			users.get(input[0]).setStatus((short) 1);
+			users.get(input[1]).setStatus((short) 1);
 			
 			outArr[0] = "true";
 		}
@@ -396,24 +406,37 @@ class Request implements Task {
 	/**
 	 * Add a character to a game.
 	 * 
-	 * @param input [0] = position on board; [1] = o or x
+	 * @param input [0], [1] = players; [2], [3] = x- and y-coordinates; [4] = O or X
 	 * @return output indicating whether character input has been successful
+	 * @throws IOException 
 	 */
-	private String addChar(String[] input) {
-		Game currentGame = games.get(input[0] + "/" + input[1]).getLast();
-		char[] board = currentGame.getBoard();
-		int position = Integer.parseInt(input[2]) - 1;
+	private String[] addChar(String[] input) throws IOException {
+		//TODO actually implement rules of the game, ie for when it finishes!
+		Set<String> key = new HashSet<>();
+		key.add(input[0]);
+		key.add(input[1]);
 		
-		if (!(board[position] == ' ')) {
-			outArr[0] = "false";
-			outArr[1] = "Space already taken";
-		} else {
-			currentGame.addChar(position, input[3].charAt(0));
+		Game currentGame = games.get(key).getLast();
+		int x = Integer.parseInt(input[2]);
+		int y = Integer.parseInt(input[3]);
+		
+		currentGame.addChar(x, y, input[4].charAt(0));
 			
-			outArr[0] = "true";
-		}
+		outArr = new String[4];
+			
+		outArr[0] = "true";
+		outArr[1] = input[2];
+		outArr[2] = input[3];
+		outArr[3] = input[4];
 		
-		return protocol.transmit("addchar", outArr);
+		users.get(input[1]).getDataOutputStream().writeBytes(
+				protocol.transmit("addchar", outArr));
+		
+		outArr = new String[2];
+		outArr[0] = protocol.transmit("addchar", outArr);
+		outArr[1] = input[1];
+		
+		return outArr;
 	}
 	
 	/**
@@ -448,8 +471,7 @@ class Request implements Task {
 		String[] notifyOnlineUsers = {"signedout", input[0]};
 		Server.broadcastMessage(notifyOnlineUsers);
 		
-		outArr[0] = "true";
-		outArr[1] = "Signed out. See you soon!";
+		String[] outArr = {"true", "Signed out. See you soon!"};
 		
 		return protocol.transmit("signout", outArr);
 	}
@@ -490,13 +512,13 @@ class Request implements Task {
 					else if (action.equals("timedlederboard"))
 						output = timedLeaderboard(input);
 					else if (action.equals("challenge"))
-						outputArr = sendChallenge(input);
+						outArr = sendChallenge(input);
 					else if (action.equals("challengeresponse"))
-						outputArr = challengeResponse(input);
+						outArr = challengeResponse(input);
 					else if (action.equals("newgame"))
 						output = newGame(input);
 					else if (action.equals("addchar"))
-						output = addChar(input);
+						outArr = addChar(input);
 					else if (action.equals("leavegame"))
 						output = leftGame(input);
 					else if (action.equals("signout"))
@@ -504,8 +526,9 @@ class Request implements Task {
 					
 					System.out.println("Output: " + output);
 					
-					if (action.equals("challenge") || action.equals("challengeresponse"))
-						users.get(outputArr[1]).getDataOutputStream().write(outputArr[0].getBytes());
+					if (action.equals("challenge") || action.equals("challengeresponse")
+							|| action.equals("addchar"))
+						users.get(outArr[1]).getDataOutputStream().write(outArr[0].getBytes());
 					else
 						out.writeBytes(output);
 				}

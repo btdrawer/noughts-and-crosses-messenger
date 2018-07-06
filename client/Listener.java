@@ -17,6 +17,7 @@ class Listener extends Thread {
 	private String[] input;
 	private Protocol protocol;
 	private Controller controller;
+	private Thread connector;
 	
 	/**
 	 * Constructor.
@@ -26,6 +27,23 @@ class Listener extends Thread {
 	Listener(Client client) {
 		this.client = client;
 		this.protocol = client.getProtocol();
+		
+		this.connector = new Thread() {
+			@Override
+			public synchronized void run() {
+				while(true) {
+					String[] outArr = {};
+					
+					try {
+						client.sendMessage("connect", outArr);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					Thread.sleep(50000);
+				}
+			}
+		};
 	}
 	
 	/**
@@ -56,15 +74,6 @@ class Listener extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				//Signs the user out if they close the application
-				//TODO currently not working
-				System.out.println("Signout");
-				client.sendMessage("signout", client.getUsername());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }
