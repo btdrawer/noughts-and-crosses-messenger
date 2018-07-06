@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This thread reads user profiles from the data file.
@@ -17,7 +19,7 @@ import java.util.Map;
  */
 class Reader implements Task {
 	private static Map<String, Profile> users = Server.getUsers();
-	private static Map<String, LinkedList<Game>> games = Server.getGames();
+	private static Map<Set<String>, LinkedList<Game>> games = Server.getGames();
 	private static Map<Short, String> securityQuestions = Server.getSecurityQuestions();
 	
 	/**
@@ -50,11 +52,14 @@ class Reader implements Task {
 					String player2 = sArr[2];
 					int winner = Integer.parseInt(sArr[3]);
 					
-					if (games.containsKey(sArr[1] + "//" + sArr[2])) {
-						games.put(player1 + "//" + player2, new LinkedList<Game>());
+					Set<String> key = new HashSet<String>();
+					key.add(sArr[1]);
+					key.add(sArr[2]);
+					
+					if (games.containsKey(key)) {
+						games.put(key, new LinkedList<Game>());
 					} else {
-						games.get(player1 + "//" + player2).add(new Game(
-								player1, player2, winner));
+						games.get(key).add(new Game(player1, player2, winner));
 					}
 					
 					if (winner == 1) {

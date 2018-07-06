@@ -1,14 +1,16 @@
 package client;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.text.Text;
 
@@ -17,12 +19,12 @@ import javafx.scene.text.Text;
  * Takes care of in-game actions.
  * 
  * @author Ben Drawer
- * @version 5 July 2018
+ * @version 6 July 2018
  *
  */
 public class BoardController extends Controller {
 	@FXML protected Text username;
-	@FXML protected ArrayList<ArrayList<Text>> board;
+	@FXML protected GridPane board;
 	private static Client client = Main.getClient();
 	private static String[] data;
 	
@@ -36,9 +38,7 @@ public class BoardController extends Controller {
 	
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals("addchar"))
-			receiveChar(input);
-		else if (action.equals("leavegame"))
+		if (action.equals("leavegame"))
 			leftGame(input);
 		else if (action.equals("viewprofile"))
 			viewProfile(input);
@@ -72,16 +72,6 @@ public class BoardController extends Controller {
 					alert.close();
 			}
 		});
-	}
-	
-	/**
-	 * When the other player adds a new character, this method is called to add it
-	 * to the board.
-	 * 
-	 * @param input
-	 */
-	private void receiveChar(String[] input) {
-		board.get(Integer.parseInt(input[0])).get(Integer.parseInt(input[1])).setText(input[2]);
 	}
 	
 	/**
@@ -120,5 +110,21 @@ public class BoardController extends Controller {
 				Main.changeScene("Profile", 575, 545, input);
 			}
 		});
+	}
+	
+	/**
+	 * Handles the selection of a board cell.
+	 * 
+	 * @param event
+	 * @throws IOException 
+	 */
+	@FXML
+	protected void selectedCell(MouseEvent event) throws IOException {
+		Node source = (Node) event.getSource();
+		Text text = (Text) source.lookup("#text");
+		text.setText("X");
+		String[] outArr = {GridPane.getColumnIndex(source) + "", GridPane.getRowIndex(source) + "",
+				"X"};
+		client.sendMessage("addchar", outArr);
 	}
 }

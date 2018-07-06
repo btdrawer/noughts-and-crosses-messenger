@@ -60,6 +60,7 @@ class Listener extends Thread {
 			try {
 				//Signs the user out if they close the application
 				//TODO currently not working
+				System.out.println("Signout");
 				client.sendMessage("signout", client.getUsername());
 			} catch (IOException e) {
 				e.printStackTrace();

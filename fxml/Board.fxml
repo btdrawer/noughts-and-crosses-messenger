@@ -8,36 +8,59 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="client.BoardController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="client.BoardController">
   <children>
-    <GridPane gridLinesVisible="true" layoutX="15.0" layoutY="71.0" prefHeight="450.0" prefWidth="535.0">
+    <GridPane fx:id="board" gridLinesVisible="true" layoutX="15.0" layoutY="71.0" prefHeight="450.0" prefWidth="535.0">
       <children>
-	      <fx:define>
-			<ArrayList fx:id="board">
-				<ArrayList>
-					<Text strokeType="OUTSIDE" strokeWidth="0.0" text="X" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
-	          			<font>
-	            			<Font size="72.0" fx:id="x1" />
-	          			</font>
-	          			<GridPane.margin>
-	            			<Insets left="70.0" fx:id="x2" />
-	          			</GridPane.margin>
-	        		</Text>
-	        		<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.margin="$x2" GridPane.rowIndex="0" />
-	        		<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.margin="$x2" GridPane.rowIndex="0" />
-				</ArrayList>
-				<ArrayList>
-					<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.margin="$x2" GridPane.rowIndex="1" />
-        			<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.margin="$x2" GridPane.rowIndex="1" />
-        			<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.margin="$x2" GridPane.rowIndex="1" />
-				</ArrayList>
-				<ArrayList>
-					<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.margin="$x2" GridPane.rowIndex="2" />
-        			<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.margin="$x2" GridPane.rowIndex="2" />
-        			<Text font="$x1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.margin="$x2" GridPane.rowIndex="2" />
-				</ArrayList>
-			</ArrayList>
-	      </fx:define>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+          <children>
+            <Text fx:id="text" layoutX="50.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+              <font>
+                <Font size="36.0" fx:id="x1" />
+              </font>
+            </Text>
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="49.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="0" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="49.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="50.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="49.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="49.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="2" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="50.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="49.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2" onMouseClicked="#selectedCell">
+          <children>
+            <Text fx:id="text" font="$x1" layoutX="49.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+          </children>
+        </Pane>
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -50,11 +73,7 @@
         <RowConstraints maxHeight="100.0" minHeight="7.0" prefHeight="9.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
-    <Text fx:id="username" layoutX="15.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
-      <font>
-        <Font size="36.0" />
-      </font>
-    </Text>
-    <Button layoutX="470.0" layoutY="14.0" mnemonicParsing="false" text="Leave game" onAction="#leaveGameButton" />
+    <Text fx:id="username" font="$x1" layoutX="15.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+    <Button layoutX="448.0" layoutY="14.0" mnemonicParsing="false" onAction="#leaveGameButton" text="Leave game" />
   </children>
 </AnchorPane>

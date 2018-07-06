@@ -8,9 +8,11 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
@@ -31,7 +33,7 @@ class Request implements Task {
 	private BufferedReader in;
 	private DataOutputStream out;
 	private static Map<String, Profile> users;
-	private static Map<String, LinkedList<Game>> games;
+	private static Map<Set<String>, LinkedList<Game>> games;
 	private static Map<Short, String> securityQuestions;
 	private static LinkedBlockingQueue<Task> taskQueue;
 	
@@ -368,7 +370,9 @@ class Request implements Task {
 			outArr[0] = "false";
 			outArr[1] = "This user isn't available.";
 		} else {
-			String key = input[0] + "//" + input[1];
+			Set<String> key = new HashSet<>();
+			key.add(input[0]);
+			key.add(input[1]);
 			
 			if (!games.containsKey(key)) {
 				games.put(key, new LinkedList<>());

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import protocol.Protocol;
@@ -23,7 +24,7 @@ import protocol.Protocol;
 class Server {
 	private static LinkedBlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
 	private static Map<String, Profile> users = new HashMap<>();
-	private static Map<String, LinkedList<Game>> games = new HashMap<>();
+	private static Map<Set<String>, LinkedList<Game>> games = new HashMap<>();
 	private static Map<Short, String> securityQuestions = new HashMap<>();
 	private static List<Socket> sockets = new LinkedList<>();
 	private static int quantity, port, numberOfOnlineUsers;
@@ -50,7 +51,7 @@ class Server {
 	 * 
 	 * @return games
 	 */
-	static Map<String, LinkedList<Game>> getGames() {
+	static Map<Set<String>, LinkedList<Game>> getGames() {
 		return games;
 	}
 	
