@@ -163,10 +163,37 @@ class Profile implements Comparable<Profile> {
 		}
 	}
 	
+	/**
+	 * Setter for username.
+	 * 
+	 * @param username new username.
+	 */
+	void setUsername(String username) {
+		this.username = username;
+	}
+	
+	/**
+	 * Setter for password.
+	 * 
+	 * @param password new password
+	 */
+	void setPassword(String password) {
+		this.password = password;
+	}
+	
+	/**
+	 * 
+	 * @return user's DataOutputStream
+	 */
 	DataOutputStream getDataOutputStream() {
 		return dataOutputStream;
 	}
 	
+	/**
+	 * Setter for DataOutputStream.
+	 * 
+	 * @param dataOutputStream
+	 */
 	void setDataOutputStream(DataOutputStream dataOutputStream) {
 		this.dataOutputStream = dataOutputStream;
 	}

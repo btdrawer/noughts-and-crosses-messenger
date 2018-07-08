@@ -440,6 +440,72 @@ class Request implements Task {
 	}
 	
 	/**
+	 * Processes a request to change a user's username and/or password.
+	 * 
+	 * @param input
+	 * @return output indicating whether changes have been successful
+	 * @throws NoSuchAlgorithmException
+	 */
+	private String changes(String[] input) throws NoSuchAlgorithmException {
+		String currentUsername = input[1];
+		String newUsername = input[2];
+		String password = input[4];
+		String newPassword = input[5];
+		boolean usernameToChange = false, passwordToChange = false, error = false;
+		
+		outArr = new String[3];
+		outArr[2] = ".";
+		
+		if (!newUsername.equals(".")) {
+			if (users.containsKey(newUsername)) {
+				outArr[0] = "false";
+				outArr[1] = "Someone already has that username.";
+				error = true;
+			} else
+				usernameToChange = true;
+		}
+		
+		if (!newPassword.equals(".")) {
+			if (newPassword.length() < 6 || newPassword.length() > 15) {
+				outArr[0] = "false";
+				outArr[1] = "Your password must be between 6 and 15 characters in length.";
+				error = true;
+			} else
+				passwordToChange = true;
+		}
+		
+		if (getMD5(password).equals(
+				users.get(currentUsername).getPassword())) {
+			if (!error) {
+				outArr[0] = "true";
+				
+				//TODO how to update things using the Writer
+				if (usernameToChange && passwordToChange) {
+					users.get(currentUsername).setUsername(newUsername);
+					users.get(currentUsername).setPassword(newPassword);
+					
+					outArr[1] = "Your username and password have been successfully changed.";
+					outArr[2] = newUsername;
+				} else if (usernameToChange) {
+					users.get(currentUsername).setUsername(newUsername);
+					
+					outArr[1] = "Your username has been successfully changed.";
+					outArr[2] = newUsername;
+				} else if (passwordToChange) {
+					users.get(currentUsername).setPassword(newPassword);
+					
+					outArr[1] = "Your password has been successfully changed.";
+				}
+			}
+		} else {
+			outArr[0] = "false";
+			outArr[1] = "Your password was incorrect.";
+		}
+		
+		return protocol.transmit("changes", outArr);
+	}
+	
+	/**
 	 * Is called when a player quits a game.
 	 * 
 	 * @param input [0] = quitting player; [1] = other player
@@ -519,6 +585,8 @@ class Request implements Task {
 						output = newGame(input);
 					else if (action.equals("addchar"))
 						outArr = addChar(input);
+					else if (action.equals("editprofile"))
+						output = changes(input);
 					else if (action.equals("leavegame"))
 						output = leftGame(input);
 					else if (action.equals("signout"))

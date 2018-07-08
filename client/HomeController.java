@@ -215,7 +215,7 @@ public class HomeController extends Controller {
 	 */
 	@FXML
 	protected void editProfileButton(ActionEvent event) {
-		//TODO
+		Main.changeScene("EditProfile", 575, 545);
 	}
 	
 	/**

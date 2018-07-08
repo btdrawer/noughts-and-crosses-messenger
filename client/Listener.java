@@ -17,7 +17,6 @@ class Listener extends Thread {
 	private String[] input;
 	private Protocol protocol;
 	private Controller controller;
-	private Thread connector;
 	
 	/**
 	 * Constructor.
@@ -27,23 +26,6 @@ class Listener extends Thread {
 	Listener(Client client) {
 		this.client = client;
 		this.protocol = client.getProtocol();
-		
-		this.connector = new Thread() {
-			@Override
-			public synchronized void run() {
-				while(true) {
-					String[] outArr = {};
-					
-					try {
-						client.sendMessage("connect", outArr);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					
-					Thread.sleep(50000);
-				}
-			}
-		};
 	}
 	
 	/**
