@@ -22,7 +22,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 6 July 2018
+ * @version 13 July 2018
  *
  */
 class Request implements Task {
@@ -336,9 +336,9 @@ class Request implements Task {
 	 * @throws IOException
 	 */
 	private String[] sendChallenge(String[] input) throws IOException {
-		String[] outArr = {protocol.transmit("challenge", input[0]), input[1]};
+		String[] toSend = {protocol.transmit("challenge", input[0]), input[1]};
 		
-		return outArr;
+		return toSend;
 	}
 	
 	/**
@@ -360,10 +360,9 @@ class Request implements Task {
 		if (input[0].equals("false"))
 			outArr[2] = "Sorry, this user declined your challenge.";
 		
-		outArr[0] = protocol.transmit("challengeresponse", outArr);
-		outArr[1] = input[1];
+		String[] toSend = {protocol.transmit("challengeresponse", outArr), input[1]};
 		
-		return outArr;
+		return toSend;
 	}
 	
 	/**
@@ -384,15 +383,13 @@ class Request implements Task {
 			key.add(input[0]);
 			key.add(input[1]);
 			
-			if (!games.containsKey(key)) {
+			if (!games.containsKey(key))
 				games.put(key, new LinkedList<>());
-			}
 			
-			if (input[2] == "true") {
+			if (input[2] == "true")
 				games.get(key).add(new TimedGame(input[0], input[1]));
-			} else {
+			else
 				games.get(key).add(new Game(input[0], input[1]));
-			}
 			
 			users.get(input[0]).setStatus((short) 1);
 			users.get(input[1]).setStatus((short) 1);
@@ -404,14 +401,66 @@ class Request implements Task {
 	}
 	
 	/**
+	 * Evaluates whether a move played has won the game.
+	 * 
+	 * @param board the game board
+	 * @param c the character to be checked (O or X)
+	 * @param x x-position of the character
+	 * @param y y-position of the character
+	 * @return boolean indicating whether or not the game has been won.
+	 */
+	private boolean checkWin(char[][] board, char c, int x, int y) {
+		boolean xWin = true, yWin = true, dWin0 = true, dWin1 = true;
+		int i, length = 2;
+		
+		for (i = 0; i < length; i++) {
+			if (!(board[x][i] == c)) {
+				xWin = false;
+				break;
+			}
+		}
+		
+		for (i = 0; i < length; i++) {
+			if (!(board[i][y] == c)) {
+				yWin = false;
+				break;
+			}
+		}
+		
+		if (!(x == 1 && y == 0) && !(x == 1 && y == 2) && 
+				!(x != 1 && y == 1)) {
+			int j = 0;
+			
+			for (i = 0; i < length; i++) {
+				if (!(board[i][j] == c)) {
+					dWin0 = false;
+					break;
+				}
+				
+				j += 1;
+			}
+			
+			j = length;
+			
+			for (i = length; i > 0; i--) {
+				if (!(board[i][j] == c)) {
+					dWin1 = false;
+					break;
+				}
+			}
+		}
+		
+		return xWin && yWin && dWin0 && dWin1;
+	}
+	
+	/**
 	 * Add a character to a game.
 	 * 
-	 * @param input [0], [1] = players; [2], [3] = x- and y-coordinates; [4] = O or X
+	 * @param input [0] = player on current turn; [1] = opponent; [2], [3] = x- and y-coordinates; [4] = O or X
 	 * @return output indicating whether character input has been successful
 	 * @throws IOException 
 	 */
 	private String[] addChar(String[] input) throws IOException {
-		//TODO actually implement rules of the game, ie for when it finishes!
 		Set<String> key = new HashSet<>();
 		key.add(input[0]);
 		key.add(input[1]);
@@ -419,24 +468,37 @@ class Request implements Task {
 		Game currentGame = games.get(key).getLast();
 		int x = Integer.parseInt(input[2]);
 		int y = Integer.parseInt(input[3]);
+		char c = input[4].charAt(0);
 		
-		currentGame.addChar(x, y, input[4].charAt(0));
-			
+		currentGame.addChar(x, y, c);
+		currentGame.addTurn();
+		
+		boolean gameWon = checkWin(currentGame.getBoard(), c, x, y);
+		short turns = currentGame.getTurns();
+		
 		outArr = new String[4];
-			
-		outArr[0] = "true";
+		
+		if (gameWon) {
+			outArr[0] = "true_lost";
+			users.get(input[0]).addWin();
+			users.get(input[1]).addLoss();
+			currentGame.finished();
+			taskQueue.add(new Writer(currentGame));
+		} else if (turns == 9)
+			outArr[0] = "true_draw";
+		else
+			outArr[0] = "true";
+		
 		outArr[1] = input[2];
 		outArr[2] = input[3];
 		outArr[3] = input[4];
 		
-		users.get(input[1]).getDataOutputStream().writeBytes(
-				protocol.transmit("addchar", outArr));
+		if (outArr[0].equals("true_lost"))
+			outArr[0] = "true_won";
 		
-		outArr = new String[2];
-		outArr[0] = protocol.transmit("addchar", outArr);
-		outArr[1] = input[1];
+		String[] toSend = {protocol.transmit("addchar", outArr), input[1]};
 		
-		return outArr;
+		return toSend;
 	}
 	
 	/**
@@ -552,12 +614,15 @@ class Request implements Task {
 			while(true) {
 				String s, action;
 				String[] input;
+				boolean sendToOtherUser;
 				
 				while((s = in.readLine()) != null) {
 					System.out.println("Input: " + s);
 					
 					action = protocol.getAction(s);
 					input = protocol.receive(s);
+					
+					sendToOtherUser = false;
 					
 					if (action.equals("connect"))
 						output = connect();
@@ -577,28 +642,33 @@ class Request implements Task {
 						output = leaderboard(input);
 					else if (action.equals("timedlederboard"))
 						output = timedLeaderboard(input);
-					else if (action.equals("challenge"))
+					else if (action.equals("challenge")) {
 						outArr = sendChallenge(input);
-					else if (action.equals("challengeresponse"))
+						sendToOtherUser = true;
+					} else if (action.equals("challengeresponse")) {
 						outArr = challengeResponse(input);
-					else if (action.equals("newgame"))
+						sendToOtherUser = true;
+					} else if (action.equals("newgame"))
 						output = newGame(input);
-					else if (action.equals("addchar"))
+					else if (action.equals("addchar")) {
 						outArr = addChar(input);
-					else if (action.equals("editprofile"))
+						sendToOtherUser = true;
+					} else if (action.equals("editprofile"))
 						output = changes(input);
 					else if (action.equals("leavegame"))
 						output = leftGame(input);
 					else if (action.equals("signout"))
 						output = signout(input);
 					
-					System.out.println("Output: " + output);
-					
-					if (action.equals("challenge") || action.equals("challengeresponse")
-							|| action.equals("addchar"))
-						users.get(outArr[1]).getDataOutputStream().write(outArr[0].getBytes());
-					else
+					if (sendToOtherUser) {
+						System.out.println("Output to " + outArr[1] + ": " + outArr[0]);
+						
+						users.get(outArr[1]).getDataOutputStream().writeBytes(outArr[0]);
+					} else {
+						System.out.println("Output: " + output);
+						
 						out.writeBytes(output);
+					}
 				}
 			}
 		} catch (IOException e) {

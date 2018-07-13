@@ -12,6 +12,7 @@ class Game {
 	private char[][] board;
 	private int winner;
 	private boolean finished;
+	private short turns;
 	
 	/**
 	 * Constructor for new games.
@@ -27,6 +28,7 @@ class Game {
 		board = new char[3][3];
 		
 		this.finished = false;
+		this.turns = 0;
 	}
 	
 	/**
@@ -105,6 +107,23 @@ class Game {
 	 */
 	void setWinner(int winner) {
 		this.winner = winner;
+	}
+	
+	/**
+	 * Getter method for the number of turns played.
+	 * When it reaches 9, the game should terminate.
+	 * 
+	 * @return turns
+	 */
+	short getTurns() {
+		return turns;
+	}
+	
+	/**
+	 * Adds a turn to the total number.
+	 */
+	void addTurn() {
+		turns += 1;
 	}
 	
 	/**

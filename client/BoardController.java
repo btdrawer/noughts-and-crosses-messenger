@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
  * Takes care of in-game actions.
  * 
  * @author Ben Drawer
- * @version 6 July 2018
+ * @version 12 July 2018
  *
  */
 public class BoardController extends Controller {
@@ -154,14 +154,65 @@ public class BoardController extends Controller {
 	 * @param input [0] = x-coordinate, [1] = y-coordinate, [2] = O or X
 	 */
 	private void receiveChar(String[] input) {
-		if (input[0].equals("true")) {
+		if (input[0].equals("true") || input[0].equals("true_won") ||
+				input[0].equals("true_draw") || input[0].equals("true_lost")) {
 			int x = Integer.parseInt(input[1]);
 			int y = Integer.parseInt(input[2]);
 			int index = x + (y * 3);
 			Node source = (Node) board.getChildren().get(index);
 			Text text = (Text) source.lookup("#text");
 			text.setText(input[3]);
-			turn = true;
+			
+			if (input[0].equals("true"))
+				turn = true;
+		}
+		
+		if (input[0].equals("true_won")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					Alert alert = new Alert(AlertType.INFORMATION, "You won!", 
+							ButtonType.OK);
+					Optional<ButtonType> result = alert.showAndWait();
+					
+					if (result.isPresent()) {
+						Main.changeScene("Profile", 575, 545, input);
+						alert.close();
+					}
+				}
+			});
+		}
+		
+		if (input[0].equals("true_draw")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					Alert alert = new Alert(AlertType.INFORMATION, "It's a draw!", 
+							ButtonType.OK);
+					Optional<ButtonType> result = alert.showAndWait();
+					
+					if (result.isPresent()) {
+						Main.changeScene("Profile", 575, 545, input);
+						alert.close();
+					}
+				}
+			});
+		}
+		
+		if (input[0].equals("true_lost")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					Alert alert = new Alert(AlertType.INFORMATION, "Better luck next time!", 
+							ButtonType.OK);
+					Optional<ButtonType> result = alert.showAndWait();
+					
+					if (result.isPresent()) {
+						Main.changeScene("Profile", 575, 545, input);
+						alert.close();
+					}
+				}
+			});
 		}
 	}
 }
