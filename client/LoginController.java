@@ -51,7 +51,7 @@ public class LoginController extends Controller {
 			responseText.setText(Main.twoLines(input[1]));
 		} else {
 			client.setUsername(username.getText());
-			Main.changeScene("Leaderboard", 575, 545);
+			Main.changeScene("Leaderboard");
 		}
 	}
 	
@@ -81,7 +81,7 @@ public class LoginController extends Controller {
 	 */
 	@FXML
 	protected void signUpButton(ActionEvent event) throws IOException {
-		Main.changeScene("Signup", 350, 325);	
+		Main.changeScene("Signup");	
 	}
 	
 	@FXML

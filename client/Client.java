@@ -154,7 +154,9 @@ class Client {
 	 * @throws IOException
 	 */
 	void sendMessage(String action, String[] input) throws IOException {
-		out.writeBytes(protocol.transmit(action, input));
+		String toSend = protocol.transmit(action, input);
+		System.out.println("Output: " + toSend);
+		out.writeBytes(toSend);
 	}
 	
 	/**
@@ -165,46 +167,8 @@ class Client {
 	 * @throws IOException
 	 */
 	void sendMessage(String action, String input) throws IOException {
-		out.writeBytes(protocol.transmit(action, input));
-	}
-	
-	/**
-	 * Main method.
-	 * Used for testing.
-	 * 
-	 * 3 messages are sent by default: a connect, signin, and signup;
-	 * after this, a Scanner launches, where the first line is the action
-	 * and the second line is related information, separated by /.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Client c = new Client();
-		
-		c.setHost("127.0.0.1");
-		c.setPort(8080);
-		
-		try {
-			c.initialize();
-			
-			String[] outArr = {};
-			c.sendMessage("connect", outArr);
-			
-			String[] out1 = {"ben", "password"};
-			c.sendMessage("signin", out1);
-			
-			String[] out2 = {"ben", "password", 0 + "", "yeah"};
-			c.sendMessage("signup", out2);
-			
-			Scanner s = new Scanner(System.in);
-			
-			while (s.hasNext()) {
-				String action = s.nextLine();
-				String[] arr = s.nextLine().split("/");
-				c.sendMessage(action, arr);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String toSend = protocol.transmit(action, input);
+		System.out.println("Output: " + toSend);
+		out.writeBytes(toSend);
 	}
 }

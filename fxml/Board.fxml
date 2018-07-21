@@ -12,7 +12,7 @@
   <children>
     <GridPane fx:id="board" gridLinesVisible="true" layoutX="15.0" layoutY="71.0" prefHeight="450.0" prefWidth="535.0">
       <children>
-        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0" onMouseClicked="#selectedCell" >
           <children>
             <Text fx:id="text" layoutX="50.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" >
               <font>

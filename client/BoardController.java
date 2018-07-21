@@ -103,7 +103,7 @@ public class BoardController extends Controller {
 				Optional<ButtonType> result = alert.showAndWait();
 				
 				if (result.isPresent()) {
-					Main.changeScene("Profile", 575, 545, input);
+					Main.changeScene("Profile", input);
 					alert.close();
 				}
 			}
@@ -121,7 +121,7 @@ public class BoardController extends Controller {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				Main.changeScene("Profile", 575, 545, input);
+				Main.changeScene("Profile", input);
 			}
 		});
 	}
@@ -176,7 +176,7 @@ public class BoardController extends Controller {
 					Optional<ButtonType> result = alert.showAndWait();
 					
 					if (result.isPresent()) {
-						Main.changeScene("Profile", 575, 545, input);
+						Main.changeScene("Profile", input);
 						alert.close();
 					}
 				}
@@ -192,7 +192,7 @@ public class BoardController extends Controller {
 					Optional<ButtonType> result = alert.showAndWait();
 					
 					if (result.isPresent()) {
-						Main.changeScene("Profile", 575, 545, input);
+						Main.changeScene("Profile", input);
 						alert.close();
 					}
 				}
@@ -208,7 +208,7 @@ public class BoardController extends Controller {
 					Optional<ButtonType> result = alert.showAndWait();
 					
 					if (result.isPresent()) {
-						Main.changeScene("Profile", 575, 545, input);
+						Main.changeScene("Profile", input);
 						alert.close();
 					}
 				}

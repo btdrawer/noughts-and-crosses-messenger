@@ -50,7 +50,7 @@ public class SignupController extends Controller {
 			responseText.setText(Main.twoLines(response[1]));
 		} else {
 			client.setUsername(username.getText());
-			Main.changeScene("Leaderboard", 575, 545);
+			Main.changeScene("Leaderboard");
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class SignupController extends Controller {
 	 */
 	@FXML
 	protected void backButton(ActionEvent event) throws IOException {
-		Main.changeScene("Login", 325, 350);
+		Main.changeScene("Login");
 	}
 	
 	/**

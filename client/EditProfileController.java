@@ -46,7 +46,7 @@ public class EditProfileController extends HomeController {
 	@FXML
 	protected void backButton(ActionEvent event) {
 		//TODO if user was on a profile, make it return to there
-		Main.changeScene("Leaderboard", 575, 545);
+		Main.changeScene("Leaderboard");
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public class EditProfileController extends HomeController {
 			if (!input[2].equals("."))
 				client.setUsername(input[2]);
 			
-			Main.changeScene("Leaderboard", 575, 545);
+			Main.changeScene("Leaderboard");
 		} else
 			responseText.setText(Main.twoLines(input[1]));
 	}

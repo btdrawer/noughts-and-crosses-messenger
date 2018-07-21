@@ -466,11 +466,11 @@ class Request implements Task {
 		key.add(input[1]);
 		
 		Game currentGame = games.get(key).getLast();
-		int x = Integer.parseInt(input[2]);
-		int y = Integer.parseInt(input[3]);
+		int y = Integer.parseInt(input[2]);
+		int x = Integer.parseInt(input[3]);
 		char c = input[4].charAt(0);
 		
-		currentGame.addChar(x, y, c);
+		currentGame.addChar(y, x, c);
 		currentGame.addTurn();
 		
 		boolean gameWon = checkWin(currentGame.getBoard(), c, x, y);
@@ -482,6 +482,14 @@ class Request implements Task {
 			outArr[0] = "true_lost";
 			users.get(input[0]).addWin();
 			users.get(input[1]).addLoss();
+			
+			String[] players = currentGame.getPlayers();
+			
+			if (players[0].equals(input[0]))
+				currentGame.setWinner(0);
+			else if (players[1].equals(input[0]))
+				currentGame.setWinner(1);
+			
 			currentGame.finished();
 			taskQueue.add(new Writer(currentGame));
 		} else if (turns == 9)
@@ -579,10 +587,12 @@ class Request implements Task {
 		users.get(input[0]).setStatus((short) 2);
 		users.get(input[1]).setStatus((short) 2);
 		
-		String[] otherUsersProfile = protocol.receive(viewProfile(input[0]));
+		String otherUsersProfile = viewProfile(input[0]);
 		
 		users.get(input[1]).getDataOutputStream().write(
-				protocol.transmit("leavegame", otherUsersProfile).getBytes());
+				protocol.transmit("leavegame", 
+						otherUsersProfile.substring(13, 
+								otherUsersProfile.length())).getBytes());
 		
 		return viewProfile(input[1]);
 	}

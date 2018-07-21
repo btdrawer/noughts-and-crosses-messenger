@@ -43,8 +43,7 @@ public class HomeController extends Controller {
 		this.onlineUserList = FXCollections.<String>observableArrayList();
 		
 		try {
-			String[] outArr = {client.getUsername()};
-			client.sendMessage("requestusers", outArr);
+			client.sendMessage("requestusers", client.getUsername());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -137,7 +136,7 @@ public class HomeController extends Controller {
 	private void signOut(String[] input) throws IOException {
 		if (input[0].equals("true")) {
 			client.setUsername("");
-			Main.changeScene("Login", 325, 350);
+			Main.changeScene("Login");
 		}
 	}
 	
@@ -166,7 +165,7 @@ public class HomeController extends Controller {
 					outArr[0] = "true";
 					
 					String[] data = {recipient, challenger, 1 + ""};
-					Main.changeScene("Board", 575, 545, data);
+					Main.changeScene("Board", data);
 				} else if (result.isPresent() && result.get() == ButtonType.NO)
 					outArr[0] = "false";
 				
@@ -202,7 +201,7 @@ public class HomeController extends Controller {
 	 */
 	private void viewProfile(String[] input) {
 		if (input[0].equals("true")) {
-			Main.changeScene("Profile", 575, 545, input);
+			Main.changeScene("Profile", input);
 		} else {
 			//TODO Error occurred
 		}
@@ -215,7 +214,7 @@ public class HomeController extends Controller {
 	 */
 	@FXML
 	protected void editProfileButton(ActionEvent event) {
-		Main.changeScene("EditProfile", 575, 545);
+		Main.changeScene("EditProfile");
 	}
 	
 	/**

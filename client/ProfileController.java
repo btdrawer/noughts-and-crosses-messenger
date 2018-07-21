@@ -89,7 +89,7 @@ public class ProfileController extends HomeController {
 	private void challengeResponseHandler(String[] input) throws IOException {
 		if (input[0].equals("true")) {
 			String[] data = {client.getUsername(), input[1], 0 + ""};
-			Main.changeScene("Board", 575, 545, data);
+			Main.changeScene("Board", data);
 			client.sendMessage("newgame", data);
 		} else
 			responseText.setText(input[2]);

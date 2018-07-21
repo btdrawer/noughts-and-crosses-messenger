@@ -14,7 +14,7 @@ import java.util.Set;
  * This thread reads user profiles from the data file.
  * 
  * @author Ben Drawer
- * @version 25 June 2018
+ * @version 21 July 2018
  *
  */
 class Reader implements Task {
@@ -56,16 +56,16 @@ class Reader implements Task {
 					key.add(sArr[1]);
 					key.add(sArr[2]);
 					
-					if (games.containsKey(key)) {
+					if (!games.containsKey(key)) {
 						games.put(key, new LinkedList<Game>());
 					} else {
 						games.get(key).add(new Game(player1, player2, winner));
 					}
 					
-					if (winner == 1) {
+					if (winner == 0) {
 						users.get(player1).addWin();
 						users.get(player2).addLoss();
-					} else if (winner == 2) {
+					} else if (winner == 1) {
 						users.get(player2).addWin();
 						users.get(player1).addLoss();
 					}

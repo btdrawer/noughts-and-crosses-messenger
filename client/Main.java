@@ -21,6 +21,11 @@ public class Main extends Application {
 	private static Client client;
 	private static String[] data;
 	
+	private static final int[] LOGIN_DIMENSIONS = {315, 350};
+	private static final int[] SIGNUP_DIMENSIONS = {325, 350};
+	private static final int[] HOME_DIMENSIONS = {575, 545};
+	private static final int[] BOARD_DIMENSIONS = HOME_DIMENSIONS;
+			
 	/**
 	 * 
 	 * @return Client class that manages Socket input and output streams
@@ -86,7 +91,24 @@ public class Main extends Application {
 	 * @param x x number of pixels
 	 * @param y y number of pixels
 	 */
-	static void changeScene(String fxml, int x, int y) {
+	static void changeScene(String fxml) {
+		int[] dimensions = new int[2];
+		int x, y;
+		
+		if (fxml.equals("Login"))
+			dimensions = LOGIN_DIMENSIONS;
+		else if (fxml.equals("Signup"))
+			dimensions = SIGNUP_DIMENSIONS;
+		else if (fxml.equals("Leaderboard") || 
+				fxml.equals("Profile") ||
+				fxml.equals("EditProfile"))
+			dimensions = HOME_DIMENSIONS;
+		else if (fxml.equals("Board"))
+			dimensions = BOARD_DIMENSIONS;
+		
+		x = dimensions[0];
+		y = dimensions[1];
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -111,8 +133,8 @@ public class Main extends Application {
 	 * @param y y number of pixels
 	 * @param input data to be passed
 	 */
-	static void changeScene(String fxml, int x, int y, String[] input) {
-		changeScene(fxml, x, y);
+	static void changeScene(String fxml, String[] input) {
+		changeScene(fxml);
 		setData(input);
 	}
 	

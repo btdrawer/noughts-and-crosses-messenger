@@ -50,7 +50,7 @@ public class ConnectController extends Controller {
 	 */
 	private void connect(String[] input) {
 		if (input.length > 0)
-			Main.changeScene("Login", 315, 350);
+			Main.changeScene("Login");
 		else
 			responseText.setText("Unable to join server.\nPlease try again later.");
 	}
