@@ -410,47 +410,25 @@ class Request implements Task {
 	 * @return boolean indicating whether or not the game has been won.
 	 */
 	private boolean checkWin(char[][] board, char c, int x, int y) {
-		boolean xWin = true, yWin = true, dWin0 = true, dWin1 = true;
-		int i, length = 2;
+		boolean xWin = false, yWin = false, dWin0 = false, dWin1 = false;
 		
-		for (i = 0; i < length; i++) {
-			if (!(board[x][i] == c)) {
-				xWin = false;
-				break;
-			}
-		}
+		if (board[x][0] == c && board[x][0] == board[x][1] && 
+				board[x][1] == board[x][2])
+			xWin = true;
 		
-		for (i = 0; i < length; i++) {
-			if (!(board[i][y] == c)) {
-				yWin = false;
-				break;
-			}
-		}
+		if (board[0][y] == c && board[0][y] == board[1][y] 
+				&& board[1][y] == board[2][y])
+			yWin = true;
 		
-		if (!(x == 1 && y == 0) && !(x == 1 && y == 2) && 
-				!(x != 1 && y == 1)) {
-			int j = 0;
-			
-			for (i = 0; i < length; i++) {
-				if (!(board[i][j] == c)) {
-					dWin0 = false;
-					break;
-				}
-				
-				j += 1;
-			}
-			
-			j = length;
-			
-			for (i = length; i > 0; i--) {
-				if (!(board[i][j] == c)) {
-					dWin1 = false;
-					break;
-				}
-			}
-		}
+		if (board[0][0] == c && board[0][0] == board[1][1] 
+				&& board[1][1] == board[2][2])
+			dWin0 = true;
 		
-		return xWin && yWin && dWin0 && dWin1;
+		if (board[0][2] == c && board[0][2] == board[1][1] 
+				&& board[1][1] == board[2][0])
+			dWin1 = true;
+		
+		return xWin || yWin || dWin0 || dWin1;
 	}
 	
 	/**
@@ -466,11 +444,11 @@ class Request implements Task {
 		key.add(input[1]);
 		
 		Game currentGame = games.get(key).getLast();
-		int y = Integer.parseInt(input[2]);
-		int x = Integer.parseInt(input[3]);
+		int x = Integer.parseInt(input[2]);
+		int y = Integer.parseInt(input[3]);
 		char c = input[4].charAt(0);
 		
-		currentGame.addChar(y, x, c);
+		currentGame.addChar(x, y, c);
 		currentGame.addTurn();
 		
 		boolean gameWon = checkWin(currentGame.getBoard(), c, x, y);
@@ -501,10 +479,13 @@ class Request implements Task {
 		outArr[2] = input[3];
 		outArr[3] = input[4];
 		
-		if (outArr[0].equals("true_lost"))
-			outArr[0] = "true_won";
-		
 		String[] toSend = {protocol.transmit("addchar", outArr), input[1]};
+		
+		if (outArr[0].equals("true_lost")) {
+			outArr[0] = "true_won";
+			users.get(input[0]).getDataOutputStream().write(
+				protocol.transmit("addchar", outArr).getBytes());
+		}
 		
 		return toSend;
 	}

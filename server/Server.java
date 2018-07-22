@@ -18,7 +18,7 @@ import protocol.Protocol;
  * Server class.
  * 
  * @author Ben Drawer
- * @version 24 June 2018
+ * @version 22 July 2018
  *
  */
 class Server {
@@ -99,7 +99,7 @@ class Server {
 	 * @param input
 	 */
 	static void broadcastMessage(String[] input) {
-		Thread broadcaster = new Thread() {
+		new Thread() {
 			@Override
 			public void run() {
 				System.out.println("Broadcasting message to online clients...");
@@ -112,9 +112,7 @@ class Server {
 					}
 				}
 			}
-		};
-		
-		broadcaster.start();
+		}.start();
 	}
 	
 	/**

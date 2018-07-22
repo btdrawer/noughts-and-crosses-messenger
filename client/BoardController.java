@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
  * Takes care of in-game actions.
  * 
  * @author Ben Drawer
- * @version 12 July 2018
+ * @version 22 July 2018
  *
  */
 public class BoardController extends Controller {
@@ -140,7 +140,7 @@ public class BoardController extends Controller {
 		if (turn && text.getText().isEmpty()) {
 			text.setText(c + "");
 			String[] outArr = {client.getUsername(), opponent, 
-					GridPane.getColumnIndex(source) + "", GridPane.getRowIndex(source) + "",
+					GridPane.getRowIndex(source) + "", GridPane.getColumnIndex(source) + "",
 					c + ""};
 			client.sendMessage("addchar", outArr);
 			turn = false;
@@ -154,11 +154,11 @@ public class BoardController extends Controller {
 	 * @param input [0] = x-coordinate, [1] = y-coordinate, [2] = O or X
 	 */
 	private void receiveChar(String[] input) {
-		if (input[0].equals("true") || input[0].equals("true_won") ||
-				input[0].equals("true_draw") || input[0].equals("true_lost")) {
+		if (input[0].equals("true") || input[0].equals("true_draw") || 
+				input[0].equals("true_lost")) {
 			int x = Integer.parseInt(input[1]);
 			int y = Integer.parseInt(input[2]);
-			int index = x + (y * 3);
+			int index = y + (x * 3);
 			Node source = (Node) board.getChildren().get(index);
 			Text text = (Text) source.lookup("#text");
 			text.setText(input[3]);
@@ -208,7 +208,12 @@ public class BoardController extends Controller {
 					Optional<ButtonType> result = alert.showAndWait();
 					
 					if (result.isPresent()) {
-						Main.changeScene("Profile", input);
+						try {
+							client.sendMessage("viewprofile", opponent);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
 						alert.close();
 					}
 				}
