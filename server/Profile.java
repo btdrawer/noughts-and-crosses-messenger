@@ -1,21 +1,18 @@
 package server;
 
-import java.io.DataOutputStream;
-
 /**
  * Profile class.
  * Keeps details of a user's username, security question,
  * and scores to date.
  * 
  * @author Ben Drawer
- * @version 13 June 2018
+ * @version 8 September 2018
  *
  */
-class Profile implements Comparable<Profile> {
-	private String username, password, securityAnswer;
-	private short securityQuestion, status;
+public class Profile implements Comparable<Profile> {
+	private String username, password, status, securityAnswer;
+	private short securityQuestion;
 	private int wins, losses, total;
-	private DataOutputStream dataOutputStream;
 	
 	/**
 	 * Constructor.
@@ -26,13 +23,13 @@ class Profile implements Comparable<Profile> {
 	 * @param securityQuestion number representing security question
 	 * @param securityAnswer answer to security question
 	 */
-	Profile(String username, String password, short securityQuestion, 
+	public Profile(String username, String password, short securityQuestion, 
 			String securityAnswer) {
 		this.username = username;
 		this.password = password;
 		this.securityQuestion = securityQuestion;
 		this.securityAnswer = securityAnswer;
-		this.status = 2;
+		this.status = "online";
 		
 		this.wins = 0;
 		this.losses = 0;
@@ -41,22 +38,16 @@ class Profile implements Comparable<Profile> {
 	
 	/**
 	 * Constructor.
-	 * For use in the WriterThread when reading in existing users.
+	 * For use when retrieving a user from the database.
 	 * 
-	 * @param username username
-	 * @param password password
-	 * @param securityQuestion number representing security question
-	 * @param securityAnswer answer to security question
-	 * @param wins number of games the user has won
-	 * @param losses number of games the user has lost
+	 * @param username
+	 * @param status
+	 * @param wins
+	 * @param losses
 	 */
-	Profile(String username, String password, short securityQuestion, 
-			String securityAnswer, int wins, int losses) {
+	Profile(String username, String status, int wins, int losses) {
 		this.username = username;
-		this.password = password;
-		this.securityQuestion = securityQuestion;
-		this.securityAnswer = securityAnswer;
-		this.status = 0;
+		this.status = status;
 		
 		this.wins = wins;
 		this.losses = losses;
@@ -103,7 +94,7 @@ class Profile implements Comparable<Profile> {
 	 * 
 	 * @return user status
 	 */
-	short getStatus() {
+	String getStatus() {
 		return status;
 	}
 	
@@ -155,12 +146,8 @@ class Profile implements Comparable<Profile> {
 	 * 
 	 * @param online new status
 	 */
-	void setStatus(short status) {
-		if (status < 0 || status > 2) {
-			throw new IllegalArgumentException("Player status must be between 0 and 2.");
-		} else {
-			this.status = status;
-		}
+	void setStatus(String status) {
+		this.status = status;
 	}
 	
 	/**
@@ -179,23 +166,6 @@ class Profile implements Comparable<Profile> {
 	 */
 	void setPassword(String password) {
 		this.password = password;
-	}
-	
-	/**
-	 * 
-	 * @return user's DataOutputStream
-	 */
-	DataOutputStream getDataOutputStream() {
-		return dataOutputStream;
-	}
-	
-	/**
-	 * Setter for DataOutputStream.
-	 * 
-	 * @param dataOutputStream
-	 */
-	void setDataOutputStream(DataOutputStream dataOutputStream) {
-		this.dataOutputStream = dataOutputStream;
 	}
 	
 	/**

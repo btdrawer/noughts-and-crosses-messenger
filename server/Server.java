@@ -5,28 +5,22 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import protocol.Protocol;
 
 /**
- * Server class.
+ * Main server class.
  * 
  * @author Ben Drawer
- * @version 22 July 2018
+ * @version 8 September 2018
  *
  */
 class Server {
 	private static LinkedBlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
-	private static Map<String, Profile> users = new HashMap<>();
-	private static Map<Set<String>, LinkedList<Game>> games = new HashMap<>();
-	private static Map<Short, String> securityQuestions = new HashMap<>();
-	private static List<Socket> sockets = new LinkedList<>();
+	private static Map<String, Socket> sockets = new HashMap<>();
 	private static int quantity, port, numberOfOnlineUsers;
 	private static String ip;
 	private static Protocol protocol;
@@ -41,26 +35,10 @@ class Server {
 	
 	/**
 	 * 
-	 * @return users
+	 * @return mapping of users to sockets
 	 */
-	static Map<String, Profile> getUsers() {
-		return users;
-	}
-	
-	/**
-	 * 
-	 * @return games
-	 */
-	static Map<Set<String>, LinkedList<Game>> getGames() {
-		return games;
-	}
-	
-	/**
-	 * 
-	 * @return security questions
-	 */
-	static Map<Short, String> getSecurityQuestions() {
-		return securityQuestions;
+	static Map<String, Socket> getSockets() {
+		return sockets;
 	}
 	
 	/**
@@ -104,7 +82,7 @@ class Server {
 			public void run() {
 				System.out.println("Broadcasting message to online clients...");
 				
-				for (Socket s : sockets) {
+				for (Socket s : sockets.values()) {
 					try {
 						s.getOutputStream().write(protocol.transmit(input[0], input[1]).getBytes());
 					} catch (IOException e) {
@@ -181,6 +159,43 @@ class Server {
 			}
 		}
 		
+		System.out.println("Enter the database URL:");
+		
+		s = new Scanner(System.in);
+		
+		while(s.hasNext()) {
+			String dbUrl, dbUsername;
+			dbUrl = s.next();
+			
+			System.out.println("Database username:");
+			
+			s = new Scanner(System.in);
+			
+			while(s.hasNext()) {
+				dbUsername = s.next();
+				
+				System.out.println("Database password:");
+				
+				s = new Scanner(System.in);
+				
+				while(s.hasNext()) {
+					boolean isConnected = Database.setConnection(dbUrl, dbUsername, s.next());
+					
+					if (isConnected) {
+						System.out.println("Successfully connected to database!");
+					} else {
+						System.out.println("Database connection failed.");
+					}
+					
+					break;
+				}
+				
+				break;
+			}
+			
+			break;
+		}
+		
 		System.out.println("Thank you.");
 	}
 	
@@ -195,15 +210,13 @@ class Server {
 		try {
 			serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip));
 			protocol = new Protocol();
-			ThreadPool threadPool = new ThreadPool(quantity * 2);
-			threadPool.add(new Reader());
+			ThreadPool threadPool = new ThreadPool(quantity);
 			
 			System.out.println("Server is up and running!");
 			
 			while(true) {
 				if (numberOfOnlineUsers < quantity) {
 					Socket clientSocket = serverSocket.accept();
-					sockets.add(clientSocket);
 					Request newRequest = new Request(clientSocket);
 					threadPool.add(newRequest);
 				}

@@ -7,13 +7,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
 import protocol.Protocol;
@@ -22,7 +17,7 @@ import protocol.Protocol;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 13 July 2018
+ * @version 8 September 2018
  *
  */
 class Request implements Task {
@@ -32,10 +27,8 @@ class Request implements Task {
 	private String[] outArr;
 	private BufferedReader in;
 	private DataOutputStream out;
-	private static Map<String, Profile> users;
-	private static Map<Set<String>, LinkedList<Game>> games;
-	private static Map<Short, String> securityQuestions;
-	private static LinkedBlockingQueue<Task> taskQueue;
+	private Game currentGame;
+	private static Map<String, Socket> sockets = Server.getSockets();
 	
 	/**
 	 * Constructor.
@@ -49,11 +42,6 @@ class Request implements Task {
 		this.outArr = new String[2];
 		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		this.out = new DataOutputStream(clientSocket.getOutputStream());
-		
-		users = Server.getUsers();
-		games = Server.getGames();
-		securityQuestions = Server.getSecurityQuestions();
-		taskQueue = Server.getTaskQueue();
 	}
 	
 	/**
@@ -89,6 +77,17 @@ class Request implements Task {
 		return protocol.transmit("connect", outArr);
 	}
 	
+	private String getSecurityQuestions() {
+		List<String> securityQuestions = Database.getSecurityQuestions();
+		StringBuilder s = new StringBuilder();
+		
+		for (String sv : securityQuestions) {
+			s.append(sv + "//");
+		}
+		
+		return protocol.transmit("securityquestions", s.toString());
+	}
+	
 	/**
 	 * Sign-up method.
 	 * 
@@ -97,20 +96,16 @@ class Request implements Task {
 	 * @throws NoSuchAlgorithmException if password hashing algorithm unavailable
 	 */
 	private String signup(String[] input) throws NoSuchAlgorithmException {
-		String username = input[0];
-		String password = input[1];
-		short securityQ = Short.parseShort(input[2]);
-		String securityA = input[3];
-		
-		int usernameLength = input[0].length();
-		int passwordLength = input[1].length();
+		String username = input[0], password = input[1], securityQ = input[2],
+				securityA = input[3];
+		int usernameLength = input[0].length(), passwordLength = input[1].length();
 		
 		//TODO regex pattern for password
 		Pattern p = Pattern.compile("[a-zA-Z0-9]+");
 		
 		outArr = new String[2];
 		
-		if (users.containsKey(username)) {
+		if (Database.usernameExists(username)) {
 			outArr[0] = "false";
 			outArr[1] = "Sorry that username has been taken.";
 		} else if (username.equals(p.toString())) {
@@ -126,16 +121,19 @@ class Request implements Task {
 			outArr[0] = "false";
 			outArr[1] = "Your password must be between 6 and 15 characters long.";
 		} else {
-			Profile newUser = new Profile(username, getMD5(password), securityQ, securityA);
-			users.put(username, newUser);
-			taskQueue.add(new Writer(newUser));
-			users.get(username).setDataOutputStream(out);
+			boolean signUp = Database.signUp(username, password, securityQ, securityA);
 			
-			String[] notifyOnlineUsers = {"signedin", username};
-			Server.broadcastMessage(notifyOnlineUsers);
-			
-			outArr[0] = "true";
-			outArr[1] = "Sign-up successful. Welcome!";
+			if (signUp) {
+				String[] notifyOnlineUsers = {"signedin", username};
+				sockets.put(username, clientSocket);
+				Server.broadcastMessage(notifyOnlineUsers);
+				
+				outArr[0] = "true";
+				outArr[1] = "Sign-up successful. Welcome!";
+			} else {
+				outArr[0] = "false";
+				outArr[1] = "An error occurred; please try again later.";
+			}
 		}
 		
 		return protocol.transmit("signup", outArr);
@@ -176,23 +174,18 @@ class Request implements Task {
 		
 		outArr = new String[2];
 		
-		if (!users.containsKey(username)) {
+		if (!Database.signIn(username, password)) {
 			outArr[0] = "false";
-		} else if (!(users.get(username).getPassword().equals(getMD5(password)))) {
-			outArr[0] = "false";
+			outArr[1] = "Your username and/or password were incorrect.";
 		} else {
-			users.get(username).setStatus((short) 2);
-			users.get(username).setDataOutputStream(out);
+			Database.setStatus(username, "online");
+			sockets.put(username, clientSocket);
 			
 			String[] notifyOnlineUsers = {"signedin", username};
 			Server.broadcastMessage(notifyOnlineUsers);
 			
 			outArr[0] = "true";
 			outArr[1] = "Welcome back!";
-		}
-		
-		if (outArr[0].equals("false")) {
-			outArr[1] = "Your username and/or password were incorrect.";
 		}
 		
 		return protocol.transmit("signin", outArr);
@@ -208,9 +201,11 @@ class Request implements Task {
 	private String forgotPasswordRequest(String[] input) {
 		outArr = new String[2];
 		
-		if (users.containsKey(input[0])) {
+		String question = Database.forgotPasswordRequest(input[0]);
+		
+		if (question != null) {
 			outArr[0] = "true";
-			outArr[1] = securityQuestions.get((short) users.get(input[0]).getSecurityQuestion());
+			outArr[1] = question;
 		} else {
 			outArr[0] = "false";
 			outArr[1] = "Username not found.";
@@ -229,7 +224,7 @@ class Request implements Task {
 	private String forgotPassword(String[] input) {
 		outArr = new String[2];
 		
-		if (users.get(input[0]).getSecurityAnswer().equals(input[1])) {
+		if (Database.forgotPasswordAnswer(input[0], input[1])) {
 			outArr[0] = "true";
 			outArr[1] = "Enter your new password:";
 		} else {
@@ -248,10 +243,11 @@ class Request implements Task {
 	private String requestUsers(String[] input) {
 		StringBuilder sb = new StringBuilder();
 		
-		for (Profile p : users.values()) {
-			if (!p.getUsername().equals((input[0])) && 
-					p.getStatus() > 0) {
-				sb.append(p.getUsername() + "//");
+		List<String> users = Database.getUsers();
+		
+		for (String s : users) {
+			if (!s.equals((input[0]))) {
+				sb.append(s + "//");
 			}
 		}
 		
@@ -265,11 +261,7 @@ class Request implements Task {
 	 * @return String with user's details
 	 */
 	private String viewProfile(String[] input) {
-		Profile p = users.get(input[0]);
-		String[] outArr = {"true", p.getUsername(), p.getStatus() + "", 
-				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
-		
-		return protocol.transmit("viewprofile", outArr);
+		return viewProfile(input[0]);
 	}
 	
 	/**
@@ -279,7 +271,8 @@ class Request implements Task {
 	 * @return String with user's details
 	 */
 	private String viewProfile(String input) {
-		Profile p = users.get(input);
+		Profile p = Database.getProfile(input);
+		
 		String[] outArr = {"true", p.getUsername(), p.getStatus() + "", 
 				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
 		
@@ -294,22 +287,20 @@ class Request implements Task {
 	 * @return
 	 */
 	private String leaderboard(String[] input) {
-		ArrayList<Profile> userArrayList = new ArrayList<Profile>(users.values());
-		Collections.sort(userArrayList);
-		
-		int n = Integer.parseInt(input[0]);
-		int size = userArrayList.size();
+		List<String[]> leaderboardList = Database.getLeaderboard();
+		int size = leaderboardList.size();
 		
 		if (size > 0) {
-			outArr = new String[n * 3 + 1];
+			outArr = new String[size * 3 + 1];
 			outArr[0] = "true";
+			int i = 0;
 			
-			for (int i = 1; i < outArr.length / 3 - 1 && i < size; i += 3) {
-				Profile p = userArrayList.get(size - i);
+			for (String[] s : leaderboardList) {
+				outArr[i] = s[0];
+				outArr[i+1] = s[1];
+				outArr[i+2] = s[2];
 				
-				outArr[i] = p.getUsername();
-				outArr[i+1] = p.getWins() + "";
-				outArr[i+2] = p.getTotal() + "";
+				i += 3;
 			}
 		} else {
 			outArr = new String[2];
@@ -374,25 +365,15 @@ class Request implements Task {
 	private String newGame(String[] input) {
 		outArr = new String[2];
 		
-		if (users.get(input[0]).getStatus() == 0 || 
-				users.get(input[1]).getStatus() == 0) {
+		if (Database.getProfile(input[0]).getStatus() == "offline" || 
+				Database.getProfile(input[1]).getStatus() == "busy") {
 			outArr[0] = "false";
 			outArr[1] = "This user isn't available.";
 		} else {
-			Set<String> key = new HashSet<>();
-			key.add(input[0]);
-			key.add(input[1]);
+			currentGame = new Game(input[0], input[1]);
 			
-			if (!games.containsKey(key))
-				games.put(key, new LinkedList<>());
-			
-			if (input[2] == "true")
-				games.get(key).add(new TimedGame(input[0], input[1]));
-			else
-				games.get(key).add(new Game(input[0], input[1]));
-			
-			users.get(input[0]).setStatus((short) 1);
-			users.get(input[1]).setStatus((short) 1);
+			Database.setStatus(input[0], "busy");
+			Database.setStatus(input[1], "busy");
 			
 			outArr[0] = "true";
 		}
@@ -439,11 +420,6 @@ class Request implements Task {
 	 * @throws IOException 
 	 */
 	private String[] addChar(String[] input) throws IOException {
-		Set<String> key = new HashSet<>();
-		key.add(input[0]);
-		key.add(input[1]);
-		
-		Game currentGame = games.get(key).getLast();
 		int x = Integer.parseInt(input[2]);
 		int y = Integer.parseInt(input[3]);
 		char c = input[4].charAt(0);
@@ -451,25 +427,25 @@ class Request implements Task {
 		currentGame.addChar(x, y, c);
 		currentGame.addTurn();
 		
-		boolean gameWon = checkWin(currentGame.getBoard(), c, x, y);
 		short turns = currentGame.getTurns();
 		
 		outArr = new String[4];
 		
-		if (gameWon) {
+		if (checkWin(currentGame.getBoard(), c, x, y)) {
 			outArr[0] = "true_lost";
-			users.get(input[0]).addWin();
-			users.get(input[1]).addLoss();
 			
 			String[] players = currentGame.getPlayers();
+			String winner = "", loser = "";
 			
-			if (players[0].equals(input[0]))
-				currentGame.setWinner(0);
-			else if (players[1].equals(input[0]))
-				currentGame.setWinner(1);
+			if (players[0].equals(input[0])) {
+				winner = players[0];
+				loser = players[1];
+			} else if (players[1].equals(input[0])) {
+				winner = players[1];
+				loser = players[1];
+			}
 			
-			currentGame.finished();
-			taskQueue.add(new Writer(currentGame));
+			Database.newGame(winner, loser);
 		} else if (turns == 9)
 			outArr[0] = "true_draw";
 		else
@@ -483,7 +459,7 @@ class Request implements Task {
 		
 		if (outArr[0].equals("true_lost")) {
 			outArr[0] = "true_won";
-			users.get(input[0]).getDataOutputStream().write(
+			sockets.get(input[0]).getOutputStream().write(
 				protocol.transmit("addchar", outArr).getBytes());
 		}
 		
@@ -508,7 +484,7 @@ class Request implements Task {
 		outArr[2] = ".";
 		
 		if (!newUsername.equals(".")) {
-			if (users.containsKey(newUsername)) {
+			if (!Database.usernameExists(newUsername)) {
 				outArr[0] = "false";
 				outArr[1] = "Someone already has that username.";
 				error = true;
@@ -525,27 +501,33 @@ class Request implements Task {
 				passwordToChange = true;
 		}
 		
-		if (getMD5(password).equals(
-				users.get(currentUsername).getPassword())) {
+		if (Database.signIn(currentUsername, getMD5(password))) {
 			if (!error) {
 				outArr[0] = "true";
+				String newData = null;
 				
 				//TODO how to update things using the Writer
 				if (usernameToChange && passwordToChange) {
-					users.get(currentUsername).setUsername(newUsername);
-					users.get(currentUsername).setPassword(newPassword);
+					newData = "username = " + newUsername + ", password = " + getMD5(password);
 					
 					outArr[1] = "Your username and password have been successfully changed.";
 					outArr[2] = newUsername;
 				} else if (usernameToChange) {
-					users.get(currentUsername).setUsername(newUsername);
+					newData = "username = " + newUsername;
 					
 					outArr[1] = "Your username has been successfully changed.";
 					outArr[2] = newUsername;
 				} else if (passwordToChange) {
-					users.get(currentUsername).setPassword(newPassword);
+					newData = "password = " + getMD5(password);
 					
 					outArr[1] = "Your password has been successfully changed.";
+				}
+				
+				boolean changesMade = Database.changeProfileDetails(currentUsername, newData);
+				
+				if (!changesMade) {
+					outArr[0] = "false";
+					outArr[1] = "An error occurred. Please try again later.";
 				}
 			}
 		} else {
@@ -564,13 +546,12 @@ class Request implements Task {
 	 * @throws IOException 
 	 */
 	private String leftGame(String[] input) throws IOException {
-		//TODO timedGame implementation
-		users.get(input[0]).setStatus((short) 2);
-		users.get(input[1]).setStatus((short) 2);
+		Database.setStatus(input[0], "online");
+		Database.setStatus(input[1], "online");
 		
 		String otherUsersProfile = viewProfile(input[0]);
 		
-		users.get(input[1]).getDataOutputStream().write(
+		sockets.get(input[1]).getOutputStream().write(
 				protocol.transmit("leavegame", 
 						otherUsersProfile.substring(13, 
 								otherUsersProfile.length())).getBytes());
@@ -585,14 +566,22 @@ class Request implements Task {
 	 * @return output indicating that the sign out has been successful
 	 */
 	private String signout(String[] input) {
-		users.get(input[0]).setStatus((short) 0);
+		String username = input[0];
 		
-		String[] notifyOnlineUsers = {"signedout", input[0]};
-		Server.broadcastMessage(notifyOnlineUsers);
+		boolean signedOut = Database.setStatus(username, "offline");
 		
-		String[] outArr = {"true", "Signed out. See you soon!"};
-		
-		return protocol.transmit("signout", outArr);
+		if (signedOut) {
+			String[] notifyOnlineUsers = {"signedout", username};
+			Server.broadcastMessage(notifyOnlineUsers);
+			
+			String[] outArr = {"true", "Signed out. See you soon!"};
+			
+			return protocol.transmit("signout", outArr);
+		} else {
+			String[] outArr = {"false", "An error occurred. Please try again later."};
+			
+			return protocol.transmit("signout", outArr);
+		}
 	}
 	
 	/**
@@ -617,6 +606,8 @@ class Request implements Task {
 					
 					if (action.equals("connect"))
 						output = connect();
+					else if (action.equals("securityquestions"))
+						output = getSecurityQuestions();
 					else if (action.equals("signup"))
 						output = signup(input);
 					else if (action.equals("signin"))
@@ -654,7 +645,7 @@ class Request implements Task {
 					if (sendToOtherUser) {
 						System.out.println("Output to " + outArr[1] + ": " + outArr[0]);
 						
-						users.get(outArr[1]).getDataOutputStream().writeBytes(outArr[0]);
+						sockets.get(outArr[1]).getOutputStream().write(outArr[0].getBytes());
 					} else {
 						System.out.println("Output: " + output);
 						

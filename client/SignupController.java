@@ -1,10 +1,14 @@
 package client;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -19,11 +23,22 @@ import javafx.scene.text.Text;
 public class SignupController extends Controller {
 	@FXML protected TextField username;
 	@FXML protected PasswordField password;
-	@FXML protected MenuButton questions;
+	@FXML protected ChoiceBox<String> questions;
 	@FXML protected TextField answer;
 	private String[] response;
 	@FXML protected Text responseText;
 	private static Client client = Main.getClient();
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		
+		try {
+			client.sendMessage("securityquestions", "");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Receives input, and if the action is "signup", calls the
@@ -36,6 +51,8 @@ public class SignupController extends Controller {
 	void processInput(String action, String[] input) {
 		 if (action.equals("signup"))
 			 signUp(input);
+		 else if (action.equals("securityquestions"))
+			 populateSecurityQuestions(input);
 	}
 	
 	/**
@@ -52,6 +69,17 @@ public class SignupController extends Controller {
 			client.setUsername(username.getText());
 			Main.changeScene("Leaderboard");
 		}
+	}
+	
+	private void populateSecurityQuestions(String[] input) {
+		List<String> toList = new LinkedList<>();
+		
+		for (String s : input) {
+			toList.add(s);
+		}
+		
+		ObservableList<String> questionList = FXCollections.observableList(toList);
+		questions.setItems(questionList);
 	}
 	
 	/**
@@ -76,14 +104,14 @@ public class SignupController extends Controller {
 	@FXML
 	protected void signUpButton(ActionEvent event) throws IOException {
 		String usernameStr = username.getText(), passwordStr = password.getText(),
-				answerStr = answer.getText();
+				questionStr = questions.getValue(), answerStr = answer.getText();
 		
 		if (usernameStr.isEmpty() || passwordStr.isEmpty() ||
-				answerStr.isEmpty()) {
+				questionStr.isEmpty() || answerStr.isEmpty()) {
 			responseText.setText("Please ensure all fields are completed.");
 		} else {
 			//TODO get number from menu item
-			String[] outArr = {usernameStr, passwordStr, 0 + "", answerStr};
+			String[] outArr = {usernameStr, passwordStr, questionStr, answerStr};
 			client.sendMessage("signup", outArr);
 		}
 	}
