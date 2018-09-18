@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,12 +17,13 @@ import protocol.Protocol;
  * Main server class.
  * 
  * @author Ben Drawer
- * @version 8 September 2018
+ * @version 17 September 2018
  *
  */
-class Server {
+class Main {
 	private static LinkedBlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
 	private static Map<String, Socket> sockets = new HashMap<>();
+	private static List<Game> openGames = new LinkedList<>();
 	private static int quantity, port, numberOfOnlineUsers;
 	private static String ip;
 	private static Protocol protocol;
@@ -39,6 +42,81 @@ class Server {
 	 */
 	static Map<String, Socket> getSockets() {
 		return sockets;
+	}
+	
+	/**
+	 * Finds an open game for a specific player.
+	 * 
+	 * @param player
+	 * @return game
+	 */
+	static Game findGame(String player) {
+		for (Game g : openGames) {
+			for (String s : g.getPlayers()) {
+				if (s.equals(player))
+					return g;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Opens a new game between two players.
+	 * 
+	 * @param players
+	 * @return true or false
+	 */
+	static void newGame(String[] players) {
+		boolean inGame = false;
+		
+		for (Game g : openGames) {
+			for (String s : g.getPlayers()) {
+				if (s.equals(players[0]) || s.equals(players[1]))
+					inGame = true;
+			}
+		}
+		
+		if (!inGame)
+			openGames.add(new Game(players[0], players[1]));
+	}
+	
+	/**
+	 * Adds a character to an open game.
+	 * 
+	 * @param player
+	 * @param x x-position of new character
+	 * @param y y-position of new character
+	 * @param c character to be placed
+	 * @return true or false
+	 */
+	static void addChar(String player, int x, int y, char c) {
+		for (Game g : openGames) {
+			for (String s : g.getPlayers()) {
+				if (s.equals(player)) {
+					g.addChar(x, y, c);
+					g.addTurn();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Removes a game from the open games list when finished.
+	 * 
+	 * @param player
+	 */
+	static void gameFinished(String player) {
+		int index = -1;
+		
+		for (Game g : openGames) {
+			for (String s : g.getPlayers()) {
+				if (s.equals(player))
+					index = openGames.indexOf(g);
+			}
+		}
+		
+		openGames.remove(index);
 	}
 	
 	/**

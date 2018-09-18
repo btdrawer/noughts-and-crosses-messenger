@@ -27,8 +27,7 @@ class Request implements Task {
 	private String[] outArr;
 	private BufferedReader in;
 	private DataOutputStream out;
-	private Game currentGame;
-	private static Map<String, Socket> sockets = Server.getSockets();
+	private static Map<String, Socket> sockets = Main.getSockets();
 	
 	/**
 	 * Constructor.
@@ -38,7 +37,7 @@ class Request implements Task {
 	 */
 	Request(Socket clientSocket) throws IOException {
 		this.clientSocket = clientSocket;
-		this.protocol = Server.getProtocol();
+		this.protocol = Main.getProtocol();
 		this.outArr = new String[2];
 		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		this.out = new DataOutputStream(clientSocket.getOutputStream());
@@ -66,9 +65,9 @@ class Request implements Task {
 	 * @return output stating that the connection has been successful
 	 */
 	private String connect() {
-		Server.joinedServer();
+		Main.joinedServer();
 		System.out.println("Connection with client established.\n" +
-				"numberOfOnlineUsers: " + Server.getNumberOfOnlineUsers());
+				"numberOfOnlineUsers: " + Main.getNumberOfOnlineUsers());
 		
 		outArr = new String[2];
 		outArr[0] = "true";
@@ -96,8 +95,8 @@ class Request implements Task {
 	 * @throws NoSuchAlgorithmException if password hashing algorithm unavailable
 	 */
 	private String signup(String[] input) throws NoSuchAlgorithmException {
-		String username = input[0], password = input[1], securityQ = input[2],
-				securityA = input[3];
+		String username = input[0], password = getMD5(input[1]), securityQ = input[2],
+				securityA = getMD5(input[3]);
 		int usernameLength = input[0].length(), passwordLength = input[1].length();
 		
 		//TODO regex pattern for password
@@ -126,7 +125,7 @@ class Request implements Task {
 			if (signUp) {
 				String[] notifyOnlineUsers = {"signedin", username};
 				sockets.put(username, clientSocket);
-				Server.broadcastMessage(notifyOnlineUsers);
+				Main.broadcastMessage(notifyOnlineUsers);
 				
 				outArr[0] = "true";
 				outArr[1] = "Sign-up successful. Welcome!";
@@ -170,7 +169,7 @@ class Request implements Task {
 	 */
 	private String signin(String[] input) throws NoSuchAlgorithmException {
 		String username = input[0];
-		String password = input[1];
+		String password = getMD5(input[1]);
 		
 		outArr = new String[2];
 		
@@ -182,7 +181,7 @@ class Request implements Task {
 			sockets.put(username, clientSocket);
 			
 			String[] notifyOnlineUsers = {"signedin", username};
-			Server.broadcastMessage(notifyOnlineUsers);
+			Main.broadcastMessage(notifyOnlineUsers);
 			
 			outArr[0] = "true";
 			outArr[1] = "Welcome back!";
@@ -220,11 +219,12 @@ class Request implements Task {
 	 * 
 	 * @param input [0] = username; [1] = answer
 	 * @return output indicating whether the user has successfully answered the security question
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private String forgotPassword(String[] input) {
+	private String forgotPassword(String[] input) throws NoSuchAlgorithmException {
 		outArr = new String[2];
 		
-		if (Database.forgotPasswordAnswer(input[0], input[1])) {
+		if (Database.forgotPasswordAnswer(input[0], getMD5(input[1]))) {
 			outArr[0] = "true";
 			outArr[1] = "Enter your new password:";
 		} else {
@@ -370,7 +370,7 @@ class Request implements Task {
 			outArr[0] = "false";
 			outArr[1] = "This user isn't available.";
 		} else {
-			currentGame = new Game(input[0], input[1]);
+			Main.newGame(input);
 			
 			Database.setStatus(input[0], "busy");
 			Database.setStatus(input[1], "busy");
@@ -420,13 +420,14 @@ class Request implements Task {
 	 * @throws IOException 
 	 */
 	private String[] addChar(String[] input) throws IOException {
+		String[] players = {input[0], input[1]};
 		int x = Integer.parseInt(input[2]);
 		int y = Integer.parseInt(input[3]);
 		char c = input[4].charAt(0);
 		
-		currentGame.addChar(x, y, c);
-		currentGame.addTurn();
+		Main.addChar(players[0], x, y, c);
 		
+		Game currentGame = Main.findGame(input[0]);
 		short turns = currentGame.getTurns();
 		
 		outArr = new String[4];
@@ -434,7 +435,7 @@ class Request implements Task {
 		if (checkWin(currentGame.getBoard(), c, x, y)) {
 			outArr[0] = "true_lost";
 			
-			String[] players = currentGame.getPlayers();
+			players = currentGame.getPlayers();
 			String winner = "", loser = "";
 			
 			if (players[0].equals(input[0])) {
@@ -446,9 +447,17 @@ class Request implements Task {
 			}
 			
 			Database.newGame(winner, loser);
-		} else if (turns == 9)
+			
+			Database.setStatus(players[0], "online");
+			Database.setStatus(players[1], "online");
+			Main.gameFinished(winner);
+		} else if (turns == 9) {
 			outArr[0] = "true_draw";
-		else
+			
+			Database.setStatus(players[0], "online");
+			Database.setStatus(players[1], "online");
+			Main.gameFinished(players[0]);
+		} else
 			outArr[0] = "true";
 		
 		outArr[1] = input[2];
@@ -572,7 +581,7 @@ class Request implements Task {
 		
 		if (signedOut) {
 			String[] notifyOnlineUsers = {"signedout", username};
-			Server.broadcastMessage(notifyOnlineUsers);
+			Main.broadcastMessage(notifyOnlineUsers);
 			
 			String[] outArr = {"true", "Signed out. See you soon!"};
 			
@@ -660,7 +669,7 @@ class Request implements Task {
 		} finally {
 			try {
 				clientSocket.close();
-				Server.leftServer();
+				Main.leftServer();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

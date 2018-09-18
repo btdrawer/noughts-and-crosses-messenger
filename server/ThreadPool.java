@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  */
 class ThreadPool {
-	private static LinkedBlockingQueue<Task> taskQueue = Server.getTaskQueue();
+	private static LinkedBlockingQueue<Task> taskQueue = Main.getTaskQueue();
 	private Thread[] threads;
 	
 	/**

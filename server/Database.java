@@ -12,7 +12,7 @@ import java.util.List;
  * Database functions for user management.
  * 
  * @author Ben Drawer
- * @version 8 September 2018
+ * @version 17 September 2018
  *
  */
 class Database {
@@ -337,6 +337,25 @@ class Database {
 		return leaderboard;
 	}
 	
+	static int getUserID(String username) {
+		try {
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT id FROM user WHERE username = ?;");
+			
+			stmt.setString(1, username);
+			
+			ResultSet rs = stmt.executeQuery();
+			
+			while (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return -1;
+	}
+	
 	/**
 	 * Adds a game to the database.
 	 * 
@@ -346,23 +365,14 @@ class Database {
 	 */
 	static boolean newGame(String winner, String loser) {
 		try {
+			int winnerId = getUserID(winner);
+			int loserId = getUserID(loser);
+			
 			PreparedStatement stmt = con.prepareStatement(
-					"SELECT id FROM user WHERE username = ? OR username = ?;");
+					"INSERT INTO game (won, lost) VALUES (?, ?);");
 			
-			stmt.setString(1, winner);
-			stmt.setString(2, loser);
-			
-			ResultSet rs = stmt.executeQuery();
-			
-			int id1 = rs.getInt(1);
-			rs.next();
-			int id2 = rs.getInt(2);
-			
-			stmt = con.prepareStatement(
-					"INSERT INTO game (winner, loser) VALUES (?, ?);");
-			
-			stmt.setInt(1, id1);
-			stmt.setInt(2, id2);
+			stmt.setInt(1, winnerId);
+			stmt.setInt(2, loserId);
 			
 			stmt.executeUpdate();
 			

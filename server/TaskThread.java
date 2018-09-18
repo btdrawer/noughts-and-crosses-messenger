@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  */
 class TaskThread extends Thread {
-	private LinkedBlockingQueue<Task> taskQueue = Server.getTaskQueue();
+	private LinkedBlockingQueue<Task> taskQueue = Main.getTaskQueue();
 	
 	/**
 	 * Run method.

@@ -113,7 +113,7 @@ public class Main extends Application {
 			@Override
 			public void run() {
 				try {
-					Parent root = FXMLLoader.load(getClass().getResource("/fxml/" + fxml + ".fxml"));
+					Parent root = FXMLLoader.load(getClass().getResource(fxml + ".fxml"));
 					
 					primaryStage.setScene(new Scene(root, x, y));
 					primaryStage.show();
@@ -144,7 +144,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) throws IOException {
 		primaryStage = stage;
-		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Connect.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("Connect.fxml"));
 		
 		stage.setTitle("Noughts and Crosses");
 		stage.setScene(new Scene(root, 325, 350));

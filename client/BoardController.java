@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
  * Takes care of in-game actions.
  * 
  * @author Ben Drawer
- * @version 22 July 2018
+ * @version 18 September 2018
  *
  */
 public class BoardController extends Controller {
@@ -167,43 +167,22 @@ public class BoardController extends Controller {
 				turn = true;
 		}
 		
-		if (input[0].equals("true_won")) {
+		if (input[0].equals("true_won") || input[0].equals("true_draw") || input[0].equals("true_lost")) {
+			String alertText = "";
+			
+			if (input[0].equals("true_won"))
+				alertText = "You won!";
+			else if (input[0].equals("true_draw"))
+				alertText = "It's a draw!";
+			else if (input[0].equals("true_lost"))
+				alertText = "Better luck next time!";
+			
+			final String alertFinal = alertText;
+			
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					Alert alert = new Alert(AlertType.INFORMATION, "You won!", 
-							ButtonType.OK);
-					Optional<ButtonType> result = alert.showAndWait();
-					
-					if (result.isPresent()) {
-						Main.changeScene("Profile", input);
-						alert.close();
-					}
-				}
-			});
-		}
-		
-		if (input[0].equals("true_draw")) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					Alert alert = new Alert(AlertType.INFORMATION, "It's a draw!", 
-							ButtonType.OK);
-					Optional<ButtonType> result = alert.showAndWait();
-					
-					if (result.isPresent()) {
-						Main.changeScene("Profile", input);
-						alert.close();
-					}
-				}
-			});
-		}
-		
-		if (input[0].equals("true_lost")) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					Alert alert = new Alert(AlertType.INFORMATION, "Better luck next time!", 
+					Alert alert = new Alert(AlertType.INFORMATION, alertFinal, 
 							ButtonType.OK);
 					Optional<ButtonType> result = alert.showAndWait();
 					
