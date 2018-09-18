@@ -52,6 +52,6 @@
       </rowConstraints>
     </GridPane>
     <Button layoutX="227.0" layoutY="227.0" mnemonicParsing="false" onAction="#playButton" text="Play" />
-    <Text fx:id="responseText" layoutX="227.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+    <Text fx:id="responseText" layoutX="227.0" layoutY="522.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
   </children>
 </AnchorPane>

@@ -37,29 +37,14 @@ public class ProfileController extends HomeController {
 		
 		//TODO change colours
 		this.statusStr = profileData[2];
+		status.setText(statusStr);
 		
-		if (statusStr.equals("0")) {
-			status.setText("Offline");
+		if (statusStr.equals("offline"))
 			status.setStyle("-fx-text-fill: red;");
-		} else if (statusStr.equals("1")) {
-			status.setText("Unavailable");
+		else if (statusStr.equals("busy"))
 			status.setStyle("-fx-text-fill: grey;");
-		} else if (statusStr.equals("2")) {
-			status.setText("Available");
+		else if (statusStr.equals("online"))
 			status.setStyle("-fx-text-fill: green;");
-		}
-	}
-	
-	@Override
-	void processInput(String action, String[] input) {
-		if (action.equals("challengeresponse"))
-			try {
-				challengeResponseHandler(input);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		else
-			super.processInput(action, input);
 	}
 	
 	/**
@@ -77,21 +62,5 @@ public class ProfileController extends HomeController {
 			String[] outArr = {client.getUsername(), username.getText()};
 			client.sendMessage("challenge", outArr);
 		}
-	}
-	
-	/**
-	 * Handles the response received from the server after a player
-	 * has been challenged.
-	 * 
-	 * @param input
-	 * @throws IOException 
-	 */
-	private void challengeResponseHandler(String[] input) throws IOException {
-		if (input[0].equals("true")) {
-			String[] data = {client.getUsername(), input[1], 0 + ""};
-			Main.changeScene("Board", data);
-			client.sendMessage("newgame", data);
-		} else
-			responseText.setText(input[2]);
 	}
 }

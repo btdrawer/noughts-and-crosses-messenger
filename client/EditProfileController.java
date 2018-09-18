@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
 public class EditProfileController extends HomeController {
 	@FXML protected TextField usernameField;
 	@FXML protected PasswordField password, newPassword, confirmPassword;
-	@FXML protected Text responseText;
+	@FXML protected Text editResponseText;
 	private static Client client = Main.getClient();
 	private String currentUsername;
 	
@@ -62,7 +62,7 @@ public class EditProfileController extends HomeController {
 		boolean send = false;
 		
 		if (passwordStr.isEmpty())
-			responseText.setText("You must enter your password to make any changes.");
+			editResponseText.setText("You must enter your password to make any changes.");
 		else {
 			String newUsername = usernameField.getText();
 			
@@ -76,7 +76,7 @@ public class EditProfileController extends HomeController {
 			
 			if (!newPasswordStr.isEmpty()) {
 				if (!newPasswordStr.equals(confirmPasswordStr))
-					responseText.setText("Your passwords do not match.");
+					editResponseText.setText("Your passwords do not match.");
 				else {
 					changes[5] = newPasswordStr;
 					send = true;
@@ -102,6 +102,6 @@ public class EditProfileController extends HomeController {
 			
 			Main.changeScene("Leaderboard");
 		} else
-			responseText.setText(Main.twoLines(input[1]));
+			editResponseText.setText(Main.twoLines(input[1]));
 	}
 }

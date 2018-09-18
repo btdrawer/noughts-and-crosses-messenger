@@ -152,13 +152,13 @@ class Database {
 		
 		try {
 			PreparedStatement stmt = con.prepareStatement(
-					"SELECT username FROM user WHERE status NOT LIKE 'offline';");
+					"SELECT username FROM user WHERE status <> " +
+					"(SELECT id FROM status WHERE status = 'offline')");
 			
 			ResultSet rs = stmt.executeQuery();
 			
 			while (rs.next()) {
 				users.add(rs.getString(1));
-				rs.next();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -179,17 +179,20 @@ class Database {
 		
 		try {
 			PreparedStatement stmt = con.prepareStatement(
-				"SELECT username, status, wins, losses " +
-				"FROM (" +
-					"SELECT COUNT(id) AS wins FROM game WHERE won = ?" +
-				") w, (" +
-					"SELECT COUNT(id) AS losses FROM game WHERE lost = ?" +
-				") l, user " +
-				"WHERE username = ?");
+				"SELECT w.username, status.status, wins, COUNT(game.id) AS losses " + 
+				"FROM (" + 
+				"SELECT user.id AS id, username, status, COUNT(game.id) AS wins " + 
+				"FROM game " + 
+				"JOIN user " + 
+				"ON game.won = user.id " + 
+				"WHERE username = ? " + 
+				") w, game, status " + 
+				"WHERE game.lost = w.id " + 
+				"AND status.id = w.status " +
+				"AND username = ?");
 			
 			stmt.setString(1, username);
 			stmt.setString(2, username);
-			stmt.setString(3, username);
 			
 			ResultSet rs = stmt.executeQuery();
 			
@@ -197,8 +200,6 @@ class Database {
 				p = new Profile(rs.getString(1), rs.getString(2), rs.getInt(3),
 						rs.getInt(4));
 			}
-			
-			System.out.println(p);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -230,7 +231,7 @@ class Database {
 						"WHERE username = ?;");
 				
 				stmt.setString(1, status);
-				stmt.setString(2, status);
+				stmt.setString(2, username);
 				
 				stmt.executeUpdate();
 				
@@ -337,6 +338,12 @@ class Database {
 		return leaderboard;
 	}
 	
+	/**
+	 * Retrieve a user's unique ID in the database.
+	 * 
+	 * @param username
+	 * @return user ID number
+	 */
 	static int getUserID(String username) {
 		try {
 			PreparedStatement stmt = con.prepareStatement(

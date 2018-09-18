@@ -56,12 +56,6 @@ class Listener extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				client.sendMessage("signout", client.getUsername());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

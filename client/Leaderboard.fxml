@@ -20,34 +20,34 @@
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gross wins" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Net wins" GridPane.columnIndex="2" GridPane.rowIndex="0" />
         <fx:define>
-        	<ArrayList fx:id="username">
-		        <Text id="username0" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-		        <Text id="username1" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-		        <Text id="username2" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-		        <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-		        <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-		        <Text id="username5" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-        	</ArrayList>
+          <ArrayList fx:id="username">
+            <Text id="username0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="username1" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="username2" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="username5" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+          </ArrayList>
         </fx:define>
         <fx:define>
-        	<ArrayList fx:id="gross">
-		        <Text id="gross0" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Text id="gross1" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <Text id="gross2" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        <Text id="gross3" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-        <Text id="gross4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-        <Text id="gross5" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-        	</ArrayList>
+          <ArrayList fx:id="gross">
+            <Text id="gross0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="gross1" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="gross2" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="gross3" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="gross4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="gross5" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+          </ArrayList>
         </fx:define>
         <fx:define>
-        	<ArrayList fx:id="net">
-		        <Text id="net0" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-		        <Text id="net1" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-		        <Text id="net2" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-		        <Text id="net3" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-		        <Text id="net4" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-		        <Text id="net5" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-        	</ArrayList>
+          <ArrayList fx:id="net">
+            <Text id="net0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="net1" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="net2" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="net3" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="net4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text id="net5" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+          </ArrayList>
         </fx:define>
       </children>
       <columnConstraints>
@@ -93,5 +93,6 @@
     </Button>
     <Button fx:id="editProfile" layoutX="374.0" layoutY="26.0" mnemonicParsing="false" onAction="#editProfileButton" text="Edit profile" />
     <Button fx:id="signout" layoutX="474.0" layoutY="26.0" mnemonicParsing="false" onAction="#signOutButton" text="Sign out" />
+    <Text fx:id="responseText" layoutX="221.0" layoutY="522.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
   </children>
 </AnchorPane>

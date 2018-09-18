@@ -13,7 +13,7 @@ import javafx.fxml.FXMLLoader;
  * This class provides the GUI for connecting to a server.
  * 
  * @author Ben Drawer
- * @version 2 July 2018
+ * @version 18 September 2018
  *
  */
 public class Main extends Application {
@@ -149,6 +149,15 @@ public class Main extends Application {
 		stage.setTitle("Noughts and Crosses");
 		stage.setScene(new Scene(root, 325, 350));
 		stage.show();
+	}
+	
+	/**
+	 * Stop method.
+	 */
+	@Override
+	public void stop() throws Exception {
+		client.sendMessage("signout", client.getUsername());
+		super.stop();
 	}
 	
 	/**

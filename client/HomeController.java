@@ -2,6 +2,7 @@ package client;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Random;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -14,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 
 /**
  * Controller for the leaderboard pane.
@@ -24,8 +26,8 @@ import javafx.scene.input.MouseEvent;
  */
 public class HomeController extends Controller {
 	@FXML protected ListView<String> onlineUsers;
-	@FXML protected Button settings;
-	@FXML protected Button signout;
+	@FXML protected Button settings, signout;
+	@FXML protected Text responseText;
 	private ObservableList<String> onlineUserList;
 	private static Client client = Main.getClient();
 	
@@ -68,6 +70,8 @@ public class HomeController extends Controller {
 			viewProfile(input);
 		else if (action.equals("challenge"))
 			receiveChallenge(input);
+		else if (action.equals("challengeresponse"))
+			challengeResponseHandler(input);
 		else if (action.equals("signout")) {
 			try {
 				signOut(input);
@@ -230,12 +234,38 @@ public class HomeController extends Controller {
 	}
 	
 	/**
+	 * Handles the response received from the server after a player
+	 * has been challenged.
+	 * 
+	 * @param input
+	 * @throws IOException 
+	 */
+	private void challengeResponseHandler(String[] input) {
+		if (input[0].equals("true")) {
+			try {
+				String[] data = {client.getUsername(), input[1], 0 + ""};
+				Main.changeScene("Board", data);
+				client.sendMessage("newgame", data);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else
+			responseText.setText(input[2]);
+	}
+	
+	/**
 	 * Handler for the 'Play a random opponent' button.
 	 * 
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	protected void playRandom(ActionEvent event) {
-		//TODO
+	protected void playRandom(ActionEvent event) throws IOException {
+		int userNum = new Random().nextInt(onlineUserList.size());
+		String username = onlineUserList.get(userNum);
+		
+		String[] outArr = {client.getUsername(), username};
+		client.sendMessage("sendchallenge", outArr);
+		responseText.setText("Challenging random user: " + username + "...");
 	}
 }
