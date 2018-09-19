@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import protocol.Constants;
 import protocol.Protocol;
 
 /**
@@ -18,6 +19,19 @@ class ProfileActions {
 	private Socket clientSocket;
 	private Protocol protocol;
 	private static Map<String, Socket> sockets = Main.getSockets();
+	private static final String SIGNED_IN = Constants.SIGNED_IN,
+			SIGNED_OUT = Constants.SIGNED_OUT,
+			SIGN_UP = Constants.SIGN_UP,
+			SIGN_IN = Constants.SIGN_IN,
+			SIGN_OUT = Constants.SIGN_OUT,
+			FORGOT_PASSWORD_REQUEST = Constants.FORGOT_PASSWORD_REQUEST,
+			FORGOT_PASSWORD_ANSWER = Constants.FORGOT_PASSWORD_ANSWER,
+			VIEW_PROFILE = Constants.VIEW_PROFILE,
+			EDIT_PROFILE = Constants.EDIT_PROFILE,
+			TRUE = Constants.TRUE,
+			FALSE = Constants.FALSE,
+			ONLINE = Constants.ONLINE,
+			OFFLINE = Constants.OFFLINE;
 	
 	/**
 	 * Constructor.
@@ -48,37 +62,34 @@ class ProfileActions {
 		outArr = new String[2];
 		
 		if (Database.usernameExists(username)) {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Sorry that username has been taken.";
 		} else if (username.equals(p.toString())) {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Please ensure your username has only alphabetic or numeric characters.";
 		} else if (usernameLength > 12) {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Your username cannot be more than 12 characters long.";
 		} else if (usernameLength == 0) {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Your username cannot be empty!";
-		} else if (passwordLength < 6 || passwordLength > 15) {
-			outArr[0] = "false";
-			outArr[1] = "Your password must be between 6 and 15 characters long.";
 		} else {
 			boolean signUp = Database.signUp(username, password, securityQ, securityA);
 			
 			if (signUp) {
-				String[] notifyOnlineUsers = {"signedin", username};
+				String[] notifyOnlineUsers = {SIGNED_IN, username};
 				sockets.put(username, clientSocket);
 				Main.broadcastMessage(notifyOnlineUsers);
 				
-				outArr[0] = "true";
+				outArr[0] = TRUE;
 				outArr[1] = "Sign-up successful. Welcome!";
 			} else {
-				outArr[0] = "false";
+				outArr[0] = FALSE;
 				outArr[1] = "An error occurred; please try again later.";
 			}
 		}
 		
-		return protocol.transmit("signup", outArr);
+		return protocol.transmit(SIGN_UP, outArr);
 	}
 	
 	/**
@@ -95,20 +106,20 @@ class ProfileActions {
 		outArr = new String[2];
 		
 		if (!Database.signIn(username, password)) {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Your username and/or password were incorrect.";
 		} else {
-			Database.setStatus(username, "online");
+			Database.setStatus(username, ONLINE);
 			sockets.put(username, clientSocket);
 			
-			String[] notifyOnlineUsers = {"signedin", username};
+			String[] notifyOnlineUsers = {SIGNED_IN, username};
 			Main.broadcastMessage(notifyOnlineUsers);
 			
-			outArr[0] = "true";
+			outArr[0] = TRUE;
 			outArr[1] = "Welcome back!";
 		}
 		
-		return protocol.transmit("signin", outArr);
+		return protocol.transmit(SIGN_IN, outArr);
 	}
 	
 	/**
@@ -124,14 +135,14 @@ class ProfileActions {
 		String question = Database.forgotPasswordRequest(input[0]);
 		
 		if (question != null) {
-			outArr[0] = "true";
+			outArr[0] = TRUE;
 			outArr[1] = question;
 		} else {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Username not found.";
 		}
 		
-		return protocol.transmit("forgot", outArr);
+		return protocol.transmit(FORGOT_PASSWORD_REQUEST, outArr);
 	}
 	
 	/**
@@ -146,14 +157,14 @@ class ProfileActions {
 		outArr = new String[2];
 		
 		if (Database.forgotPasswordAnswer(input[0], input[1])) {
-			outArr[0] = "true";
+			outArr[0] = TRUE;
 			outArr[1] = "Enter your new password:";
 		} else {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Sorry, the answer you gave did not match our records.";
 		}
 		
-		return protocol.transmit("forgot", outArr);
+		return protocol.transmit(FORGOT_PASSWORD_ANSWER, outArr);
 	}
 	
 	/**
@@ -165,10 +176,10 @@ class ProfileActions {
 	String viewProfile(String input) {
 		Profile p = Database.getProfile(input);
 		
-		String[] outArr = {"true", p.getUsername(), p.getStatus() + "", 
+		String[] outArr = {TRUE, p.getUsername(), p.getStatus() + "", 
 				p.getWins() + "", p.getLosses() + "", p.getTotal() + ""};
 		
-		return protocol.transmit("viewprofile", outArr);
+		return protocol.transmit(VIEW_PROFILE, outArr);
 	}
 	
 	/**
@@ -190,7 +201,7 @@ class ProfileActions {
 		
 		if (!newUsername.equals(".")) {
 			if (Database.usernameExists(newUsername)) {
-				outArr[0] = "false";
+				outArr[0] = FALSE;
 				outArr[1] = "Someone already has that username.";
 				error = true;
 			} else
@@ -223,16 +234,16 @@ class ProfileActions {
 				}
 				
 				if (!changesMade) {
-					outArr[0] = "false";
+					outArr[0] = FALSE;
 					outArr[1] = "An error occurred. Please try again later.";
 				}
 			}
 		} else {
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "Your password was incorrect.";
 		}
 		
-		return protocol.transmit("changes", outArr);
+		return protocol.transmit(EDIT_PROFILE, outArr);
 	}
 	
 	/**
@@ -244,22 +255,22 @@ class ProfileActions {
 	String signout(String[] input, boolean leftServer) {
 		String username = input[0];
 		
-		boolean signedOut = Database.setStatus(username, "offline");
+		boolean signedOut = Database.setStatus(username, OFFLINE);
 		
 		if (signedOut) {
-			String[] notifyOnlineUsers = {"signedout", username};
+			String[] notifyOnlineUsers = {SIGNED_OUT, username};
 			Main.broadcastMessage(notifyOnlineUsers);
 			
-			String[] outArr = {"true", "Signed out. See you soon!"};
+			String[] outArr = {TRUE, "Signed out. See you soon!"};
 			
 			if (leftServer)
 				Main.leftServer();
 			
-			return protocol.transmit("signout", outArr);
+			return protocol.transmit(SIGN_OUT, outArr);
 		} else {
-			String[] outArr = {"false", "An error occurred. Please try again later."};
+			String[] outArr = {FALSE, "An error occurred. Please try again later."};
 			
-			return protocol.transmit("signout", outArr);
+			return protocol.transmit(SIGN_OUT, outArr);
 		}
 	}
 }

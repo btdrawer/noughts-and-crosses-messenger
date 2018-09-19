@@ -9,6 +9,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import protocol.Constants;
+
 /**
  * Controller for the Edit Profile scene.
  * 
@@ -21,6 +23,9 @@ public class EditProfileController extends HomeController {
 	@FXML protected PasswordField password, newPassword, confirmPassword;
 	@FXML protected Text editResponseText;
 	private static Client client = Main.getClient();
+	private static final String EDIT_PROFILE = Constants.EDIT_PROFILE,
+			TRUE = Constants.TRUE,
+			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL;
 	private String currentUsername;
 	
 	@Override
@@ -33,8 +38,8 @@ public class EditProfileController extends HomeController {
 	
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals("changes"))
-			changes(input);
+		if (action.equals(EDIT_PROFILE))
+			editProfile(input);
 		else
 			super.processInput(action, input);
 	}
@@ -47,7 +52,7 @@ public class EditProfileController extends HomeController {
 	@FXML
 	protected void backButton(ActionEvent event) {
 		//TODO if user was on a profile, make it return to there
-		Main.changeScene("Leaderboard");
+		Main.changeScene(LEADERBOARD_PANEL);
 	}
 	
 	/**
@@ -88,7 +93,7 @@ public class EditProfileController extends HomeController {
 			//Conditional on "send" so that, if the user does not change anything but
 			//nonetheless presses "Save changes", the server isn't needlessly notified.
 			if (send)
-				client.sendMessage("editprofile", changes);
+				client.sendMessage(EDIT_PROFILE, changes);
 		}
 	}
 	
@@ -97,12 +102,12 @@ public class EditProfileController extends HomeController {
 	 * 
 	 * @param input [0] = success or failure; [1] = message; [2] = new username (if changed)
 	 */
-	private void changes(String[] input) {
-		if (input[0].equals("true")) {
+	private void editProfile(String[] input) {
+		if (input[0].equals(TRUE)) {
 			if (!input[2].equals("."))
 				client.setUsername(input[2]);
 			
-			Main.changeScene("Leaderboard");
+			Main.changeScene(LEADERBOARD_PANEL);
 		} else
 			editResponseText.setText(Main.twoLines(input[1]));
 	}

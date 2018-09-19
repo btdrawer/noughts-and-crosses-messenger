@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import protocol.Protocol;
+import protocol.Constants;
 
 /**
  * This class handles a request.
@@ -61,16 +62,6 @@ class Request {
 	}
 	
 	/**
-	 * Creates a String of details of a user's profile.
-	 * 
-	 * @param input input array (the method takes the 0th element)
-	 * @return String with user's details
-	 */
-	private String viewProfile(String[] input) {
-		return profileActions.viewProfile(input[0]);
-	}
-	
-	/**
 	 * Run method.
 	 * This runs in a continuous loop, listening on the client socket and calling
 	 * the appropriate methods accordingly.
@@ -90,44 +81,44 @@ class Request {
 					
 					sendToOtherUser = false;
 					
-					if (action.equals("connect"))
+					if (action.equals(Constants.CONNECT))
 						output = serverActions.connect();
-					else if (action.equals("securityquestions"))
+					else if (action.equals(Constants.GET_SECURITY_QUESTIONS))
 						output = serverActions.getSecurityQuestions();
-					else if (action.equals("signup"))
+					else if (action.equals(Constants.SIGN_UP))
 						output = profileActions.signup(input);
-					else if (action.equals("signin"))
+					else if (action.equals(Constants.SIGN_IN))
 						output = profileActions.signin(input);
-					else if (action.equals("forgotReq"))
+					else if (action.equals(Constants.FORGOT_PASSWORD_REQUEST))
 						output = profileActions.forgotPasswordRequest(input);
-					else if (action.equals("forgot"))
+					else if (action.equals(Constants.FORGOT_PASSWORD_ANSWER))
 						output = profileActions.forgotPassword(input);
-					else if (action.equals("requestusers"))
+					else if (action.equals(Constants.GET_ONLINE_USERS))
 						output = serverActions.requestUsers(input);
-					else if (action.equals("viewprofile"))
-						output = viewProfile(input);
-					else if (action.equals("leaderboard"))
+					else if (action.equals(Constants.VIEW_PROFILE))
+						output = profileActions.viewProfile(input[0]);
+					else if (action.equals(Constants.GET_LEADERBOARD))
 						output = serverActions.leaderboard(input);
-					else if (action.equals("timedlederboard"))
+					else if (action.equals(Constants.GET_TIMED_LEADERBOARD))
 						output = serverActions.timedLeaderboard(input);
-					else if (action.equals("challenge")) {
+					else if (action.equals(Constants.SEND_CHALLENGE)) {
 						outArr = gameActions.sendChallenge(input);
 						sendToOtherUser = true;
-					} else if (action.equals("challengeresponse")) {
+					} else if (action.equals(Constants.RESPOND_TO_CHALLENGE)) {
 						outArr = gameActions.challengeResponse(input);
 						sendToOtherUser = true;
-					} else if (action.equals("newgame"))
+					} else if (action.equals(Constants.NEW_GAME))
 						output = gameActions.newGame(input);
-					else if (action.equals("addchar")) {
+					else if (action.equals(Constants.ADD_CHAR)) {
 						outArr = gameActions.addChar(input);
 						sendToOtherUser = true;
-					} else if (action.equals("editprofile"))
+					} else if (action.equals(Constants.EDIT_PROFILE))
 						output = profileActions.changes(input);
-					else if (action.equals("leavegame"))
+					else if (action.equals(Constants.LEFT_GAME))
 						output = gameActions.leftGame(input, profileActions);
-					else if (action.equals("signout"))
+					else if (action.equals(Constants.SIGN_OUT))
 						output = profileActions.signout(input, false);
-					else if (action.equals("signout_leftserver"))
+					else if (action.equals(Constants.LEFT_SERVER))
 						output = profileActions.signout(input, true);
 					
 					if (sendToOtherUser) {

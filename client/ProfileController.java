@@ -5,12 +5,13 @@ import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
+import protocol.Constants;
 
 /**
  * Controller for the Profile scene.
  * 
  * @author Ben Drawer
- * @version 6 July 2018
+ * @version 20 September 2018
  *
  */
 public class ProfileController extends HomeController {
@@ -18,6 +19,7 @@ public class ProfileController extends HomeController {
 			status, responseText;
 	private String[] profileData;
 	private static Client client = Main.getClient();
+	private static final String SEND_CHALLENGE = Constants.SEND_CHALLENGE;
 	private String statusStr;
 	
 	/**
@@ -60,7 +62,7 @@ public class ProfileController extends HomeController {
 			responseText.setText("This player is currently not available.");
 		else {
 			String[] outArr = {client.getUsername(), username.getText()};
-			client.sendMessage("challenge", outArr);
+			client.sendMessage(SEND_CHALLENGE, outArr);
 		}
 	}
 }

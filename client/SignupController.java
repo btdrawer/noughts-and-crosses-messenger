@@ -14,6 +14,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import protocol.Constants;
+
 /**
  * Controller for the signup pane.
  * 
@@ -29,13 +31,18 @@ public class SignupController extends Controller {
 	private String[] response;
 	@FXML protected Text responseText;
 	private static Client client = Main.getClient();
+	private static final String GET_SECURITY_QUESTIONS = Constants.GET_SECURITY_QUESTIONS,
+			SIGN_UP = Constants.SIGN_UP,
+			FALSE = Constants.FALSE,
+			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL,
+			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL;
 	
 	@Override
 	public void initialize() {
 		super.initialize();
 		
 		try {
-			client.sendMessage("securityquestions", "");
+			client.sendMessage(GET_SECURITY_QUESTIONS, "");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,9 +57,9 @@ public class SignupController extends Controller {
 	 */
 	@Override
 	void processInput(String action, String[] input) {
-		 if (action.equals("signup"))
+		 if (action.equals(SIGN_UP))
 			 signUp(input);
-		 else if (action.equals("securityquestions"))
+		 else if (action.equals(GET_SECURITY_QUESTIONS))
 			 populateSecurityQuestions(input);
 	}
 	
@@ -64,11 +71,11 @@ public class SignupController extends Controller {
 	 * @param input information from server
 	 */
 	private void signUp(String[] input) {
-		if (input[0].equals("false")) {
+		if (input[0].equals(FALSE)) {
 			responseText.setText(Main.twoLines(response[1]));
 		} else {
 			client.setUsername(username.getText());
-			Main.changeScene("Leaderboard");
+			Main.changeScene(LEADERBOARD_PANEL);
 		}
 	}
 	
@@ -91,7 +98,7 @@ public class SignupController extends Controller {
 	 */
 	@FXML
 	protected void backButton(ActionEvent event) throws IOException {
-		Main.changeScene("Login");
+		Main.changeScene(SIGN_IN_PANEL);
 	}
 	
 	/**
@@ -115,7 +122,7 @@ public class SignupController extends Controller {
 			responseText.setText("Please ensure all fields are completed.");
 		} else {
 			String[] outArr = {usernameStr, passwordStr, questionStr, answerStr};
-			client.sendMessage("signup", outArr);
+			client.sendMessage(SIGN_UP, outArr);
 		}
 	}
 }

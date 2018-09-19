@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import protocol.Protocol;
+import protocol.Constants;
 
 /**
  * 
@@ -16,6 +17,19 @@ class GameActions {
 	private String[] outArr;
 	private Protocol protocol;
 	private static Map<String, Socket> sockets = Main.getSockets();
+	private static final String SEND_CHALLENGE = Constants.SEND_CHALLENGE,
+			RESPOND_TO_CHALLENGE = Constants.RESPOND_TO_CHALLENGE,
+			NEW_GAME = Constants.NEW_GAME,
+			TRUE_LOST = Constants.TRUE_LOST,
+			TRUE_DRAW = Constants.TRUE_DRAW,
+			TRUE_WON = Constants.TRUE_WON,
+			TRUE = Constants.TRUE,
+			FALSE = Constants.FALSE,
+			ADD_CHAR = Constants.ADD_CHAR,
+			LEFT_GAME = Constants.LEFT_GAME,
+			ONLINE = Constants.ONLINE,
+			BUSY = Constants.BUSY,
+			OFFLINE = Constants.OFFLINE;
 	
 	/**
 	 * Constructor.
@@ -36,7 +50,7 @@ class GameActions {
 	 * @throws IOException
 	 */
 	String[] sendChallenge(String[] input) throws IOException {
-		String[] toSend = {protocol.transmit("challenge", input[0]), input[1]};
+		String[] toSend = {protocol.transmit(SEND_CHALLENGE, input[0]), input[1]};
 		
 		return toSend;
 	}
@@ -57,10 +71,10 @@ class GameActions {
 		outArr[0] = input[0];
 		outArr[1] = input[2];
 		
-		if (input[0].equals("false"))
+		if (input[0].equals(FALSE))
 			outArr[2] = "Sorry, this user declined your challenge.";
 		
-		String[] toSend = {protocol.transmit("challengeresponse", outArr), input[1]};
+		String[] toSend = {protocol.transmit(RESPOND_TO_CHALLENGE, outArr), input[1]};
 		
 		return toSend;
 	}
@@ -74,20 +88,20 @@ class GameActions {
 	String newGame(String[] input) {
 		outArr = new String[2];
 		
-		if (Database.getProfile(input[0]).getStatus() == "offline" || 
-				Database.getProfile(input[1]).getStatus() == "busy") {
-			outArr[0] = "false";
+		if (Database.getProfile(input[0]).getStatus().equals(OFFLINE) || 
+				Database.getProfile(input[1]).getStatus().equals(BUSY)) {
+			outArr[0] = FALSE;
 			outArr[1] = "This user isn't available.";
 		} else {
 			Main.newGame(input);
 			
-			Database.setStatus(input[0], "busy");
-			Database.setStatus(input[1], "busy");
+			Database.setStatus(input[0], BUSY);
+			Database.setStatus(input[1], BUSY);
 			
-			outArr[0] = "true";
+			outArr[0] = TRUE;
 		}
 		
-		return protocol.transmit("newgame", outArr);
+		return protocol.transmit(NEW_GAME, outArr);
 	}
 	
 	/**
@@ -142,7 +156,7 @@ class GameActions {
 		outArr = new String[4];
 		
 		if (checkWin(currentGame.getBoard(), c, x, y)) {
-			outArr[0] = "true_lost";
+			outArr[0] = TRUE_LOST;
 			
 			players = currentGame.getPlayers();
 			String winner = "", loser = "";
@@ -157,28 +171,28 @@ class GameActions {
 			
 			Database.newGame(winner, loser);
 			
-			Database.setStatus(players[0], "online");
-			Database.setStatus(players[1], "online");
+			Database.setStatus(players[0], ONLINE);
+			Database.setStatus(players[1], ONLINE);
 			Main.gameFinished(winner);
 		} else if (turns == 9) {
-			outArr[0] = "true_draw";
+			outArr[0] = TRUE_DRAW;
 			
-			Database.setStatus(players[0], "online");
-			Database.setStatus(players[1], "online");
+			Database.setStatus(players[0], ONLINE);
+			Database.setStatus(players[1], ONLINE);
 			Main.gameFinished(players[0]);
 		} else
-			outArr[0] = "true";
+			outArr[0] = TRUE;
 		
 		outArr[1] = input[2];
 		outArr[2] = input[3];
 		outArr[3] = input[4];
 		
-		String[] toSend = {protocol.transmit("addchar", outArr), input[1]};
+		String[] toSend = {protocol.transmit(ADD_CHAR, outArr), input[1]};
 		
-		if (outArr[0].equals("true_lost")) {
-			outArr[0] = "true_won";
+		if (outArr[0].equals(TRUE_LOST)) {
+			outArr[0] = TRUE_WON;
 			sockets.get(input[0]).getOutputStream().write(
-				protocol.transmit("addchar", outArr).getBytes());
+				protocol.transmit(ADD_CHAR, outArr).getBytes());
 		}
 		
 		return toSend;
@@ -192,13 +206,13 @@ class GameActions {
 	 * @throws IOException 
 	 */
 	String leftGame(String[] input, ProfileActions profileActions) throws IOException {
-		Database.setStatus(input[0], "online");
-		Database.setStatus(input[1], "online");
+		Database.setStatus(input[0], ONLINE);
+		Database.setStatus(input[1], ONLINE);
 		
 		String otherUsersProfile = profileActions.viewProfile(input[0]);
 		
 		sockets.get(input[1]).getOutputStream().write(
-				protocol.transmit("leavegame", 
+				protocol.transmit(LEFT_GAME, 
 						otherUsersProfile.substring(13, 
 								otherUsersProfile.length())).getBytes());
 		

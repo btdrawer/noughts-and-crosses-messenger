@@ -3,6 +3,7 @@ package server;
 import java.net.Socket;
 import java.util.List;
 
+import protocol.Constants;
 import protocol.Protocol;
 
 /**
@@ -14,6 +15,13 @@ import protocol.Protocol;
 class ServerActions {
 	private String[] outArr;
 	private Protocol protocol;
+	private static final String CONNECT = Constants.CONNECT,
+			GET_SECURITY_QUESTIONS = Constants.GET_SECURITY_QUESTIONS,
+			GET_ONLINE_USERS = Constants.GET_ONLINE_USERS,
+			GET_LEADERBOARD = Constants.GET_LEADERBOARD,
+			GET_TIMED_LEADERBOARD = Constants.GET_TIMED_LEADERBOARD,
+			TRUE = Constants.TRUE,
+			FALSE = Constants.FALSE;
 	
 	/**
 	 * Constructor.
@@ -36,10 +44,10 @@ class ServerActions {
 				"numberOfOnlineUsers: " + Main.getNumberOfOnlineUsers());
 		
 		outArr = new String[2];
-		outArr[0] = "true";
+		outArr[0] = TRUE;
 		outArr[1] = "Connection test successful.";
 		
-		return protocol.transmit("connect", outArr);
+		return protocol.transmit(CONNECT, outArr);
 	}
 	
 	String getSecurityQuestions() {
@@ -50,7 +58,7 @@ class ServerActions {
 			s.append(sv + "//");
 		}
 		
-		return protocol.transmit("securityquestions", s.toString());
+		return protocol.transmit(GET_SECURITY_QUESTIONS, s.toString());
 	}
 	
 	/**
@@ -69,7 +77,7 @@ class ServerActions {
 			}
 		}
 		
-		return protocol.transmit("requestusers", sb.toString());
+		return protocol.transmit(GET_ONLINE_USERS, sb.toString());
 	}
 	
 	/**
@@ -85,7 +93,7 @@ class ServerActions {
 		
 		if (size > 0) {
 			outArr = new String[size * 3 + 1];
-			outArr[0] = "true";
+			outArr[0] = TRUE;
 			int i = 0;
 			
 			for (String[] s : leaderboardList) {
@@ -97,14 +105,17 @@ class ServerActions {
 			}
 		} else {
 			outArr = new String[2];
-			outArr[0] = "false";
+			outArr[0] = FALSE;
 			outArr[1] = "It's lonely in here!";
 		}
 		
-		return protocol.transmit("leaderboard", outArr);
+		return protocol.transmit(GET_LEADERBOARD, outArr);
 	}
 	
 	String timedLeaderboard(String[] input) {
-		return null;
+		outArr[0] = FALSE;
+		outArr[1] = "It's lonely in here!";
+		
+		return protocol.transmit(GET_TIMED_LEADERBOARD, outArr);
 	}
 }

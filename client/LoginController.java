@@ -9,6 +9,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import protocol.Constants;
+
 /**
  * Controller for the login pane.
  * 
@@ -21,6 +23,10 @@ public class LoginController extends Controller {
 	@FXML protected PasswordField password;
 	@FXML private Text responseText;
 	private static Client client = Main.getClient();
+	private static final String SIGN_IN = Constants.SIGN_IN,
+			FALSE = Constants.FALSE,
+			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL,
+			SIGN_UP_PANEL = PanelConstants.SIGN_UP_PANEL;
 	
 	/**
 	 * Processes input from server.
@@ -29,7 +35,7 @@ public class LoginController extends Controller {
 	 * @param input information associated with action
 	 */
 	void processInput(String action, String[] input) {
-		if (action.equals("signin")) {
+		if (action.equals(SIGN_IN)) {
 			try {
 				signIn(input);
 			} catch (IOException e) {
@@ -48,11 +54,11 @@ public class LoginController extends Controller {
 	 * @throws IOException
 	 */
 	private void signIn(String[] input) throws IOException {
-		if (input[0].equals("false")) {
+		if (input[0].equals(FALSE)) {
 			responseText.setText(Main.twoLines(input[1]));
 		} else {
 			client.setUsername(username.getText());
-			Main.changeScene("Leaderboard");
+			Main.changeScene(LEADERBOARD_PANEL);
 		}
 	}
 	
@@ -72,7 +78,7 @@ public class LoginController extends Controller {
 			responseText.setText("Username and/or password\ncannot be left blank.");
 		} else {
 			String[] outArr = {usernameStr, passwordStr};
-			client.sendMessage("signin", outArr);
+			client.sendMessage(SIGN_IN, outArr);
 		}
 	}
 	
@@ -84,7 +90,7 @@ public class LoginController extends Controller {
 	 */
 	@FXML
 	protected void signUpButton(ActionEvent event) throws IOException {
-		Main.changeScene("Signup");	
+		Main.changeScene(SIGN_UP_PANEL);	
 	}
 	
 	@FXML

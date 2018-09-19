@@ -8,11 +8,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import protocol.Constants;
+
 /**
  * Controller for the Connect view.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 20 September 2018
  *
  */
 public class ConnectController extends Controller {
@@ -20,6 +22,8 @@ public class ConnectController extends Controller {
 	@FXML protected TextField port;
 	@FXML protected Text responseText;
 	private static Client client = Main.getClient();
+	private static final String CONNECT = Constants.CONNECT,
+			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL;
 	
 	/**
 	 * The initialize method here is set to do nothing, as the
@@ -38,7 +42,7 @@ public class ConnectController extends Controller {
 	 * @throws IOException
 	 */
 	void processInput(String action, String[] input) {
-		if (action.equals("connect"))
+		if (action.equals(CONNECT))
 			connect(input);
 	}
 	
@@ -50,7 +54,7 @@ public class ConnectController extends Controller {
 	 */
 	private void connect(String[] input) {
 		if (input.length > 0)
-			Main.changeScene("Login");
+			Main.changeScene(SIGN_IN_PANEL);
 		else
 			responseText.setText("Unable to join server.\nPlease try again later.");
 	}
@@ -78,7 +82,7 @@ public class ConnectController extends Controller {
 				client.getListener().setController(this);
 				
 				String[] outArr = {};
-				client.sendMessage("connect", outArr);
+				client.sendMessage(CONNECT, outArr);
 			} catch (ConnectException e) {
 				responseText.setText("Could not find server.");
 			}

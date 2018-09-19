@@ -17,6 +17,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
+import protocol.Constants;
+
 /**
  * Controller for the leaderboard pane.
  * 
@@ -30,6 +32,20 @@ class HomeController extends Controller {
 	@FXML protected Text responseText;
 	private ObservableList<String> onlineUserList;
 	private static Client client = Main.getClient();
+	private static final String SIGNED_IN = Constants.SIGNED_IN,
+			SIGNED_OUT = Constants.SIGNED_OUT,
+			GET_ONLINE_USERS = Constants.GET_ONLINE_USERS,
+			VIEW_PROFILE = Constants.VIEW_PROFILE,
+			SEND_CHALLENGE = Constants.SEND_CHALLENGE,
+			RESPOND_TO_CHALLENGE = Constants.RESPOND_TO_CHALLENGE,
+			SIGN_OUT = Constants.SIGN_OUT,
+			TRUE = Constants.TRUE,
+			FALSE = Constants.FALSE,
+			NEW_GAME = Constants.NEW_GAME,
+			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL,
+			PROFILE_PANEL = PanelConstants.PROFILE_PANEL,
+			EDIT_PROFILE_PANEL = PanelConstants.EDIT_PROFILE_PANEL,
+			BOARD_PANEL = PanelConstants.BOARD_PANEL;
 	
 	/**
 	 * Initialize method.
@@ -45,7 +61,7 @@ class HomeController extends Controller {
 		this.onlineUserList = FXCollections.<String>observableArrayList();
 		
 		try {
-			client.sendMessage("requestusers", client.getUsername());
+			client.sendMessage(GET_ONLINE_USERS, client.getUsername());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -60,19 +76,19 @@ class HomeController extends Controller {
 	 */
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals("signedin"))
+		if (action.equals(SIGNED_IN))
 			this.addToOnlineUserList(input[0]);
-		else if (action.equals("signedout"))
+		else if (action.equals(SIGNED_OUT))
 			this.removeFromOnlineUserList(input[0]);
-		else if (action.equals("requestusers"))
+		else if (action.equals(GET_ONLINE_USERS))
 			compileUserList(input);
-		else if (action.equals("viewprofile"))
+		else if (action.equals(VIEW_PROFILE))
 			viewProfile(input);
-		else if (action.equals("challenge"))
+		else if (action.equals(SEND_CHALLENGE))
 			receiveChallenge(input);
-		else if (action.equals("challengeresponse"))
+		else if (action.equals(RESPOND_TO_CHALLENGE))
 			challengeResponseHandler(input);
-		else if (action.equals("signout")) {
+		else if (action.equals(SIGN_OUT)) {
 			try {
 				signOut(input);
 			} catch (IOException e) {
@@ -138,9 +154,9 @@ class HomeController extends Controller {
 	 * @throws IOException
 	 */
 	private void signOut(String[] input) throws IOException {
-		if (input[0].equals("true")) {
+		if (input[0].equals(TRUE)) {
 			client.setUsername("");
-			Main.changeScene("Login");
+			Main.changeScene(SIGN_IN_PANEL);
 		}
 	}
 	
@@ -166,15 +182,15 @@ class HomeController extends Controller {
 				Optional<ButtonType> result = alert.showAndWait();
 				
 				if (result.isPresent() && result.get() == ButtonType.YES) {
-					outArr[0] = "true";
+					outArr[0] = TRUE;
 					
 					String[] data = {recipient, challenger, 1 + ""};
 					Main.changeScene("Board", data);
 				} else if (result.isPresent() && result.get() == ButtonType.NO)
-					outArr[0] = "false";
+					outArr[0] = FALSE;
 				
 				try {
-					client.sendMessage("challengeresponse", outArr);
+					client.sendMessage(RESPOND_TO_CHALLENGE, outArr);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -194,7 +210,7 @@ class HomeController extends Controller {
 		String[] outArr = {onlineUsers.getSelectionModel().getSelectedItem()};
 		
 		if (event.getClickCount() > 1)
-			client.sendMessage("viewprofile", outArr);
+			client.sendMessage(VIEW_PROFILE, outArr);
 	}
 	
 	/**
@@ -204,8 +220,8 @@ class HomeController extends Controller {
 	 * @param input data for the user's profile
 	 */
 	private void viewProfile(String[] input) {
-		if (input[0].equals("true")) {
-			Main.changeScene("Profile", input);
+		if (input[0].equals(TRUE)) {
+			Main.changeScene(PROFILE_PANEL, input);
 		} else {
 			//TODO Error occurred
 		}
@@ -218,7 +234,7 @@ class HomeController extends Controller {
 	 */
 	@FXML
 	protected void editProfileButton(ActionEvent event) {
-		Main.changeScene("EditProfile");
+		Main.changeScene(EDIT_PROFILE_PANEL);
 	}
 	
 	/**
@@ -230,7 +246,7 @@ class HomeController extends Controller {
 	@FXML
 	protected void signOutButton(ActionEvent event) throws IOException {
 		String[] outArr = {client.getUsername()};
-		client.sendMessage("signout", outArr);
+		client.sendMessage(SIGN_OUT, outArr);
 	}
 	
 	/**
@@ -241,11 +257,11 @@ class HomeController extends Controller {
 	 * @throws IOException 
 	 */
 	private void challengeResponseHandler(String[] input) {
-		if (input[0].equals("true")) {
+		if (input[0].equals(TRUE)) {
 			try {
 				String[] data = {client.getUsername(), input[1], 0 + ""};
-				Main.changeScene("Board", data);
-				client.sendMessage("newgame", data);
+				Main.changeScene(BOARD_PANEL, data);
+				client.sendMessage(NEW_GAME, data);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -268,7 +284,7 @@ class HomeController extends Controller {
 			String username = onlineUserList.get(userNum);
 			
 			String[] outArr = {client.getUsername(), username};
-			client.sendMessage("challenge", outArr);
+			client.sendMessage(SEND_CHALLENGE, outArr);
 			responseText.setText("Challenging random user: " + username + "...");
 		}
 	}

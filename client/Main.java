@@ -7,19 +7,21 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import protocol.Constants;
 import javafx.fxml.FXMLLoader;
 
 /**
  * This class provides the GUI for connecting to a server.
  * 
  * @author Ben Drawer
- * @version 18 September 2018
+ * @version 20 September 2018
  *
  */
 public class Main extends Application {
 	private static Stage primaryStage;
 	private static Client client;
 	private static String[] data;
+	private static final String LEFT_SERVER = Constants.LEFT_SERVER;
 	
 	private static final int[] LOGIN_DIMENSIONS = {315, 350};
 	private static final int[] SIGNUP_DIMENSIONS = {325, 350};
@@ -156,7 +158,7 @@ public class Main extends Application {
 	 */
 	@Override
 	public void stop() throws Exception {
-		client.sendMessage("signout_leftserver", client.getUsername());
+		client.sendMessage(LEFT_SERVER, client.getUsername());
 		super.stop();
 	}
 	
