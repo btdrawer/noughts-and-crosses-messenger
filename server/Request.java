@@ -95,8 +95,8 @@ class Request implements Task {
 	 * @throws NoSuchAlgorithmException if password hashing algorithm unavailable
 	 */
 	private String signup(String[] input) throws NoSuchAlgorithmException {
-		String username = input[0], password = getMD5(input[1]), securityQ = input[2],
-				securityA = getMD5(input[3]);
+		String username = input[0], password = input[1], securityQ = input[2],
+				securityA = input[3];
 		int usernameLength = input[0].length(), passwordLength = input[1].length();
 		
 		//TODO regex pattern for password
@@ -139,28 +139,6 @@ class Request implements Task {
 	}
 	
 	/**
-	 * Password hasher.
-	 * 
-	 * @param input password
-	 * @return MD5 password hash
-	 * @throws NoSuchAlgorithmException if hashing algorithm is unavailable
-	 */
-	static String getMD5(String input) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		md.reset();
-		md.update(input.getBytes());
-		byte[] digest = md.digest();
-		
-		StringBuilder s = new StringBuilder();
-		
-		for (byte b : digest) {
-			s.append(b);
-		}
-		
-		return s.toString();
-	}
-	
-	/**
 	 * Sign-in method.
 	 * 
 	 * @param input username and password
@@ -169,7 +147,7 @@ class Request implements Task {
 	 */
 	private String signin(String[] input) throws NoSuchAlgorithmException {
 		String username = input[0];
-		String password = getMD5(input[1]);
+		String password = input[1];
 		
 		outArr = new String[2];
 		
@@ -224,7 +202,7 @@ class Request implements Task {
 	private String forgotPassword(String[] input) throws NoSuchAlgorithmException {
 		outArr = new String[2];
 		
-		if (Database.forgotPasswordAnswer(input[0], getMD5(input[1]))) {
+		if (Database.forgotPasswordAnswer(input[0], input[1])) {
 			outArr[0] = "true";
 			outArr[1] = "Enter your new password:";
 		} else {
@@ -483,17 +461,17 @@ class Request implements Task {
 	 * @throws NoSuchAlgorithmException
 	 */
 	private String changes(String[] input) throws NoSuchAlgorithmException {
-		String currentUsername = input[1];
-		String newUsername = input[2];
-		String password = input[4];
-		String newPassword = input[5];
+		String currentUsername = input[0];
+		String newUsername = input[1];
+		String password = input[2];
+		String newPassword = input[3];
 		boolean usernameToChange = false, passwordToChange = false, error = false;
 		
 		outArr = new String[3];
 		outArr[2] = ".";
 		
 		if (!newUsername.equals(".")) {
-			if (!Database.usernameExists(newUsername)) {
+			if (Database.usernameExists(newUsername)) {
 				outArr[0] = "false";
 				outArr[1] = "Someone already has that username.";
 				error = true;
@@ -501,38 +479,30 @@ class Request implements Task {
 				usernameToChange = true;
 		}
 		
-		if (!newPassword.equals(".")) {
-			if (newPassword.length() < 6 || newPassword.length() > 15) {
-				outArr[0] = "false";
-				outArr[1] = "Your password must be between 6 and 15 characters in length.";
-				error = true;
-			} else
-				passwordToChange = true;
-		}
+		if (!newPassword.equals("."))
+			passwordToChange = true;
 		
-		if (Database.signIn(currentUsername, getMD5(password))) {
+		if (Database.signIn(currentUsername, password)) {
 			if (!error) {
 				outArr[0] = "true";
-				String newData = null;
+				boolean changesMade = false;
 				
 				//TODO how to update things using the Writer
 				if (usernameToChange && passwordToChange) {
-					newData = "username = " + newUsername + ", password = " + getMD5(password);
+					changesMade = Database.changeProfileDetails(currentUsername, newUsername, newPassword);
 					
 					outArr[1] = "Your username and password have been successfully changed.";
 					outArr[2] = newUsername;
 				} else if (usernameToChange) {
-					newData = "username = " + newUsername;
+					changesMade = Database.changeProfileDetails(currentUsername, newUsername, password);
 					
 					outArr[1] = "Your username has been successfully changed.";
 					outArr[2] = newUsername;
 				} else if (passwordToChange) {
-					newData = "password = " + getMD5(password);
+					changesMade = Database.changeProfileDetails(currentUsername, currentUsername, newPassword);
 					
 					outArr[1] = "Your password has been successfully changed.";
 				}
-				
-				boolean changesMade = Database.changeProfileDetails(currentUsername, newData);
 				
 				if (!changesMade) {
 					outArr[0] = "false";
@@ -574,7 +544,7 @@ class Request implements Task {
 	 * @param input [0] = username
 	 * @return output indicating that the sign out has been successful
 	 */
-	private String signout(String[] input) {
+	private String signout(String[] input, boolean leftServer) {
 		String username = input[0];
 		
 		boolean signedOut = Database.setStatus(username, "offline");
@@ -584,6 +554,9 @@ class Request implements Task {
 			Main.broadcastMessage(notifyOnlineUsers);
 			
 			String[] outArr = {"true", "Signed out. See you soon!"};
+			
+			if (leftServer)
+				Main.leftServer();
 			
 			return protocol.transmit("signout", outArr);
 		} else {
@@ -649,7 +622,9 @@ class Request implements Task {
 					else if (action.equals("leavegame"))
 						output = leftGame(input);
 					else if (action.equals("signout"))
-						output = signout(input);
+						output = signout(input, false);
+					else if (action.equals("signout_leftserver"))
+						output = signout(input, true);
 					
 					if (sendToOtherUser) {
 						System.out.println("Output to " + outArr[1] + ": " + outArr[0]);
@@ -666,13 +641,6 @@ class Request implements Task {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				clientSocket.close();
-				Main.leftServer();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

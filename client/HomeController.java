@@ -21,10 +21,10 @@ import javafx.scene.text.Text;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 1 July 2018
+ * @version 20 September 2018
  *
  */
-public class HomeController extends Controller {
+class HomeController extends Controller {
 	@FXML protected ListView<String> onlineUsers;
 	@FXML protected Button settings, signout;
 	@FXML protected Text responseText;
@@ -261,11 +261,15 @@ public class HomeController extends Controller {
 	 */
 	@FXML
 	protected void playRandom(ActionEvent event) throws IOException {
-		int userNum = new Random().nextInt(onlineUserList.size());
-		String username = onlineUserList.get(userNum);
-		
-		String[] outArr = {client.getUsername(), username};
-		client.sendMessage("sendchallenge", outArr);
-		responseText.setText("Challenging random user: " + username + "...");
+		if (onlineUserList.size() == 0) {
+			responseText.setText("It's lonely in here!");
+		} else {
+			int userNum = new Random().nextInt(onlineUserList.size());
+			String username = onlineUserList.get(userNum);
+			
+			String[] outArr = {client.getUsername(), username};
+			client.sendMessage("challenge", outArr);
+			responseText.setText("Challenging random user: " + username + "...");
+		}
 	}
 }

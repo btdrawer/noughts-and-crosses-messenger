@@ -1,6 +1,7 @@
 package client;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +13,7 @@ import javafx.scene.text.Text;
  * Controller for the login pane.
  * 
  * @author Ben Drawer
- * @version 2 July 2018
+ * @version 20 September 2018
  *
  */
 public class LoginController extends Controller {
@@ -60,10 +61,12 @@ public class LoginController extends Controller {
 	 * 
 	 * @param event
 	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
 	 */
 	@FXML
-	protected void signInButton(ActionEvent event) throws IOException {
-		String usernameStr = username.getText(), passwordStr = password.getText();
+	protected void signInButton(ActionEvent event) throws IOException, NoSuchAlgorithmException {
+		String usernameStr = username.getText(), 
+				passwordStr = client.getProtocol().getMD5(password.getText());
 		
 		if (usernameStr.isEmpty() || passwordStr.isEmpty()) {
 			responseText.setText("Username and/or password\ncannot be left blank.");

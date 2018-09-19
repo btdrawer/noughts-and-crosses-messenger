@@ -400,7 +400,7 @@ class Database {
 	static boolean usernameExists(String username) {
 		try {
 			PreparedStatement stmt = con.prepareStatement(
-					"SELECT * FROM user WHERE username LIKE ?");
+					"SELECT * FROM user WHERE username = ?");
 			
 			stmt.setString(1, username);
 			
@@ -420,18 +420,20 @@ class Database {
 	 * @param changes
 	 * @return true or false
 	 */
-	static boolean changeProfileDetails(String username, String changes) {
+	static boolean changeProfileDetails(String oldUsername, String newUsername, String password) {
 		try {
 			PreparedStatement stmt = con.prepareStatement(
-					"UPDATE user SET ? WHERE username = ?");
+					"UPDATE user SET username = ?, password = ? WHERE username = ?");
 			
-			stmt.setString(1, changes);
-			stmt.setString(2, username);
+			stmt.setString(1, newUsername);
+			stmt.setString(2, password);
+			stmt.setString(3, oldUsername);
 			
 			stmt.executeUpdate();
 			
 			return true;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}

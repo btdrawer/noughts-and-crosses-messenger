@@ -156,7 +156,7 @@ public class Main extends Application {
 	 */
 	@Override
 	public void stop() throws Exception {
-		client.sendMessage("signout", client.getUsername());
+		client.sendMessage("signout_leftserver", client.getUsername());
 		super.stop();
 	}
 	

@@ -1,6 +1,7 @@
 package client;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +13,7 @@ import javafx.scene.text.Text;
  * Controller for the Edit Profile scene.
  * 
  * @author Ben Drawer
- * @version 6 July 2018
+ * @version 20 September 2018
  *
  */
 public class EditProfileController extends HomeController {
@@ -54,11 +55,12 @@ public class EditProfileController extends HomeController {
 	 * 
 	 * @param event
 	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
 	 */
 	@FXML
-	protected void saveChangesButton(ActionEvent event) throws IOException {
-		String passwordStr = password.getText();
-		String[] changes = {"username", currentUsername, ".", "password", passwordStr, "."};
+	protected void saveChangesButton(ActionEvent event) throws IOException, NoSuchAlgorithmException {
+		String passwordStr = client.getProtocol().getMD5(password.getText());
+		String[] changes = {currentUsername, ".", passwordStr, "."};
 		boolean send = false;
 		
 		if (passwordStr.isEmpty())
@@ -67,7 +69,7 @@ public class EditProfileController extends HomeController {
 			String newUsername = usernameField.getText();
 			
 			if (!(newUsername.isEmpty() || newUsername.equals(currentUsername))) {
-				changes[2] = newUsername;
+				changes[1] = newUsername;
 				send = true;
 			}
 			
@@ -78,7 +80,7 @@ public class EditProfileController extends HomeController {
 				if (!newPasswordStr.equals(confirmPasswordStr))
 					editResponseText.setText("Your passwords do not match.");
 				else {
-					changes[5] = newPasswordStr;
+					changes[3] = client.getProtocol().getMD5(newPasswordStr);
 					send = true;
 				}
 			}

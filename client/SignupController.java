@@ -1,6 +1,7 @@
 package client;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import javafx.scene.text.Text;
  * Controller for the signup pane.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 20 September 2018
  *
  */
 public class SignupController extends Controller {
@@ -100,17 +101,19 @@ public class SignupController extends Controller {
 	 * 
 	 * @param event
 	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
 	 */
 	@FXML
-	protected void signUpButton(ActionEvent event) throws IOException {
-		String usernameStr = username.getText(), passwordStr = password.getText(),
-				questionStr = questions.getValue(), answerStr = answer.getText();
+	protected void signUpButton(ActionEvent event) throws IOException, NoSuchAlgorithmException {
+		String usernameStr = username.getText(), 
+				passwordStr = client.getProtocol().getMD5(password.getText()),
+				questionStr = questions.getValue(), 
+				answerStr = client.getProtocol().getMD5(answer.getText());
 		
 		if (usernameStr.isEmpty() || passwordStr.isEmpty() ||
 				questionStr.isEmpty() || answerStr.isEmpty()) {
 			responseText.setText("Please ensure all fields are completed.");
 		} else {
-			//TODO get number from menu item
 			String[] outArr = {usernameStr, passwordStr, questionStr, answerStr};
 			client.sendMessage("signup", outArr);
 		}

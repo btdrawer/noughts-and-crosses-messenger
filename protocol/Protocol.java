@@ -1,11 +1,14 @@
 package protocol;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Protocol class.
  * Transmits data between clients and server.
  * 
  * @author Ben Drawer
- * @version 1 June 2018
+ * @version 20 September 2018
  *
  */
 public class Protocol {
@@ -64,5 +67,27 @@ public class Protocol {
 		}
 		
 		return s1;
+	}
+	
+	/**
+	 * Password hasher.
+	 * 
+	 * @param input password
+	 * @return MD5 password hash
+	 * @throws NoSuchAlgorithmException if hashing algorithm is unavailable
+	 */
+	public String getMD5(String input) throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		md.reset();
+		md.update(input.getBytes());
+		byte[] digest = md.digest();
+		
+		StringBuilder s = new StringBuilder();
+		
+		for (byte b : digest) {
+			s.append(b);
+		}
+		
+		return s.toString();
 	}
 }
