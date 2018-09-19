@@ -6,11 +6,11 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Thread pool for threads handling requests.
  * 
  * @author Ben Drawer
- * @version 30 May 2018
+ * @version 20 September 2018
  *
  */
 class ThreadPool {
-	private static LinkedBlockingQueue<Task> taskQueue = Main.getTaskQueue();
+	private static LinkedBlockingQueue<Request> requestQueue = Main.getRequestQueue();
 	private Thread[] threads;
 	
 	/**
@@ -22,7 +22,7 @@ class ThreadPool {
 		threads = new Thread[quantity];
 		
 		for(int i = 0; i < quantity; i++) {
-			threads[i] = new TaskThread();
+			threads[i] = new RequestThread();
 			threads[i].start();
 		}
 	}
@@ -32,8 +32,8 @@ class ThreadPool {
 	 * 
 	 * @param newRequest
 	 */
-	void add(Task newTask) {
-		taskQueue.add(newTask);
+	void add(Request newRequest) {
+		requestQueue.add(newRequest);
 	}
 	
 	/**

@@ -8,8 +8,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Ben Drawer
  *
  */
-class TaskThread extends Thread {
-	private LinkedBlockingQueue<Task> taskQueue = Main.getTaskQueue();
+class RequestThread extends Thread {
+	private LinkedBlockingQueue<Request> taskQueue = Main.getRequestQueue();
 	
 	/**
 	 * Run method.

@@ -21,7 +21,7 @@ import protocol.Protocol;
  *
  */
 class Main {
-	private static LinkedBlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
+	private static LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 	private static Map<String, Socket> sockets = new HashMap<>();
 	private static List<Game> openGames = new LinkedList<>();
 	private static int quantity, port, numberOfOnlineUsers;
@@ -32,8 +32,8 @@ class Main {
 	 * 
 	 * @return request queue
 	 */
-	static LinkedBlockingQueue<Task> getTaskQueue() {
-		return taskQueue;
+	static LinkedBlockingQueue<Request> getRequestQueue() {
+		return requestQueue;
 	}
 	
 	/**
