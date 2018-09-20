@@ -21,12 +21,18 @@ public class Main extends Application {
 	private static Stage primaryStage;
 	private static Client client;
 	private static String[] data;
-	private static final String LEFT_SERVER = Constants.LEFT_SERVER;
-	
-	private static final int[] LOGIN_DIMENSIONS = {315, 350};
-	private static final int[] SIGNUP_DIMENSIONS = {325, 350};
-	private static final int[] HOME_DIMENSIONS = {575, 545};
-	private static final int[] BOARD_DIMENSIONS = HOME_DIMENSIONS;
+	private static final String LEFT_SERVER = Constants.LEFT_SERVER,
+			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL,
+			SIGN_UP_PANEL = PanelConstants.SIGN_UP_PANEL,
+			FORGOT_PASSWORD_PANEL = PanelConstants.FORGOT_PASSWORD_PANEL,
+			FORGOT_PASSWORD_QUESTION_PANEL = PanelConstants.FORGOT_PASSWORD_QUESTION_PANEL,
+			FORGOT_PASSWORD_CHANGE_PANEL = PanelConstants.FORGOT_PASSWORD_CHANGE_PANEL,
+			BOARD_PANEL = PanelConstants.BOARD_PANEL;
+	private static final int[] SIGN_IN_DIMENSIONS = PanelConstants.SIGN_IN_DIMENSIONS,
+			SIGN_UP_DIMENSIONS = PanelConstants.SIGN_UP_DIMENSIONS,
+			HOME_DIMENSIONS = PanelConstants.HOME_DIMENSIONS,
+			BOARD_DIMENSIONS = PanelConstants.BOARD_DIMENSIONS,
+			FORGOT_PASSWORD_DIMENSIONS = PanelConstants.FORGOT_PASSWORD_DIMENSIONS;
 			
 	/**
 	 * 
@@ -97,16 +103,28 @@ public class Main extends Application {
 		int[] dimensions = new int[2];
 		int x, y;
 		
-		if (fxml.equals("Login"))
-			dimensions = LOGIN_DIMENSIONS;
-		else if (fxml.equals("Signup"))
-			dimensions = SIGNUP_DIMENSIONS;
-		else if (fxml.equals("Leaderboard") || 
-				fxml.equals("Profile") ||
-				fxml.equals("EditProfile"))
-			dimensions = HOME_DIMENSIONS;
-		else if (fxml.equals("Board"))
-			dimensions = BOARD_DIMENSIONS;
+		switch (fxml) {
+			case SIGN_IN_PANEL:
+				dimensions = SIGN_IN_DIMENSIONS;
+				break;
+			case SIGN_UP_PANEL:
+				dimensions = SIGN_UP_DIMENSIONS;
+				break;
+			case FORGOT_PASSWORD_PANEL:
+				dimensions = FORGOT_PASSWORD_DIMENSIONS;
+				break;
+			case FORGOT_PASSWORD_QUESTION_PANEL:
+				dimensions = FORGOT_PASSWORD_DIMENSIONS;
+				break;
+			case FORGOT_PASSWORD_CHANGE_PANEL:
+				dimensions = FORGOT_PASSWORD_DIMENSIONS;
+				break;
+			case BOARD_PANEL:
+				dimensions = BOARD_DIMENSIONS;
+				break;
+			default:
+				dimensions = HOME_DIMENSIONS;
+		}
 		
 		x = dimensions[0];
 		y = dimensions[1];
@@ -149,7 +167,7 @@ public class Main extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("Connect.fxml"));
 		
 		stage.setTitle("Noughts and Crosses");
-		stage.setScene(new Scene(root, 325, 350));
+		stage.setScene(new Scene(root, 315, 350));
 		stage.show();
 	}
 	

@@ -255,14 +255,16 @@ class Database {
 		try {
 			PreparedStatement stmt = con.prepareStatement(
 					"SELECT question FROM security_question JOIN user " +
-					"ON security_question.id = securityQ " +
-					"WHERE username LIKE ?");
+					"ON security_question.id = security_question " +
+					"WHERE username = ?");
 			
 			stmt.setString(1, username);
 			
 			ResultSet rs = stmt.executeQuery();
 			
-			return rs.getString(1);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -291,6 +293,30 @@ class Database {
 			
 			return rs.getRow() == 1;
 		} catch (SQLException e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * Resets the user's password.
+	 * 
+	 * @param username
+	 * @param newPassword
+	 * @return true or false
+	 */
+	static boolean forgotPasswordChange(String username, String newPassword) {
+		try {
+			PreparedStatement stmt = con.prepareStatement(
+					"UPDATE user SET password = ? WHERE username = ?");
+			
+			stmt.setString(1, newPassword);
+			stmt.setString(2, username);
+			
+			stmt.executeUpdate();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}

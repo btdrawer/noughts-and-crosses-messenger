@@ -17,6 +17,7 @@ public class Constants {
 	
 	public static final String FORGOT_PASSWORD_REQUEST = "FORGOT_PASSWORD_REQUEST";
 	public static final String FORGOT_PASSWORD_ANSWER = "FORGOT_PASSWORD_ANSWER";
+	public static final String FORGOT_PASSWORD_CHANGE = "FORGOT_PASSWORD_CHANGE";
 	
 	public static final String VIEW_PROFILE = "VIEW_PROFILE";
 	public static final String EDIT_PROFILE = "EDIT_PROFILE";

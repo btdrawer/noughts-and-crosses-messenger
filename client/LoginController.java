@@ -26,7 +26,8 @@ public class LoginController extends Controller {
 	private static final String SIGN_IN = Constants.SIGN_IN,
 			FALSE = Constants.FALSE,
 			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL,
-			SIGN_UP_PANEL = PanelConstants.SIGN_UP_PANEL;
+			SIGN_UP_PANEL = PanelConstants.SIGN_UP_PANEL,
+			FORGOT_PASSWORD_PANEL = PanelConstants.FORGOT_PASSWORD_PANEL;
 	
 	/**
 	 * Processes input from server.
@@ -83,7 +84,7 @@ public class LoginController extends Controller {
 	}
 	
 	/**
-	 * Listener for sign-up button.
+	 * Handler for sign-up button.
 	 * 
 	 * @param event
 	 * @throws IOException 
@@ -93,8 +94,13 @@ public class LoginController extends Controller {
 		Main.changeScene(SIGN_UP_PANEL);	
 	}
 	
+	/**
+	 * Handler for forgot password button.
+	 * 
+	 * @param event
+	 */
 	@FXML
 	protected void forgotPassword(ActionEvent event) {
-		//TODO forgot password panel
+		Main.changeScene(FORGOT_PASSWORD_PANEL);
 	}
 }

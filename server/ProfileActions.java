@@ -27,6 +27,7 @@ class ProfileActions {
 			SIGN_OUT = Constants.SIGN_OUT,
 			FORGOT_PASSWORD_REQUEST = Constants.FORGOT_PASSWORD_REQUEST,
 			FORGOT_PASSWORD_ANSWER = Constants.FORGOT_PASSWORD_ANSWER,
+			FORGOT_PASSWORD_CHANGE = Constants.FORGOT_PASSWORD_CHANGE,
 			VIEW_PROFILE = Constants.VIEW_PROFILE,
 			EDIT_PROFILE = Constants.EDIT_PROFILE,
 			TRUE = Constants.TRUE,
@@ -131,16 +132,18 @@ class ProfileActions {
 	 * @return output indicating whether username has been found
 	 */
 	String forgotPasswordRequest(String[] input) {
-		outArr = new String[2];
+		String username = input[0];
+		outArr = new String[3];
+		outArr[1] = username;
 		
-		String question = Database.forgotPasswordRequest(input[0]);
+		String question = Database.forgotPasswordRequest(username);
 		
 		if (question != null) {
 			outArr[0] = TRUE;
-			outArr[1] = question;
+			outArr[2] = question;
 		} else {
 			outArr[0] = FALSE;
-			outArr[1] = "Username not found.";
+			outArr[2] = "Username not found.";
 		}
 		
 		return protocol.transmit(FORGOT_PASSWORD_REQUEST, outArr);
@@ -166,6 +169,20 @@ class ProfileActions {
 		}
 		
 		return protocol.transmit(FORGOT_PASSWORD_ANSWER, outArr);
+	}
+	
+	String forgotPasswordChange(String[] input) {
+		outArr = new String[2];
+		
+		if (Database.forgotPasswordChange(input[0], input[1])) {
+			outArr[0] = TRUE;
+			outArr[1] = "Password successfully reset!";
+		} else {
+			outArr[0] = FALSE;
+			outArr[1] = "An error occurred. Please try again later.";
+		}
+		
+		return protocol.transmit(FORGOT_PASSWORD_CHANGE, outArr);
 	}
 	
 	/**

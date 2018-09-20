@@ -100,6 +100,9 @@ class Request {
 						case Constants.FORGOT_PASSWORD_ANSWER:
 							output = profileActions.forgotPassword(input);
 							break;
+						case Constants.FORGOT_PASSWORD_CHANGE:
+							output = profileActions.forgotPasswordChange(input);
+							break;
 						case Constants.GET_ONLINE_USERS:
 							output = serverActions.requestUsers(input);
 							break;
