@@ -20,6 +20,7 @@ class ProfileActions {
 	private Protocol protocol;
 	private static Map<String, Socket> sockets = Main.getSockets();
 	private static final String SIGNED_IN = Constants.SIGNED_IN,
+			CHANGED_USERNAME = Constants.CHANGED_USERNAME,
 			SIGNED_OUT = Constants.SIGNED_OUT,
 			SIGN_UP = Constants.SIGN_UP,
 			SIGN_IN = Constants.SIGN_IN,
@@ -54,7 +55,7 @@ class ProfileActions {
 	String signup(String[] input) throws NoSuchAlgorithmException {
 		String username = input[0], password = input[1], securityQ = input[2],
 				securityA = input[3];
-		int usernameLength = input[0].length(), passwordLength = input[1].length();
+		int usernameLength = input[0].length();
 		
 		//TODO regex pattern for password
 		Pattern p = Pattern.compile("[a-zA-Z0-9]+");
@@ -77,9 +78,9 @@ class ProfileActions {
 			boolean signUp = Database.signUp(username, password, securityQ, securityA);
 			
 			if (signUp) {
-				String[] notifyOnlineUsers = {SIGNED_IN, username};
+				String[] notifyOnlineUsers = {username};
 				sockets.put(username, clientSocket);
-				Main.broadcastMessage(notifyOnlineUsers);
+				Main.broadcastMessage(SIGNED_IN, notifyOnlineUsers);
 				
 				outArr[0] = TRUE;
 				outArr[1] = "Sign-up successful. Welcome!";
@@ -112,8 +113,8 @@ class ProfileActions {
 			Database.setStatus(username, ONLINE);
 			sockets.put(username, clientSocket);
 			
-			String[] notifyOnlineUsers = {SIGNED_IN, username};
-			Main.broadcastMessage(notifyOnlineUsers);
+			String[] notifyOnlineUsers = {username};
+			Main.broadcastMessage(SIGNED_IN, notifyOnlineUsers);
 			
 			outArr[0] = TRUE;
 			outArr[1] = "Welcome back!";
@@ -213,17 +214,23 @@ class ProfileActions {
 		
 		if (Database.signIn(currentUsername, password)) {
 			if (!error) {
-				outArr[0] = "true";
+				outArr[0] = TRUE;
 				boolean changesMade = false;
 				
 				//TODO how to update things using the Writer
 				if (usernameToChange && passwordToChange) {
 					changesMade = Database.changeProfileDetails(currentUsername, newUsername, newPassword);
 					
+					String[] notifyOnlineUsers = {currentUsername, newUsername};
+					Main.broadcastMessage(CHANGED_USERNAME, notifyOnlineUsers);
+					
 					outArr[1] = "Your username and password have been successfully changed.";
 					outArr[2] = newUsername;
 				} else if (usernameToChange) {
 					changesMade = Database.changeProfileDetails(currentUsername, newUsername, password);
+					
+					String[] notifyOnlineUsers = {currentUsername, newUsername};
+					Main.broadcastMessage(CHANGED_USERNAME, notifyOnlineUsers);
 					
 					outArr[1] = "Your username has been successfully changed.";
 					outArr[2] = newUsername;
@@ -258,8 +265,8 @@ class ProfileActions {
 		boolean signedOut = Database.setStatus(username, OFFLINE);
 		
 		if (signedOut) {
-			String[] notifyOnlineUsers = {SIGNED_OUT, username};
-			Main.broadcastMessage(notifyOnlineUsers);
+			String[] notifyOnlineUsers = {username};
+			Main.broadcastMessage(SIGNED_OUT, notifyOnlineUsers);
 			
 			String[] outArr = {TRUE, "Signed out. See you soon!"};
 			

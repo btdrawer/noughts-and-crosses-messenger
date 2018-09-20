@@ -58,11 +58,7 @@ public class ProfileController extends HomeController {
 	 */
 	@FXML
 	protected void playButton(ActionEvent event) throws IOException {
-		if (statusStr.equals("0") || statusStr.equals("1"))
-			responseText.setText("This player is currently not available.");
-		else {
-			String[] outArr = {client.getUsername(), username.getText()};
-			client.sendMessage(SEND_CHALLENGE, outArr);
-		}
+		String[] outArr = {client.getUsername(), username.getText()};
+		client.sendMessage(SEND_CHALLENGE, outArr);
 	}
 }

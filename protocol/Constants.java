@@ -12,6 +12,7 @@ public class Constants {
 	public static final String SIGN_IN = "SIGN_IN";
 
 	public static final String SIGNED_IN = "SIGNED_IN";
+	public static final String CHANGED_USERNAME = "CHANGED_USERNAME";
 	public static final String SIGNED_OUT = "SIGNED_OUT";
 	
 	public static final String FORGOT_PASSWORD_REQUEST = "FORGOT_PASSWORD_REQUEST";
@@ -21,6 +22,7 @@ public class Constants {
 	public static final String EDIT_PROFILE = "EDIT_PROFILE";
 	
 	public static final String SEND_CHALLENGE = "SEND_CHALLENGE";
+	public static final String SEND_CHALLENGE_PINGBACK = "SEND_CHALLENGE_PINGBACK";
 	public static final String RESPOND_TO_CHALLENGE = "RESPOND_TO_CHALLENGE";
 	
 	public static final String NEW_GAME = "NEW_GAME";

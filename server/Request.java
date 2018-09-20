@@ -101,10 +101,9 @@ class Request {
 						output = serverActions.leaderboard(input);
 					else if (action.equals(Constants.GET_TIMED_LEADERBOARD))
 						output = serverActions.timedLeaderboard(input);
-					else if (action.equals(Constants.SEND_CHALLENGE)) {
-						outArr = gameActions.sendChallenge(input);
-						sendToOtherUser = true;
-					} else if (action.equals(Constants.RESPOND_TO_CHALLENGE)) {
+					else if (action.equals(Constants.SEND_CHALLENGE))
+						output = gameActions.sendChallenge(input);
+					else if (action.equals(Constants.RESPOND_TO_CHALLENGE)) {
 						outArr = gameActions.challengeResponse(input);
 						sendToOtherUser = true;
 					} else if (action.equals(Constants.NEW_GAME))

@@ -33,10 +33,12 @@ class HomeController extends Controller {
 	private ObservableList<String> onlineUserList;
 	private static Client client = Main.getClient();
 	private static final String SIGNED_IN = Constants.SIGNED_IN,
+			CHANGED_USERNAME = Constants.CHANGED_USERNAME,
 			SIGNED_OUT = Constants.SIGNED_OUT,
 			GET_ONLINE_USERS = Constants.GET_ONLINE_USERS,
 			VIEW_PROFILE = Constants.VIEW_PROFILE,
 			SEND_CHALLENGE = Constants.SEND_CHALLENGE,
+			SEND_CHALLENGE_PINGBACK = Constants.SEND_CHALLENGE_PINGBACK,
 			RESPOND_TO_CHALLENGE = Constants.RESPOND_TO_CHALLENGE,
 			SIGN_OUT = Constants.SIGN_OUT,
 			TRUE = Constants.TRUE,
@@ -80,12 +82,16 @@ class HomeController extends Controller {
 			this.addToOnlineUserList(input[0]);
 		else if (action.equals(SIGNED_OUT))
 			this.removeFromOnlineUserList(input[0]);
+		else if (action.equals(CHANGED_USERNAME))
+			changedUsernameHandler(input);
 		else if (action.equals(GET_ONLINE_USERS))
 			compileUserList(input);
 		else if (action.equals(VIEW_PROFILE))
 			viewProfile(input);
 		else if (action.equals(SEND_CHALLENGE))
 			receiveChallenge(input);
+		else if (action.equals(SEND_CHALLENGE_PINGBACK))
+			sendChallengePingbackHandler(input);
 		else if (action.equals(RESPOND_TO_CHALLENGE))
 			challengeResponseHandler(input);
 		else if (action.equals(SIGN_OUT)) {
@@ -148,6 +154,27 @@ class HomeController extends Controller {
 	}
 	
 	/**
+	 * Called when someone on the server changes their username.
+	 * 
+	 * [0] = old username
+	 * [1] = new username
+	 * 
+	 * @param input
+	 */
+	private void changedUsernameHandler(String[] input) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (!client.getUsername().equals(input[0])) {
+					onlineUserList.remove(input[0]);
+					onlineUserList.add(input[1]);
+					onlineUsers.setItems(onlineUserList);
+				}
+			}
+		});
+	}
+	
+	/**
 	 * Sends the user to the login pane, having been signed out.
 	 * 
 	 * @param input response from server indicating whether sign out was successful
@@ -185,7 +212,7 @@ class HomeController extends Controller {
 					outArr[0] = TRUE;
 					
 					String[] data = {recipient, challenger, 1 + ""};
-					Main.changeScene("Board", data);
+					Main.changeScene(BOARD_PANEL, data);
 				} else if (result.isPresent() && result.get() == ButtonType.NO)
 					outArr[0] = FALSE;
 				
@@ -196,6 +223,20 @@ class HomeController extends Controller {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * After a user sends a challenge, the server provides a response
+	 * stating whether or not that user is available.
+	 * 
+	 * [0] = true or false
+	 * [1] = response text
+	 * 
+	 * @param input
+	 */
+	private void sendChallengePingbackHandler(String[] input) {
+		if (input[0].equals(FALSE))
+			responseText.setText(input[1]);
 	}
 	
 	/**

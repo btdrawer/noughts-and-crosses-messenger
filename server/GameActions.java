@@ -18,6 +18,7 @@ class GameActions {
 	private Protocol protocol;
 	private static Map<String, Socket> sockets = Main.getSockets();
 	private static final String SEND_CHALLENGE = Constants.SEND_CHALLENGE,
+			SEND_CHALLENGE_PINGBACK = Constants.SEND_CHALLENGE_PINGBACK,
 			RESPOND_TO_CHALLENGE = Constants.RESPOND_TO_CHALLENGE,
 			NEW_GAME = Constants.NEW_GAME,
 			TRUE_LOST = Constants.TRUE_LOST,
@@ -49,10 +50,19 @@ class GameActions {
 	 * @param input
 	 * @throws IOException
 	 */
-	String[] sendChallenge(String[] input) throws IOException {
-		String[] toSend = {protocol.transmit(SEND_CHALLENGE, input[0]), input[1]};
+	String sendChallenge(String[] input) throws IOException {
+		if (Main.findGame(input[1]) == null) {
+			sockets.get(input[1]).getOutputStream().write(
+					protocol.transmit(SEND_CHALLENGE, input[0]).getBytes());
+			
+			outArr[0] = TRUE;
+			outArr[1] = "Challenging user: " + input[1] + "...";
+		} else {
+			outArr[0] = FALSE;
+			outArr[1] = "This user is unavailable.";
+		}
 		
-		return toSend;
+		return protocol.transmit(SEND_CHALLENGE_PINGBACK, outArr);
 	}
 	
 	/**

@@ -154,7 +154,7 @@ class Main {
 	 * 
 	 * @param input
 	 */
-	static void broadcastMessage(String[] input) {
+	static void broadcastMessage(String action, String[] input) {
 		new Thread() {
 			@Override
 			public void run() {
@@ -162,7 +162,7 @@ class Main {
 				
 				for (Socket s : sockets.values()) {
 					try {
-						s.getOutputStream().write(protocol.transmit(input[0], input[1]).getBytes());
+						s.getOutputStream().write(protocol.transmit(action, input).getBytes());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
