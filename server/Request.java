@@ -81,44 +81,64 @@ class Request {
 					
 					sendToOtherUser = false;
 					
-					if (action.equals(Constants.CONNECT))
-						output = serverActions.connect();
-					else if (action.equals(Constants.GET_SECURITY_QUESTIONS))
-						output = serverActions.getSecurityQuestions();
-					else if (action.equals(Constants.SIGN_UP))
-						output = profileActions.signup(input);
-					else if (action.equals(Constants.SIGN_IN))
-						output = profileActions.signin(input);
-					else if (action.equals(Constants.FORGOT_PASSWORD_REQUEST))
-						output = profileActions.forgotPasswordRequest(input);
-					else if (action.equals(Constants.FORGOT_PASSWORD_ANSWER))
-						output = profileActions.forgotPassword(input);
-					else if (action.equals(Constants.GET_ONLINE_USERS))
-						output = serverActions.requestUsers(input);
-					else if (action.equals(Constants.VIEW_PROFILE))
-						output = profileActions.viewProfile(input[0]);
-					else if (action.equals(Constants.GET_LEADERBOARD))
-						output = serverActions.leaderboard(input);
-					else if (action.equals(Constants.GET_TIMED_LEADERBOARD))
-						output = serverActions.timedLeaderboard(input);
-					else if (action.equals(Constants.SEND_CHALLENGE))
-						output = gameActions.sendChallenge(input);
-					else if (action.equals(Constants.RESPOND_TO_CHALLENGE)) {
-						outArr = gameActions.challengeResponse(input);
-						sendToOtherUser = true;
-					} else if (action.equals(Constants.NEW_GAME))
-						output = gameActions.newGame(input);
-					else if (action.equals(Constants.ADD_CHAR)) {
-						outArr = gameActions.addChar(input);
-						sendToOtherUser = true;
-					} else if (action.equals(Constants.EDIT_PROFILE))
-						output = profileActions.changes(input);
-					else if (action.equals(Constants.LEFT_GAME))
-						output = gameActions.leftGame(input, profileActions);
-					else if (action.equals(Constants.SIGN_OUT))
-						output = profileActions.signout(input, false);
-					else if (action.equals(Constants.LEFT_SERVER))
-						output = profileActions.signout(input, true);
+					switch (action) {
+						case Constants.CONNECT:
+							output = serverActions.connect();
+							break;
+						case Constants.GET_SECURITY_QUESTIONS:
+							output = serverActions.getSecurityQuestions();
+							break;
+						case Constants.SIGN_UP:
+							output = profileActions.signup(input);
+							break;
+						case Constants.SIGN_IN:
+							output = profileActions.signin(input);
+							break;
+						case Constants.FORGOT_PASSWORD_REQUEST:
+							output = profileActions.forgotPasswordRequest(input);
+							break;
+						case Constants.FORGOT_PASSWORD_ANSWER:
+							output = profileActions.forgotPassword(input);
+							break;
+						case Constants.GET_ONLINE_USERS:
+							output = serverActions.requestUsers(input);
+							break;
+						case Constants.VIEW_PROFILE:
+							output = profileActions.viewProfile(input[0]);
+							break;
+						case Constants.GET_LEADERBOARD:
+							output = serverActions.leaderboard(input);
+							break;
+						case Constants.GET_TIMED_LEADERBOARD:
+							output = serverActions.timedLeaderboard(input);
+							break;
+						case Constants.SEND_CHALLENGE:
+							output = gameActions.sendChallenge(input);
+							break;
+						case Constants.RESPOND_TO_CHALLENGE:
+							outArr = gameActions.challengeResponse(input);
+							sendToOtherUser = true;
+							break;
+						case Constants.NEW_GAME:
+							output = gameActions.newGame(input);
+							break;
+						case Constants.ADD_CHAR:
+							outArr = gameActions.addChar(input);
+							sendToOtherUser = true;
+							break;
+						case Constants.EDIT_PROFILE:
+							output = profileActions.changes(input);
+							break;
+						case Constants.LEFT_GAME:
+							output = gameActions.leftGame(input, profileActions);
+							break;
+						case Constants.SIGN_OUT:
+							output = profileActions.signout(input, false);
+							break;
+						case Constants.LEFT_SERVER:
+							output = profileActions.signout(input, true);
+							break;
+					}
 					
 					if (sendToOtherUser) {
 						System.out.println("Output to " + outArr[1] + ": " + outArr[0]);

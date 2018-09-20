@@ -78,28 +78,39 @@ class HomeController extends Controller {
 	 */
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals(SIGNED_IN))
-			this.addToOnlineUserList(input[0]);
-		else if (action.equals(SIGNED_OUT))
-			this.removeFromOnlineUserList(input[0]);
-		else if (action.equals(CHANGED_USERNAME))
-			changedUsernameHandler(input);
-		else if (action.equals(GET_ONLINE_USERS))
-			compileUserList(input);
-		else if (action.equals(VIEW_PROFILE))
-			viewProfile(input);
-		else if (action.equals(SEND_CHALLENGE))
-			receiveChallenge(input);
-		else if (action.equals(SEND_CHALLENGE_PINGBACK))
-			sendChallengePingbackHandler(input);
-		else if (action.equals(RESPOND_TO_CHALLENGE))
-			challengeResponseHandler(input);
-		else if (action.equals(SIGN_OUT)) {
-			try {
-				signOut(input);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		switch (action) {
+			case SIGNED_IN:
+				this.addToOnlineUserList(input[0]);
+				break;
+			case SIGNED_OUT:
+				this.removeFromOnlineUserList(input[0]);
+				break;
+			case CHANGED_USERNAME:
+				changedUsernameHandler(input);
+				break;
+			case GET_ONLINE_USERS:
+				compileUserList(input);
+				break;
+			case VIEW_PROFILE:
+				viewProfile(input);
+				break;
+			case SEND_CHALLENGE:
+				receiveChallenge(input);
+				break;
+			case SEND_CHALLENGE_PINGBACK:
+				sendChallengePingbackHandler(input);
+				break;
+			case RESPOND_TO_CHALLENGE:
+				challengeResponseHandler(input);
+				break;
+			case SIGN_OUT:
+				try {
+					signOut(input);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				break;
 		}
 	}
 	

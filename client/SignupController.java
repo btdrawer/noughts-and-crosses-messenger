@@ -57,10 +57,14 @@ public class SignupController extends Controller {
 	 */
 	@Override
 	void processInput(String action, String[] input) {
-		 if (action.equals(SIGN_UP))
-			 signUp(input);
-		 else if (action.equals(GET_SECURITY_QUESTIONS))
-			 populateSecurityQuestions(input);
+		switch (action) {
+			case SIGN_UP:
+				signUp(input);
+				break;
+			case GET_SECURITY_QUESTIONS:
+				populateSecurityQuestions(input);
+				break;
+		}
 	}
 	
 	/**

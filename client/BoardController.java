@@ -60,12 +60,17 @@ public class BoardController extends Controller {
 	
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals(ADD_CHAR))
-			receiveChar(input);
-		else if (action.equals(LEFT_GAME))
-			leftGame(input);
-		else if (action.equals(VIEW_PROFILE))
-			viewProfile(input);
+		switch (action) {
+			case ADD_CHAR:
+				receiveChar(input);
+				break;
+			case LEFT_GAME:
+				leftGame(input);
+				break;
+			case VIEW_PROFILE:
+				viewProfile(input);
+				break;
+		}
 	}
 	
 	/**

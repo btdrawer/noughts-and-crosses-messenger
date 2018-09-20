@@ -38,10 +38,13 @@ public class EditProfileController extends HomeController {
 	
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals(EDIT_PROFILE))
-			editProfile(input);
-		else
-			super.processInput(action, input);
+		switch (action) {
+			case EDIT_PROFILE:
+				editProfile(input);
+				break;
+			default:
+				super.processInput(action, input);
+		}
 	}
 	
 	/**

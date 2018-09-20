@@ -59,12 +59,16 @@ public class LeaderboardController extends HomeController {
 	 */
 	@Override
 	void processInput(String action, String[] input) {
-		if (action.equals(GET_LEADERBOARD))
+		switch (action) {
+		case GET_LEADERBOARD:
 			setLeaderboard(input);
-		else if (action.equals(GET_TIMED_LEADERBOARD))
+			break;
+		case GET_TIMED_LEADERBOARD:
 			setTimedLeaderboard(input);
-		else
+			break;
+		default:
 			super.processInput(action, input);
+		}
 	}
 	
 	/**
