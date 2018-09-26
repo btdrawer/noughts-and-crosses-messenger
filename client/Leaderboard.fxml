@@ -14,41 +14,11 @@
         <ListView fx:id="onlineUsers" onMouseClicked="#selectedProfile" prefHeight="439.0" prefWidth="200.0" />
       </content>
     </ScrollPane>
-    <GridPane layoutX="250.0" layoutY="61.0">
+    <GridPane fx:id="leaderboard" layoutX="250.0" layoutY="61.0">
       <children>
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gross wins" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Net wins" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-        <fx:define>
-          <ArrayList fx:id="username">
-            <Text id="username0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="username1" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="username2" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="username4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="username5" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-          </ArrayList>
-        </fx:define>
-        <fx:define>
-          <ArrayList fx:id="gross">
-            <Text id="gross0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="gross1" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="gross2" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="gross3" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="gross4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="gross5" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-          </ArrayList>
-        </fx:define>
-        <fx:define>
-          <ArrayList fx:id="net">
-            <Text id="net0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="net1" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="net2" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="net3" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="net4" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text id="net5" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-          </ArrayList>
-        </fx:define>
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

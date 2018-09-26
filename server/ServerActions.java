@@ -94,7 +94,7 @@ class ServerActions {
 		if (size > 0) {
 			outArr = new String[size * 3 + 1];
 			outArr[0] = TRUE;
-			int i = 0;
+			int i = 1;
 			
 			for (String[] s : leaderboardList) {
 				outArr[i] = s[0];

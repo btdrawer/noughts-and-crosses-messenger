@@ -105,8 +105,7 @@ class GameActions {
 		} else {
 			Main.newGame(input);
 			
-			Database.setStatus(input[0], BUSY);
-			Database.setStatus(input[1], BUSY);
+			Database.setStatus(input[0], input[1], BUSY);
 			
 			outArr[0] = TRUE;
 		}
@@ -166,6 +165,7 @@ class GameActions {
 		outArr = new String[4];
 		
 		if (checkWin(currentGame.getBoard(), c, x, y)) {
+			currentGame.finished();
 			outArr[0] = TRUE_LOST;
 			
 			players = currentGame.getPlayers();
@@ -176,19 +176,16 @@ class GameActions {
 				loser = players[1];
 			} else if (players[1].equals(input[0])) {
 				winner = players[1];
-				loser = players[1];
+				loser = players[0];
 			}
 			
-			Database.newGame(winner, loser);
-			
-			Database.setStatus(players[0], ONLINE);
-			Database.setStatus(players[1], ONLINE);
+			Database.newGame(winner, loser, currentGame.getGameLength());
+			Database.setStatus(players[0], players[1], ONLINE);
 			Main.gameFinished(winner);
 		} else if (turns == 9) {
 			outArr[0] = TRUE_DRAW;
 			
-			Database.setStatus(players[0], ONLINE);
-			Database.setStatus(players[1], ONLINE);
+			Database.setStatus(players[0], players[1], ONLINE);
 			Main.gameFinished(players[0]);
 		} else
 			outArr[0] = TRUE;

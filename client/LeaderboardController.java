@@ -3,9 +3,11 @@ package client;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import protocol.Constants;
@@ -19,6 +21,7 @@ import protocol.Constants;
  */
 public class LeaderboardController extends HomeController {
 	@FXML protected ListView<String> onlineUsers;
+	@FXML protected GridPane leaderboard;
 	@FXML protected Button settings;
 	@FXML protected Button signout;
 	private static Client client = Main.getClient();
@@ -60,14 +63,14 @@ public class LeaderboardController extends HomeController {
 	@Override
 	void processInput(String action, String[] input) {
 		switch (action) {
-		case GET_LEADERBOARD:
-			setLeaderboard(input);
-			break;
-		case GET_TIMED_LEADERBOARD:
-			setTimedLeaderboard(input);
-			break;
-		default:
-			super.processInput(action, input);
+			case GET_LEADERBOARD:
+				setLeaderboard(input);
+				break;
+			case GET_TIMED_LEADERBOARD:
+				setTimedLeaderboard(input);
+				break;
+			default:
+				super.processInput(action, input);
 		}
 	}
 	
@@ -77,15 +80,22 @@ public class LeaderboardController extends HomeController {
 	 * @param input user's usernames, gross and net wins to be displayed
 	 */
 	private void setLeaderboard(String[] input) {
-		if (input[0].equals(TRUE)) {
-			int n = input.length / 3 - 1;
-			
-			for (int i = 0; i < n; i += 3) {
-				username.get(i).setText(input[i+1]);
-				gross.get(i).setText(input[i+2]);
-				net.get(i).setText(input[i+3]);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (input[0].equals(TRUE)) {
+					int j = 1;
+					
+					for (int i = 1; i < input.length; i += 3) {
+						leaderboard.add(new Text(input[i]), 0, j);
+						leaderboard.add(new Text(input[i+1]), 1, j);
+						leaderboard.add(new Text(input[i+2]), 2, j);
+						
+						j += 1;
+					}
+				}
 			}
-		}
+		});
 	}
 	
 	private void setTimedLeaderboard(String[] input) {

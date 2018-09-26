@@ -1,5 +1,7 @@
 package server;
 
+import java.util.Date;
+
 /**
  * Game class.
  * 
@@ -12,6 +14,7 @@ class Game {
 	private char[][] board;
 	private boolean finished;
 	private short turns;
+	private Date start, finish;
 	
 	/**
 	 * Constructor for new games.
@@ -28,6 +31,15 @@ class Game {
 		
 		this.finished = false;
 		this.turns = 0;
+		this.start = new Date();
+	}
+	
+	/**
+	 * 
+	 * @return game time in milliseconds
+	 */
+	long getGameLength() {
+		return finish.getTime() - start.getTime();
 	}
 	
 	/**
@@ -82,5 +94,12 @@ class Game {
 	 */
 	void addTurn() {
 		turns += 1;
+	}
+	
+	/**
+	 * Sets the time when the game finished.
+	 */
+	void finished() {
+		this.finish = new Date();
 	}
 }

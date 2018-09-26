@@ -209,11 +209,11 @@ class Database {
 	
 	/**
 	 * Changes the user's status.
+	 * 
 	 * Possibilities:
 	 * * Online
 	 * * Busy
 	 * * Offline
-	 * If in a game, user's status is automatically set to busy.
 	 * 
 	 * @param con connection to database
 	 * @param username
@@ -232,6 +232,46 @@ class Database {
 				
 				stmt.setString(1, status);
 				stmt.setString(2, username);
+				
+				stmt.executeUpdate();
+				
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return false;
+		}
+	}
+	
+	/**
+	 * Changes the user's status.
+	 * Called when a game starts or finishes and changes the
+	 * statuses of both players.
+	 * 
+	 * Possibilities:
+	 * * Online (if game is ending)
+	 * * Busy (if game is starting)
+	 * * Offline (should not be set here)
+	 * 
+	 * @param con connection to database
+	 * @param username
+	 * @param status
+	 * @return true or false
+	 */
+	static boolean setStatus(String player1, String player2, String status) {
+		if (!(status.equals("offline") || status.equals("busy") 
+			|| status.equals("online"))) {
+			return false;
+		} else {
+			try {
+				PreparedStatement stmt = con.prepareStatement(
+						"UPDATE user SET status = (SELECT id FROM status WHERE status = ?) " + 
+						"WHERE username = ? OR username = ?;");
+				
+				stmt.setString(1, status);
+				stmt.setString(2, player1);
+				stmt.setString(3, player2);
 				
 				stmt.executeUpdate();
 				
@@ -332,30 +372,27 @@ class Database {
 		
 		try {
 			PreparedStatement stmt = con.prepareStatement(
-					"SELECT username, COUNT(wins) FROM user, game WHERE " + 
-					"users.id = winner ORDER BY username ASC;");
+					"SELECT w.id, username, gross, gross - COUNT(game.id) AS net " + 
+					"FROM ( " + 
+					"SELECT user.id AS id, username,\n COUNT(game.id) AS gross " + 
+					"FROM user, game " + 
+					"WHERE user.id = won " + 
+					"GROUP BY username " + 
+					") w, game " + 
+					"WHERE w.id = lost " + 
+					"GROUP BY username " + 
+					"ORDER BY gross - COUNT(game.id) DESC;");
 			
 			ResultSet rs = stmt.executeQuery();
 			
 			while (rs.next()) {
 				String[] temp = new String[3];
 				
-				temp[0] = rs.getString(1);
-				temp[1] = rs.getInt(2) + "";
+				temp[0] = rs.getString(2);
+				temp[1] = rs.getInt(3) + "";
+				temp[2] = rs.getInt(4) + "";
 				
 				leaderboard.add(temp);
-			}
-			
-			stmt = con.prepareStatement(
-					"SELECT COUNT(losses) FROM user, game WHERE " + 
-					"user.id = winner ORDER BY username ASC;");
-			
-			rs = stmt.executeQuery();
-			
-			int i = 0;
-			
-			while (rs.next()) {
-				leaderboard.get(i)[2] = rs.getInt(3) + "";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -396,16 +433,17 @@ class Database {
 	 * @param loser
 	 * @return true or false
 	 */
-	static boolean newGame(String winner, String loser) {
+	static boolean newGame(String winner, String loser, long time) {
 		try {
 			int winnerId = getUserID(winner);
 			int loserId = getUserID(loser);
 			
 			PreparedStatement stmt = con.prepareStatement(
-					"INSERT INTO game (won, lost) VALUES (?, ?);");
+					"INSERT INTO game (won, lost, time) VALUES (?, ?, ?);");
 			
 			stmt.setInt(1, winnerId);
 			stmt.setInt(2, loserId);
+			stmt.setLong(3, time);
 			
 			stmt.executeUpdate();
 			
