@@ -12,7 +12,7 @@ import java.util.List;
  * Database functions for user management.
  * 
  * @author Ben Drawer
- * @version 17 September 2018
+ * @version 27 September 2018
  *
  */
 class Database {
@@ -367,7 +367,7 @@ class Database {
 	 * @param con connection to database
 	 * @return a list of usernames, wins, and losses
 	 */
-	static List<String[]> getLeaderboard() {
+	static List<String[]> getLeaderboard(int limit) {
 		List<String[]> leaderboard = new LinkedList<>();
 		
 		try {
@@ -381,7 +381,10 @@ class Database {
 					") w, game " + 
 					"WHERE w.id = lost " + 
 					"GROUP BY username " + 
-					"ORDER BY gross - COUNT(game.id) DESC;");
+					"ORDER BY gross - COUNT(game.id) DESC " +
+					"LIMIT ?;");
+			
+			stmt.setInt(1, limit);
 			
 			ResultSet rs = stmt.executeQuery();
 			
@@ -391,6 +394,44 @@ class Database {
 				temp[0] = rs.getString(2);
 				temp[1] = rs.getInt(3) + "";
 				temp[2] = rs.getInt(4) + "";
+				
+				leaderboard.add(temp);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return leaderboard;
+	}
+	
+	/**
+	 * Retrieves the timed leaderboard.
+	 * The timed leaderboard shows the shortest times in milliseconds.
+	 * The same user can appear on it more than once.
+	 * 
+	 * @param con connection to database
+	 * @return a list of usernames and times
+	 */
+	static List<String[]> getTimedLeaderboard(int limit) {
+		List<String[]> leaderboard = new LinkedList<>();
+		
+		try {
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT username, time " + 
+					"FROM user, game " + 
+					"WHERE user.id = won " + 
+					"ORDER BY time ASC " +
+					"LIMIT ?;");
+			
+			stmt.setInt(1, limit);
+			
+			ResultSet rs = stmt.executeQuery();
+			
+			while (rs.next()) {
+				String[] temp = new String[2];
+				
+				temp[0] = rs.getString(1);
+				temp[1] = rs.getInt(2) + "";
 				
 				leaderboard.add(temp);
 			}

@@ -9,7 +9,7 @@ import protocol.Protocol;
 /**
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 26 September 2018
  *
  */
 class ServerActions {
@@ -88,7 +88,7 @@ class ServerActions {
 	 * @return
 	 */
 	String leaderboard(String[] input) {
-		List<String[]> leaderboardList = Database.getLeaderboard();
+		List<String[]> leaderboardList = Database.getLeaderboard(Integer.parseInt(input[0]));
 		int size = leaderboardList.size();
 		
 		if (size > 0) {
@@ -113,8 +113,24 @@ class ServerActions {
 	}
 	
 	String timedLeaderboard(String[] input) {
-		outArr[0] = FALSE;
-		outArr[1] = "It's lonely in here!";
+		List<String[]> timedLeaderboardList = Database.getTimedLeaderboard(Integer.parseInt(input[0]));
+		int size = timedLeaderboardList.size();
+		
+		if (size > 0) {
+			outArr = new String[size * 2 + 1];
+			outArr[0] = TRUE;
+			int i = 1;
+			
+			for (String[] s : timedLeaderboardList) {
+				outArr[i] = s[0];
+				outArr[i+1] = s[1];
+				
+				i += 2;
+			}
+		} else {
+			outArr[0] = FALSE;
+			outArr[1] = "It's lonely in here!";
+		}
 		
 		return protocol.transmit(GET_TIMED_LEADERBOARD, outArr);
 	}

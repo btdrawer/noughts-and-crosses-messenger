@@ -16,12 +16,12 @@ import protocol.Constants;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 26 September 2018
  *
  */
 public class LeaderboardController extends HomeController {
 	@FXML protected ListView<String> onlineUsers;
-	@FXML protected GridPane leaderboard;
+	@FXML protected GridPane leaderboard, timedLeaderboard;
 	@FXML protected Button settings;
 	@FXML protected Button signout;
 	private static Client client = Main.getClient();
@@ -98,7 +98,26 @@ public class LeaderboardController extends HomeController {
 		});
 	}
 	
+	/**
+	 * Sets the content of the timed leaderboard.
+	 * 
+	 * @param input
+	 */
 	private void setTimedLeaderboard(String[] input) {
-		//TODO
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (input[0].equals(TRUE)) {
+					int j = 1;
+					
+					for (int i = 1; i < input.length; i += 2) {
+						timedLeaderboard.add(new Text(input[i]), 0, j);
+						timedLeaderboard.add(new Text(input[i+1]), 1, j);
+						
+						j += 1;
+					}
+				}
+			}
+		});
 	}
 }
