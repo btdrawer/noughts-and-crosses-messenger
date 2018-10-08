@@ -26,6 +26,10 @@ public class Constants {
 	public static final String SEND_CHALLENGE_PINGBACK = "SEND_CHALLENGE_PINGBACK";
 	public static final String RESPOND_TO_CHALLENGE = "RESPOND_TO_CHALLENGE";
 	
+	public static final String SEND_MESSAGE = "SEND_MESSAGE";
+	public static final String GET_MESSAGES = "GET_MESSAGES";
+	public static final String GET_NEW_MESSAGE = "GET_NEW_MESSAGE";
+	
 	public static final String NEW_GAME = "NEW_GAME";
 	public static final String ADD_CHAR = "ADD_CHAR";
 	public static final String LEFT_GAME = "LEFT_GAME";

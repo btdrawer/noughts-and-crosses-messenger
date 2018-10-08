@@ -12,7 +12,7 @@ import java.util.List;
  * Database functions for user management.
  * 
  * @author Ben Drawer
- * @version 27 September 2018
+ * @version 8 October 2018
  *
  */
 class Database {
@@ -533,6 +533,74 @@ class Database {
 			stmt.setString(1, newUsername);
 			stmt.setString(2, password);
 			stmt.setString(3, oldUsername);
+			
+			stmt.executeUpdate();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Retrieves a list of messages between two users.
+	 * 
+	 * @param username1
+	 * @param username2
+	 * @return a list of messages between two users
+	 */
+	static List<Message> getMessages(String username1, String username2, int offset) {
+		try {
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT timestamp, sender, recipient, message " +
+					"FROM message " +
+					"WHERE (sender = ? AND recipient = ?) OR " +
+					"(sender = ? AND recipient = ?) " +
+					"ORDER BY timestamp DESC " +
+					"OFFSET ?");
+			
+			stmt.setString(1, username1);
+			stmt.setString(2, username2);
+			stmt.setString(3, username2);
+			stmt.setString(4, username1);
+			stmt.setInt(5, offset);
+			
+			ResultSet rs = stmt.executeQuery();
+			List<Message> messages = new LinkedList<>();
+			
+			while (rs.next()) {
+				messages.add(new Message(rs.getTimestamp(1), rs.getString(2), 
+						rs.getString(3), rs.getString(4)));
+				rs.next();
+			}
+			
+			return messages;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Sends a message to the database.
+	 * 
+	 * @param timestamp
+	 * @param sender
+	 * @param recipient
+	 * @param message
+	 * @return true or false
+	 */
+	static boolean sendMessage(Message toSend) {
+		try {
+			PreparedStatement stmt = con.prepareStatement(
+					"INSERT INTO message (timestamp, sender, recipient, message) " +
+					"VALUES (?, ?, ?, ?)");
+			
+			stmt.setTimestamp(1, toSend.getTimestamp());
+			stmt.setString(2, toSend.getSender());
+			stmt.setString(3, toSend.getRecipient());
+			stmt.setString(4, toSend.getMessage());
 			
 			stmt.executeUpdate();
 			

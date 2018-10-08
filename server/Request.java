@@ -15,7 +15,7 @@ import protocol.Constants;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 8 October 2018
  *
  */
 class Request {
@@ -28,6 +28,7 @@ class Request {
 	private ServerActions serverActions;
 	private ProfileActions profileActions;
 	private GameActions gameActions;
+	private MessageActions messageActions;
 	
 	/**
 	 * Constructor.
@@ -43,6 +44,7 @@ class Request {
 		this.serverActions = new ServerActions(clientSocket);
 		this.profileActions = new ProfileActions(clientSocket);
 		this.gameActions = new GameActions();
+		this.messageActions = new MessageActions();
 	}
 	
 	/**
@@ -131,6 +133,12 @@ class Request {
 							break;
 						case Constants.EDIT_PROFILE:
 							output = profileActions.changes(input);
+							break;
+						case Constants.GET_MESSAGES:
+							output = messageActions.getMessages(input);
+							break;
+						case Constants.SEND_MESSAGE:
+							output = messageActions.sendMessage(input);
 							break;
 						case Constants.LEFT_GAME:
 							output = gameActions.leftGame(input, profileActions);
