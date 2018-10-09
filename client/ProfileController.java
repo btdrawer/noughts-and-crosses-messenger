@@ -1,6 +1,7 @@
 package client;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -105,7 +106,7 @@ public class ProfileController extends HomeController {
 	 */
 	@FXML
 	protected void sendButton(ActionEvent event) throws IOException {
-		String[] outArr = {new Timestamp(Calendar.MILLISECOND).toString(), 
+		String[] outArr = {new Timestamp(Calendar.getInstance().getTime().getTime()).toString(), 
 				client.getUsername(), username.getText(), messageField.getText()};
 		client.sendMessage(SEND_MESSAGE, outArr);
 	}
