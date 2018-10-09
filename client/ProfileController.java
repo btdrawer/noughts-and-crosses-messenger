@@ -45,9 +45,9 @@ public class ProfileController extends HomeController {
 		
 		profileData = Main.getData();
 		username.setText(profileData[1]);
-		wins.setText(profileData[3]);
-		losses.setText(profileData[4]);
-		net.setText(profileData[5]);
+		wins.setText(wins.getText() + " " + profileData[3]);
+		losses.setText(losses.getText() + " " + profileData[4]);
+		net.setText(net.getText() + " " + profileData[5]);
 		
 		//TODO change colours
 		this.statusStr = profileData[2];

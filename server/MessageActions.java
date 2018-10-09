@@ -12,7 +12,7 @@ import protocol.Protocol;
 /**
  * 
  * @author Ben Drawer
- * @version 8 October 2018
+ * @version 9 October 2018
  *
  */
 class MessageActions {
@@ -23,6 +23,13 @@ class MessageActions {
 			SEND_MESSAGE = Constants.SEND_MESSAGE,
 			TRUE = Constants.TRUE,
 			FALSE = Constants.FALSE;
+	
+	/**
+	 * Constructor.
+	 */
+	MessageActions() {
+		this.protocol = new Protocol();
+	}
 	
 	/**
 	 * Gets messages from server.
@@ -36,20 +43,26 @@ class MessageActions {
 	String getMessages(String[] input) {
 		List<Message> messagesList = Database.getMessages(input[0], input[1], 
 				Integer.parseInt(input[2]));
+		String[] messages;
 		
-		String[] messages = new String[messagesList.size() * 4];
-		
-		int j = 0;
-		
-		for (int i = 0; i < messages.length; i += 4) {
-			Message m = messagesList.get(j);
+		if (messagesList.size() > 0) {
+			messages = new String[messagesList.size() * 4];
 			
-			messages[i] = m.getTimestamp().toString();
-			messages[i+1] = m.getSender();
-			messages[i+2] = m.getRecipient();
-			messages[i+3] = m.getMessage();
+			int j = 0;
 			
-			j += 1;
+			for (int i = 0; i < messages.length; i += 4) {
+				Message m = messagesList.get(j);
+				
+				messages[i] = m.getTimestamp().toString();
+				messages[i+1] = m.getSender();
+				messages[i+2] = m.getRecipient();
+				messages[i+3] = m.getMessage();
+				
+				j += 1;
+			}
+		} else {
+			messages = new String[1];
+			messages[0] = "";
 		}
 		
 		return protocol.transmit(GET_MESSAGES, messages);

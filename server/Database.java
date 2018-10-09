@@ -558,7 +558,7 @@ class Database {
 					"WHERE (sender = ? AND recipient = ?) OR " +
 					"(sender = ? AND recipient = ?) " +
 					"ORDER BY timestamp DESC " +
-					"OFFSET ?");
+					"LIMIT 25 OFFSET ?");
 			
 			stmt.setString(1, username1);
 			stmt.setString(2, username2);

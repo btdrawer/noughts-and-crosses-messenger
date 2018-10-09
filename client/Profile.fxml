@@ -29,14 +29,14 @@
     </Text>
     <GridPane layoutX="227.0" layoutY="100.0">
       <children>
-        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Wins:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <Text fx:id="wins" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Text fx:id="losses" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <Text fx:id="shortestTime" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Text fx:id="wins" strokeType="OUTSIDE" strokeWidth="0.0" text="Wins:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         <Text fx:id="status" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Losses" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Shortest time:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Net:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Text fx:id="losses" strokeType="OUTSIDE" strokeWidth="0.0" text="Losses" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Text fx:id="shortestTime" strokeType="OUTSIDE" strokeWidth="0.0" text="Shortest time:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Text fx:id="net" strokeType="OUTSIDE" strokeWidth="0.0" text="Net:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         <Button mnemonicParsing="false" onAction="#playButton" text="Play" GridPane.columnIndex="2" GridPane.rowIndex="0" />
       </children>
       <columnConstraints>
