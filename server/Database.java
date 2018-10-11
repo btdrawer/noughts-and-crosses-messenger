@@ -595,12 +595,15 @@ class Database {
 		try {
 			PreparedStatement stmt = con.prepareStatement(
 					"INSERT INTO message (timestamp, sender, recipient, message) " +
-					"VALUES (?, ?, ?, ?)");
+					"SELECT ?, id, recipient, ? " +
+					"FROM user, " +
+					"(SELECT id AS recipient FROM user WHERE username = ?) t " +
+					"WHERE username = ?");
 			
 			stmt.setTimestamp(1, toSend.getTimestamp());
-			stmt.setString(2, toSend.getSender());
+			stmt.setString(2, toSend.getMessage());
 			stmt.setString(3, toSend.getRecipient());
-			stmt.setString(4, toSend.getMessage());
+			stmt.setString(4, toSend.getSender());
 			
 			stmt.executeUpdate();
 			
