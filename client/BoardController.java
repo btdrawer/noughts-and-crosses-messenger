@@ -59,16 +59,16 @@ public class BoardController extends Controller {
 	}
 	
 	@Override
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case ADD_CHAR:
-				receiveChar(input);
+				receiveChar(result, input);
 				break;
 			case LEFT_GAME:
-				leftGame(input);
+				leftGame(result, input);
 				break;
 			case VIEW_PROFILE:
-				viewProfile(input);
+				viewProfile(result, input);
 				break;
 		}
 	}
@@ -109,11 +109,11 @@ public class BoardController extends Controller {
 	 * 
 	 * @param input [1] = username
 	 */
-	private void leftGame(String[] input) {
+	private void leftGame(boolean result, String[] input) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				Alert alert = new Alert(AlertType.INFORMATION, input[1] + " has left the game! :(", 
+				Alert alert = new Alert(AlertType.INFORMATION, input[0] + " has left the game! :(", 
 						ButtonType.OK);
 				Optional<ButtonType> result = alert.showAndWait();
 				
@@ -132,7 +132,7 @@ public class BoardController extends Controller {
 	 * 
 	 * @param input
 	 */
-	private void viewProfile(String[] input) {
+	private void viewProfile(boolean result, String[] input) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -168,7 +168,7 @@ public class BoardController extends Controller {
 	 * 
 	 * @param input [0] = x-coordinate, [1] = y-coordinate, [2] = O or X
 	 */
-	private void receiveChar(String[] input) {
+	private void receiveChar(boolean result, String[] input) {
 		if (input[0].equals(TRUE) || input[0].equals(TRUE_DRAW) || 
 				input[0].equals(TRUE_LOST)) {
 			int x = Integer.parseInt(input[1]);

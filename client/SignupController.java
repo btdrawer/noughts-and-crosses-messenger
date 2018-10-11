@@ -20,7 +20,7 @@ import protocol.Constants;
  * Controller for the signup pane.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 public class SignupController extends Controller {
@@ -33,7 +33,6 @@ public class SignupController extends Controller {
 	private static Client client = Main.getClient();
 	private static final String GET_SECURITY_QUESTIONS = Constants.GET_SECURITY_QUESTIONS,
 			SIGN_UP = Constants.SIGN_UP,
-			FALSE = Constants.FALSE,
 			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL,
 			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL;
 	
@@ -56,10 +55,10 @@ public class SignupController extends Controller {
 	 * @param input information associated with action
 	 */
 	@Override
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case SIGN_UP:
-				signUp(input);
+				signUp(result, input);
 				break;
 			case GET_SECURITY_QUESTIONS:
 				populateSecurityQuestions(input);
@@ -74,10 +73,10 @@ public class SignupController extends Controller {
 	 * 
 	 * @param input information from server
 	 */
-	private void signUp(String[] input) {
-		if (input[0].equals(FALSE)) {
+	private void signUp(boolean result, String[] input) {
+		if (!result)
 			responseText.setText(Main.twoLines(response[1]));
-		} else {
+		else {
 			client.setUsername(username.getText());
 			Main.changeScene(LEADERBOARD_PANEL);
 		}

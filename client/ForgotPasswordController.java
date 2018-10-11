@@ -12,7 +12,7 @@ import protocol.Constants;
  * Controller for forgot password pane.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 public class ForgotPasswordController extends Controller {
@@ -20,14 +20,13 @@ public class ForgotPasswordController extends Controller {
 	@FXML protected Text responseText;
 	private static Client client = Main.getClient();
 	private static final String FORGOT_PASSWORD_REQUEST = Constants.FORGOT_PASSWORD_REQUEST,
-			TRUE = Constants.TRUE,
 			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL,
 			FORGOT_PASSWORD_QUESTION_PANEL = PanelConstants.FORGOT_PASSWORD_QUESTION_PANEL;
 	
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case FORGOT_PASSWORD_REQUEST:
-				forgotPasswordRequestHandler(input);
+				forgotPasswordRequestHandler(result, input);
 				break;
 		}
 	}
@@ -57,19 +56,17 @@ public class ForgotPasswordController extends Controller {
 	/**
 	 * Handler for when username submitted.
 	 * 
-	 * [0] = true or false
-	 * [1] = username
-	 * [2] = error message if false
+	 * [0] = username
+	 * [1] = error message if false
 	 * 
 	 * @param input
 	 */
-	private void forgotPasswordRequestHandler(String[] input) {
-		if (input[0].equals(TRUE)) {
-			String[] data = {input[1], input[2]};
+	private void forgotPasswordRequestHandler(boolean result, String[] input) {
+		if (result) {
+			String[] data = {input[0], input[1]};
 			Main.setData(data);
 			Main.changeScene(FORGOT_PASSWORD_QUESTION_PANEL);
-		} else {
-			responseText.setText(input[2]);
-		}
+		} else
+			responseText.setText(input[1]);
 	}
 }

@@ -1,7 +1,6 @@
 package client;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -18,7 +17,7 @@ import protocol.Constants;
  * Controller for the Profile scene.
  * 
  * @author Ben Drawer
- * @version 8 October 2018
+ * @version 11 October 2018
  *
  */
 public class ProfileController extends HomeController {
@@ -63,7 +62,7 @@ public class ProfileController extends HomeController {
 		
 		try {
 			String[] getMessages = {client.getUsername(), username.getText(), 
-					25 + ""};
+					0 + ""};
 			
 			client.sendMessage(GET_MESSAGES, getMessages);
 		} catch (IOException e) {
@@ -72,7 +71,7 @@ public class ProfileController extends HomeController {
 	}
 	
 	@Override
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case GET_MESSAGES:
 				getMessages(input);
@@ -80,8 +79,11 @@ public class ProfileController extends HomeController {
 			case GET_NEW_MESSAGE:
 				addNewMessage(input);
 				break;
+			case SEND_MESSAGE:
+				sendMessageCallback(result, input);
+				break;
 			default:
-				super.processInput(action, input);
+				super.processInput(action, result, input);
 		}
 	}
 	
@@ -133,5 +135,18 @@ public class ProfileController extends HomeController {
 		messages.add(input[1] + " (" + input[0] + ") " + input[3]);
 		
 		messageList.setItems(messages);
+	}
+	
+	/**
+	 * Handles message from server after message has been sent.
+	 * 
+	 * @param input
+	 */
+	private void sendMessageCallback(boolean result, String[] input) {
+		if (result) {
+			addNewMessage(input);
+			messageField.clear();
+		} else
+			responseText.setText("Message failed to send! :(");
 	}
 }

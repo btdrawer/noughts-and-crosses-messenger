@@ -41,9 +41,9 @@ public class ConnectController extends Controller {
 	 * @param input information associated with action
 	 * @throws IOException
 	 */
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		if (action.equals(CONNECT))
-			connect(input);
+			connect(result);
 	}
 	
 	/**
@@ -52,8 +52,8 @@ public class ConnectController extends Controller {
 	 * @param input
 	 * @throws IOException
 	 */
-	private void connect(String[] input) {
-		if (input.length > 0)
+	private void connect(boolean result) {
+		if (result)
 			Main.changeScene(SIGN_IN_PANEL);
 		else
 			responseText.setText("Unable to join server.\nPlease try again later.");
@@ -81,8 +81,7 @@ public class ConnectController extends Controller {
 				client.initialize();
 				client.getListener().setController(this);
 				
-				String[] outArr = {};
-				client.sendMessage(CONNECT, outArr);
+				client.sendMessage(CONNECT, "");
 			} catch (ConnectException e) {
 				responseText.setText("Could not find server.");
 			}

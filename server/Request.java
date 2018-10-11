@@ -15,7 +15,7 @@ import protocol.Constants;
  * This class handles a request.
  * 
  * @author Ben Drawer
- * @version 8 October 2018
+ * @version 11 October 2018
  *
  */
 class Request {
@@ -73,7 +73,7 @@ class Request {
 			while(true) {
 				String s, action;
 				String[] input;
-				boolean sendToOtherUser;
+				boolean result, sendToOtherUser;
 				
 				while((s = in.readLine()) != null) {
 					System.out.println("Input: " + s);
@@ -121,7 +121,8 @@ class Request {
 							output = gameActions.sendChallenge(input);
 							break;
 						case Constants.RESPOND_TO_CHALLENGE:
-							outArr = gameActions.challengeResponse(input);
+							result = protocol.getResult(s);
+							outArr = gameActions.challengeResponse(result, input);
 							sendToOtherUser = true;
 							break;
 						case Constants.NEW_GAME:

@@ -10,7 +10,7 @@ import protocol.Constants;
 /**
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 class GameActions {
@@ -25,12 +25,13 @@ class GameActions {
 			TRUE_DRAW = Constants.TRUE_DRAW,
 			TRUE_WON = Constants.TRUE_WON,
 			TRUE = Constants.TRUE,
-			FALSE = Constants.FALSE,
 			ADD_CHAR = Constants.ADD_CHAR,
 			LEFT_GAME = Constants.LEFT_GAME,
 			ONLINE = Constants.ONLINE,
 			BUSY = Constants.BUSY,
 			OFFLINE = Constants.OFFLINE;
+	private String message;
+	private boolean result;
 	
 	/**
 	 * Constructor.
@@ -53,16 +54,16 @@ class GameActions {
 	String sendChallenge(String[] input) throws IOException {
 		if (Main.findGame(input[1]) == null) {
 			sockets.get(input[1]).getOutputStream().write(
-					protocol.transmit(SEND_CHALLENGE, input[0]).getBytes());
+					protocol.transmit(SEND_CHALLENGE, true, input[0]).getBytes());
 			
-			outArr[0] = TRUE;
-			outArr[1] = "Challenging user: " + input[1] + "...";
+			result = true;
+			message = "Challenging user: " + input[1] + "...";
 		} else {
-			outArr[0] = FALSE;
-			outArr[1] = "This user is unavailable.";
+			result = false;
+			message = "This user is unavailable.";
 		}
 		
-		return protocol.transmit(SEND_CHALLENGE_PINGBACK, outArr);
+		return protocol.transmit(SEND_CHALLENGE_PINGBACK, result, message);
 	}
 	
 	/**
@@ -76,15 +77,14 @@ class GameActions {
 	 * @param input
 	 * @throws IOException
 	 */
-	String[] challengeResponse(String[] input) throws IOException {
-		outArr = new String[3];
+	String[] challengeResponse(boolean result, String[] input) throws IOException {
+		outArr = new String[2];
 		outArr[0] = input[0];
-		outArr[1] = input[2];
 		
-		if (input[0].equals(FALSE))
-			outArr[2] = "Sorry, this user declined your challenge.";
+		if (!result)
+			outArr[1] = "Sorry, this user declined your challenge.";
 		
-		String[] toSend = {protocol.transmit(RESPOND_TO_CHALLENGE, outArr), input[1]};
+		String[] toSend = {protocol.transmit(RESPOND_TO_CHALLENGE, outArr), input[0]};
 		
 		return toSend;
 	}
@@ -96,21 +96,20 @@ class GameActions {
 	 * @return output indicating whether the new game has been successfully initiated
 	 */
 	String newGame(String[] input) {
-		outArr = new String[2];
-		
 		if (Database.getProfile(input[0]).getStatus().equals(OFFLINE) || 
 				Database.getProfile(input[1]).getStatus().equals(BUSY)) {
-			outArr[0] = FALSE;
-			outArr[1] = "This user isn't available.";
+			result = false;
+			message = "This user isn't available.";
 		} else {
 			Main.newGame(input);
 			
 			Database.setStatus(input[0], input[1], BUSY);
 			
-			outArr[0] = TRUE;
+			result = true;
+			message = "";
 		}
 		
-		return protocol.transmit(NEW_GAME, outArr);
+		return protocol.transmit(NEW_GAME, result, message);
 	}
 	
 	/**

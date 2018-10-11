@@ -12,7 +12,7 @@ import protocol.Protocol;
 /**
  * 
  * @author Ben Drawer
- * @version 9 October 2018
+ * @version 11 October 2018
  *
  */
 class MessageActions {
@@ -20,9 +20,8 @@ class MessageActions {
 	private static Map<String, Socket> sockets = Main.getSockets();
 	private static final String GET_MESSAGES = Constants.GET_MESSAGES,
 			GET_NEW_MESSAGE = Constants.GET_NEW_MESSAGE,
-			SEND_MESSAGE = Constants.SEND_MESSAGE,
-			TRUE = Constants.TRUE,
-			FALSE = Constants.FALSE;
+			SEND_MESSAGE = Constants.SEND_MESSAGE;
+	private boolean result;
 	
 	/**
 	 * Constructor.
@@ -65,7 +64,7 @@ class MessageActions {
 			messages[0] = "";
 		}
 		
-		return protocol.transmit(GET_MESSAGES, messages);
+		return protocol.transmit(GET_MESSAGES, true, messages);
 	}
 	
 	/**
@@ -79,17 +78,23 @@ class MessageActions {
 		boolean sent = Database.sendMessage(
 				new Message(Timestamp.valueOf(input[0]), input[1], input[2], input[3]));
 		
-		String result;
+		String[] message;
 		
 		if (sent) {
 			sockets.get(input[2]).getOutputStream().write(
-					protocol.transmit(GET_NEW_MESSAGE, input).getBytes());
+					protocol.transmit(GET_NEW_MESSAGE, true, input).getBytes());
 			
-			result = TRUE;
+			message = new String[5];
+			result = true;
+			
+			for (int i = 0; i < input.length; i++) {
+				message[i+1] = input[i];
+			}
 		} else {
-			result = FALSE;
+			message = new String[1];
+			result = false;
 		}
 		
-		return protocol.transmit(SEND_MESSAGE, result);
+		return protocol.transmit(SEND_MESSAGE, result, message);
 	}
 }

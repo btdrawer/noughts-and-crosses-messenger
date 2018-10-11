@@ -23,7 +23,7 @@ import protocol.Constants;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 class HomeController extends Controller {
@@ -41,8 +41,6 @@ class HomeController extends Controller {
 			SEND_CHALLENGE_PINGBACK = Constants.SEND_CHALLENGE_PINGBACK,
 			RESPOND_TO_CHALLENGE = Constants.RESPOND_TO_CHALLENGE,
 			SIGN_OUT = Constants.SIGN_OUT,
-			TRUE = Constants.TRUE,
-			FALSE = Constants.FALSE,
 			NEW_GAME = Constants.NEW_GAME,
 			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL,
 			PROFILE_PANEL = PanelConstants.PROFILE_PANEL,
@@ -77,7 +75,7 @@ class HomeController extends Controller {
 	 * @throws IOException
 	 */
 	@Override
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case SIGNED_IN:
 				this.addToOnlineUserList(input[0]);
@@ -92,20 +90,20 @@ class HomeController extends Controller {
 				compileUserList(input);
 				break;
 			case VIEW_PROFILE:
-				viewProfile(input);
+				viewProfile(result, input);
 				break;
 			case SEND_CHALLENGE:
 				receiveChallenge(input);
 				break;
 			case SEND_CHALLENGE_PINGBACK:
-				sendChallengePingbackHandler(input);
+				sendChallengePingbackHandler(result, input);
 				break;
 			case RESPOND_TO_CHALLENGE:
-				challengeResponseHandler(input);
+				challengeResponseHandler(result, input);
 				break;
 			case SIGN_OUT:
 				try {
-					signOut(input);
+					signOut(result, input);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -191,8 +189,8 @@ class HomeController extends Controller {
 	 * @param input response from server indicating whether sign out was successful
 	 * @throws IOException
 	 */
-	private void signOut(String[] input) throws IOException {
-		if (input[0].equals(TRUE)) {
+	private void signOut(boolean result, String[] input) throws IOException {
+		if (result) {
 			client.setUsername("");
 			Main.changeScene(SIGN_IN_PANEL);
 		}
@@ -208,27 +206,27 @@ class HomeController extends Controller {
 		String challenger = input[0];
 		String recipient = client.getUsername();
 		
-		String[] outArr = new String[4];
-		outArr[1] = challenger;
-		outArr[2] = recipient;
+		String[] outArr = new String[2];
+		outArr[0] = challenger;
+		outArr[1] = recipient;
 		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				Alert alert = new Alert(AlertType.CONFIRMATION, challenger + " has challenged you." +
 						" Accept?", ButtonType.YES, ButtonType.NO);
-				Optional<ButtonType> result = alert.showAndWait();
+				Optional<ButtonType> response = alert.showAndWait();
 				
-				if (result.isPresent() && result.get() == ButtonType.YES) {
-					outArr[0] = TRUE;
-					
+				boolean result = false;
+				
+				if (response.isPresent() && response.get() == ButtonType.YES) {
 					String[] data = {recipient, challenger, 1 + ""};
+					result = true;
 					Main.changeScene(BOARD_PANEL, data);
-				} else if (result.isPresent() && result.get() == ButtonType.NO)
-					outArr[0] = FALSE;
+				}
 				
 				try {
-					client.sendMessage(RESPOND_TO_CHALLENGE, outArr);
+					client.sendMessage(RESPOND_TO_CHALLENGE, result, outArr);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -240,14 +238,11 @@ class HomeController extends Controller {
 	 * After a user sends a challenge, the server provides a response
 	 * stating whether or not that user is available.
 	 * 
-	 * [0] = true or false
-	 * [1] = response text
-	 * 
-	 * @param input
+	 * @param input [0] = response text
 	 */
-	private void sendChallengePingbackHandler(String[] input) {
-		if (input[0].equals(FALSE))
-			responseText.setText(input[1]);
+	private void sendChallengePingbackHandler(boolean result, String[] input) {
+		if (!result)
+			responseText.setText(input[0]);
 	}
 	
 	/**
@@ -259,10 +254,8 @@ class HomeController extends Controller {
 	 */
 	@FXML
 	protected void selectedProfile(MouseEvent event) throws IOException {
-		String[] outArr = {onlineUsers.getSelectionModel().getSelectedItem()};
-		
 		if (event.getClickCount() > 1)
-			client.sendMessage(VIEW_PROFILE, outArr);
+			client.sendMessage(VIEW_PROFILE, onlineUsers.getSelectionModel().getSelectedItem());
 	}
 	
 	/**
@@ -271,8 +264,8 @@ class HomeController extends Controller {
 	 * 
 	 * @param input data for the user's profile
 	 */
-	private void viewProfile(String[] input) {
-		if (input[0].equals(TRUE)) {
+	private void viewProfile(boolean result, String[] input) {
+		if (result) {
 			Main.changeScene(PROFILE_PANEL, input);
 		} else {
 			//TODO Error occurred
@@ -308,17 +301,17 @@ class HomeController extends Controller {
 	 * @param input
 	 * @throws IOException 
 	 */
-	private void challengeResponseHandler(String[] input) {
-		if (input[0].equals(TRUE)) {
+	private void challengeResponseHandler(boolean result, String[] input) {
+		if (result) {
 			try {
-				String[] data = {client.getUsername(), input[1], 0 + ""};
+				String[] data = {client.getUsername(), input[0], 0 + ""};
 				Main.changeScene(BOARD_PANEL, data);
 				client.sendMessage(NEW_GAME, data);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else
-			responseText.setText(input[2]);
+			responseText.setText(input[1]);
 	}
 	
 	/**

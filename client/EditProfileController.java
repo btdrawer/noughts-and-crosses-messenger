@@ -15,7 +15,7 @@ import protocol.Constants;
  * Controller for the Edit Profile scene.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 public class EditProfileController extends HomeController {
@@ -24,7 +24,6 @@ public class EditProfileController extends HomeController {
 	@FXML protected Text editResponseText;
 	private static Client client = Main.getClient();
 	private static final String EDIT_PROFILE = Constants.EDIT_PROFILE,
-			TRUE = Constants.TRUE,
 			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL;
 	private String currentUsername;
 	
@@ -37,13 +36,13 @@ public class EditProfileController extends HomeController {
 	}
 	
 	@Override
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case EDIT_PROFILE:
-				editProfile(input);
+				editProfile(result, input);
 				break;
 			default:
-				super.processInput(action, input);
+				super.processInput(action, result, input);
 		}
 	}
 	
@@ -103,15 +102,15 @@ public class EditProfileController extends HomeController {
 	/**
 	 * Handles response from server regarding attempted changes.
 	 * 
-	 * @param input [0] = success or failure; [1] = message; [2] = new username (if changed)
+	 * @param input [0] = message; [1] = new username (if changed)
 	 */
-	private void editProfile(String[] input) {
-		if (input[0].equals(TRUE)) {
-			if (!input[2].equals("."))
-				client.setUsername(input[2]);
+	private void editProfile(boolean result, String[] input) {
+		if (result) {
+			if (!input[1].equals("."))
+				client.setUsername(input[1]);
 			
 			Main.changeScene(LEADERBOARD_PANEL);
 		} else
-			editResponseText.setText(Main.twoLines(input[1]));
+			editResponseText.setText(Main.twoLines(input[0]));
 	}
 }

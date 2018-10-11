@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  * Transmits data between clients and server.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 public class Protocol {
@@ -19,6 +19,15 @@ public class Protocol {
 	 */
 	public String getAction(String a) {
 		return a.split("//")[0];
+	}
+	
+	/**
+	 * 
+	 * @param a true or false
+	 * @return boolean value
+	 */
+	public boolean getResult(String a) {
+		return Boolean.parseBoolean(a.split("//")[1]);
 	}
 	
 	/**
@@ -52,21 +61,47 @@ public class Protocol {
 	}
 	
 	/**
+	 * Transmits data.
+	 * Similar to other transmit method, but takes a String for input information
+	 * rather than an array.
+	 * 
+	 * @param action
+	 * @param result response from the server stating whether or not the action was successful
+	 * @param a array of information pertaining to the attempted action
+	 * @return String containing the action word and other information
+	 */
+	public String transmit(String action, boolean result, String[] a) {
+		StringBuilder sb = new StringBuilder();
+		
+		for(String s : a) {
+			sb.append(s + "//");
+		}
+		
+		return action + "//" + result + "//" + sb.toString() + "\n";
+	}
+	
+	/**
+	 * Transmits data.
+	 * Similar to other transmit method, but takes a String for input information
+	 * rather than an array.
+	 * 
+	 * @param action
+	 * @param result response from the server stating whether or not the action was successful
+	 * @param a String of information pertaining to the attempted action
+	 * @return String containing the action word and other information
+	 */
+	public String transmit(String action, boolean result, String a) {
+		return action + "//" + result + "//" + a + "\n";
+	}
+	
+	/**
 	 * Used to receive information.
 	 * 
 	 * @param a input String containing action word and other information
 	 * @return String array of same information, excluding the action word
 	 */
 	public String[] receive(String a) {
-		String[] s0 = a.split("//");
-		int length = s0.length-1;
-		String[] s1 = new String[length];
-		
-		for(int i = 0; i < length; i++) {
-			s1[i] = s0[i+1];
-		}
-		
-		return s1;
+		return a.split("//");
 	}
 	
 	/**
