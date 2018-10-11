@@ -101,7 +101,24 @@ public class Protocol {
 	 * @return String array of same information, excluding the action word
 	 */
 	public String[] receive(String a) {
-		return a.split("//");
+		String[] s0 = a.split("//");
+		int offset;
+		
+		if (s0.length < 2)
+			offset = 1;
+		else if (s0[1].equals("true") || s0[1].equals("false"))
+			offset = 2;
+		else
+			offset = 1;
+		
+		int length = s0.length-offset;
+		String[] s1 = new String[length];
+		
+		for(int i = 0; i < length; i++) {
+			s1[i] = s0[i+offset];
+		}
+		
+		return s1;
 	}
 	
 	/**
