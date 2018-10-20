@@ -6,7 +6,7 @@ import java.sql.Timestamp;
  * Message class.
  * 
  * @author Ben Drawer
- * @version 8 October 2018
+ * @version 11 October 2018
  *
  */
 class Message {
@@ -27,6 +27,19 @@ class Message {
 		this.timestamp = timestamp;
 		this.sender = sender;
 		this.recipient = recipient;
+		this.message = message;
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param timestamp
+	 * @param sender
+	 * @param message
+	 */
+	Message(Timestamp timestamp, String sender, String message) {
+		this.timestamp = timestamp;
+		this.sender = sender;
 		this.message = message;
 	}
 	

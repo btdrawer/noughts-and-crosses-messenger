@@ -21,7 +21,6 @@ class MessageActions {
 	private static final String GET_MESSAGES = Constants.GET_MESSAGES,
 			GET_NEW_MESSAGE = Constants.GET_NEW_MESSAGE,
 			SEND_MESSAGE = Constants.SEND_MESSAGE;
-	private boolean result;
 	
 	/**
 	 * Constructor.
@@ -40,8 +39,7 @@ class MessageActions {
 	 * @return
 	 */
 	String getMessages(String[] input) {
-		List<Message> messagesList = Database.getMessages(input[0], input[1], 
-				Integer.parseInt(input[2]));
+		List<Message> messagesList = Database.getMessages(input[0], input[1]);
 		String[] messages;
 		
 		if (messagesList.size() > 0) {
@@ -78,23 +76,13 @@ class MessageActions {
 		boolean sent = Database.sendMessage(
 				new Message(Timestamp.valueOf(input[0]), input[1], input[2], input[3]));
 		
-		String[] message;
-		
 		if (sent) {
 			sockets.get(input[2]).getOutputStream().write(
 					protocol.transmit(GET_NEW_MESSAGE, true, input).getBytes());
 			
-			message = new String[5];
-			result = true;
-			
-			for (int i = 0; i < input.length; i++) {
-				message[i+1] = input[i];
-			}
-		} else {
-			message = new String[1];
-			result = false;
-		}
-		
-		return protocol.transmit(SEND_MESSAGE, result, message);
+			return protocol.transmit(SEND_MESSAGE, true, input);
+		} else
+			return protocol.transmit(SEND_MESSAGE, false, 
+					"An error occurred. Please try again later.");
 	}
 }

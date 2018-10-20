@@ -21,7 +21,7 @@ import protocol.Constants;
  * Takes care of in-game actions.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 20 October 2018
  *
  */
 public class BoardController extends Controller {

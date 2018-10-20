@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,7 +18,7 @@ import protocol.Constants;
  * Controller for the Profile scene.
  * 
  * @author Ben Drawer
- * @version 11 October 2018
+ * @version 12 October 2018
  *
  */
 public class ProfileController extends HomeController {
@@ -44,13 +45,13 @@ public class ProfileController extends HomeController {
 		super.initialize();
 		
 		profileData = Main.getData();
-		username.setText(profileData[1]);
-		wins.setText(wins.getText() + " " + profileData[3]);
-		losses.setText(losses.getText() + " " + profileData[4]);
-		net.setText(net.getText() + " " + profileData[5]);
+		username.setText(profileData[0]);
+		wins.setText(wins.getText() + " " + profileData[2]);
+		losses.setText(losses.getText() + " " + profileData[3]);
+		net.setText(net.getText() + " " + profileData[4]);
 		
 		//TODO change colours
-		this.statusStr = profileData[2];
+		this.statusStr = profileData[1];
 		status.setText(statusStr);
 		
 		if (statusStr.equals("offline"))
@@ -119,11 +120,16 @@ public class ProfileController extends HomeController {
 	 * @param input
 	 */
 	private void getMessages(String[] input) {
-		for (int i = 0; i < input.length; i += 4) {
-			messages.add(input[1] + " (" + input[0] + ") " + input[3]);
-		}
-		
-		messageList.setItems(messages);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				for (int i = 0; i < input.length; i += 4) {
+					messages.add(input[1] + " (" + input[0] + ") " + input[3]);
+				}
+				
+				messageList.setItems(messages);
+			}
+		});
 	}
 	
 	/**
@@ -132,9 +138,14 @@ public class ProfileController extends HomeController {
 	 * @param input
 	 */
 	private void addNewMessage(String[] input) {
-		messages.add(input[1] + " (" + input[0] + ") " + input[3]);
-		
-		messageList.setItems(messages);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				messages.add(input[1] + " (" + input[0] + ") " + input[3]);
+				
+				messageList.setItems(messages);
+			}
+		});
 	}
 	
 	/**

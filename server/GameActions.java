@@ -10,7 +10,7 @@ import protocol.Constants;
 /**
  * 
  * @author Ben Drawer
- * @version 11 October 2018
+ * @version 20 October 2018
  *
  */
 class GameActions {
@@ -70,21 +70,20 @@ class GameActions {
 	 * Sends the user's response to the challenge.
 	 * 
 	 * Input:
-	 * 0 = "true" if challenge accepted, "false" if rejected
-	 * 1 = challenger's username
-	 * 2 = recipient's username 
+	 * 0 = challenger's username
+	 * 1 = recipient's username 
 	 * 
 	 * @param input
 	 * @throws IOException
 	 */
 	String[] challengeResponse(boolean result, String[] input) throws IOException {
 		outArr = new String[2];
-		outArr[0] = input[0];
+		outArr[0] = input[1];
 		
 		if (!result)
 			outArr[1] = "Sorry, this user declined your challenge.";
 		
-		String[] toSend = {protocol.transmit(RESPOND_TO_CHALLENGE, outArr), input[0]};
+		String[] toSend = {protocol.transmit(RESPOND_TO_CHALLENGE, result, outArr), input[0]};
 		
 		return toSend;
 	}

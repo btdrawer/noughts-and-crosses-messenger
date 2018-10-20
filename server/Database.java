@@ -12,7 +12,7 @@ import java.util.List;
  * Database functions for user management.
  * 
  * @author Ben Drawer
- * @version 8 October 2018
+ * @version 20 October 2018
  *
  */
 class Database {
@@ -550,28 +550,19 @@ class Database {
 	 * @param username2
 	 * @return a list of messages between two users
 	 */
-	static List<Message> getMessages(String username1, String username2, int offset) {
+	static List<Message> getMessages(String username1, String username2) {
 		try {
-			PreparedStatement stmt = con.prepareStatement(
-					"SELECT timestamp, sender, recipient, message " +
-					"FROM message " +
-					"WHERE (sender = ? AND recipient = ?) OR " +
-					"(sender = ? AND recipient = ?) " +
-					"ORDER BY timestamp DESC " +
-					"LIMIT 25 OFFSET ?");
+			PreparedStatement stmt = con.prepareStatement("CALL get_messages(?, ?)");
 			
 			stmt.setString(1, username1);
 			stmt.setString(2, username2);
-			stmt.setString(3, username2);
-			stmt.setString(4, username1);
-			stmt.setInt(5, offset);
 			
 			ResultSet rs = stmt.executeQuery();
 			List<Message> messages = new LinkedList<>();
 			
 			while (rs.next()) {
 				messages.add(new Message(rs.getTimestamp(1), rs.getString(2), 
-						rs.getString(3), rs.getString(4)));
+						rs.getString(3)));
 				rs.next();
 			}
 			
