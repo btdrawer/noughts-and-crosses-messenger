@@ -141,6 +141,22 @@ class Database {
 		}
 	}
 	
+	static boolean isOnline(String username) {
+		try {
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT * FROM user WHERE username = ? AND (status = 2 OR status = 3);");
+			
+			stmt.setString(1, username);
+			
+			ResultSet rs = stmt.executeQuery();
+			rs.last();
+			
+			return rs.getRow() == 1;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
+	
 	/**
 	 * Retrieve the usernames of all online users.
 	 * 

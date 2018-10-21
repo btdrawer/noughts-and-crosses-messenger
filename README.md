@@ -22,7 +22,6 @@ When launching server.Main, the command-line will allow you to input:
 The terminal does not hide your database password; this is because the standard way of doing this in Java creates a bug in Eclipse which is the IDE I am currently using, and since I am only using a local database it is not a big deal for me. I will fix this in the future.
 ## Known bugs
 - Leaderboard currently does not display.
-- Users are able to log in to the same account from multiple clients simultaneously.
 ## Desired improvements
 - Display notifications when a user receives a message;
 - Colourise people's status;

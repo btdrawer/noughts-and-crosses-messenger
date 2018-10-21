@@ -11,7 +11,7 @@ import protocol.Protocol;
 /**
  * 
  * @author Ben Drawer
- * @version 11 October 2018
+ * @version 21 October 2018
  *
  */
 class ProfileActions {
@@ -105,6 +105,9 @@ class ProfileActions {
 		if (!Database.signIn(username, password)) {
 			result = false;
 			message = "Your username and/or password were incorrect.";
+		} else if (Database.isOnline(username)) {
+			result = false;
+			message = "An error occurred. Please try again later.";
 		} else {
 			Database.setStatus(username, ONLINE);
 			sockets.put(username, clientSocket);
@@ -153,25 +156,23 @@ class ProfileActions {
 	 * @throws NoSuchAlgorithmException 
 	 */
 	String forgotPassword(String[] input) throws NoSuchAlgorithmException {
-		if (Database.forgotPasswordAnswer(input[0], input[1])) {
-			result = true;
+		result = Database.forgotPasswordAnswer(input[0], input[1]);
+		
+		if (result)
 			message = "Enter your new password:";
-		} else {
-			result = false;
+		else
 			message = "Sorry, the answer you gave did not match our records.";
-		}
 		
 		return protocol.transmit(FORGOT_PASSWORD_ANSWER, result, message);
 	}
 	
 	String forgotPasswordChange(String[] input) {
-		if (Database.forgotPasswordChange(input[0], input[1])) {
-			result = true;
+		result = Database.forgotPasswordChange(input[0], input[1]);
+		
+		if (result)
 			message = "Password successfully reset!";
-		} else {
-			result = false;
+		else
 			message = "An error occurred. Please try again later.";
-		}
 		
 		return protocol.transmit(FORGOT_PASSWORD_CHANGE, result, message);
 	}
