@@ -12,7 +12,7 @@ import java.util.List;
  * Database functions for user management.
  * 
  * @author Ben Drawer
- * @version 20 October 2018
+ * @version 21 October 2018
  *
  */
 class Database {
@@ -371,18 +371,7 @@ class Database {
 		List<String[]> leaderboard = new LinkedList<>();
 		
 		try {
-			PreparedStatement stmt = con.prepareStatement(
-					"SELECT w.id, username, gross, gross - COUNT(game.id) AS net " + 
-					"FROM ( " + 
-					"SELECT user.id AS id, username,\n COUNT(game.id) AS gross " + 
-					"FROM user, game " + 
-					"WHERE user.id = won " + 
-					"GROUP BY username " + 
-					") w, game " + 
-					"WHERE w.id = lost " + 
-					"GROUP BY username " + 
-					"ORDER BY gross - COUNT(game.id) DESC " +
-					"LIMIT ?;");
+			PreparedStatement stmt = con.prepareStatement("CALL get_leaderboard(?);");
 			
 			stmt.setInt(1, limit);
 			
@@ -563,7 +552,6 @@ class Database {
 			while (rs.next()) {
 				messages.add(new Message(rs.getTimestamp(1), rs.getString(2), 
 						rs.getString(3)));
-				rs.next();
 			}
 			
 			return messages;
