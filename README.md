@@ -1,5 +1,5 @@
 # noughtsandcrosses
-A simple server-based Noughts and Crosses game.
+A simple server-based Noughts and Crosses game and 1:1 messaging client.
 
 Required technologies:
 - Java
