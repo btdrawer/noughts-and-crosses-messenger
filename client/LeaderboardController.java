@@ -16,7 +16,7 @@ import protocol.Constants;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 11 October 2018
+ * @version 21 October 2018
  *
  */
 public class LeaderboardController extends HomeController {
@@ -42,11 +42,8 @@ public class LeaderboardController extends HomeController {
 		super.initialize();
 		
 		try {
-			String[] outArr = {6 + ""};
-			client.sendMessage(GET_LEADERBOARD, outArr);
-			
-			outArr[0] = 5 + "";
-			client.sendMessage(GET_TIMED_LEADERBOARD, outArr);
+			client.sendMessage(GET_LEADERBOARD, 6 + "");
+			client.sendMessage(GET_TIMED_LEADERBOARD, 5 + "");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,7 +104,7 @@ public class LeaderboardController extends HomeController {
 			@Override
 			public void run() {
 				if (result) {
-					int j = 0;
+					int j = 1;
 					
 					for (int i = 0; i < input.length; i += 2) {
 						timedLeaderboard.add(new Text(input[i]), 0, j);

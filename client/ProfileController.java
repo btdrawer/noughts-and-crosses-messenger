@@ -18,7 +18,7 @@ import protocol.Constants;
  * Controller for the Profile scene.
  * 
  * @author Ben Drawer
- * @version 12 October 2018
+ * @version 21 October 2018
  *
  */
 public class ProfileController extends HomeController {
