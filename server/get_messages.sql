@@ -11,5 +11,6 @@ BEGIN
 	FROM message, user
 	WHERE user.id = sender 
 	AND ((sender = @u2 AND recipient = @u1)
-	OR (sender = @u1 AND recipient = @u2));
+	OR (sender = @u1 AND recipient = @u2))
+    ORDER BY timestamp ASC;
 END $$

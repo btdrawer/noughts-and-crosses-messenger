@@ -6,7 +6,7 @@ import java.sql.Timestamp;
  * Message class.
  * 
  * @author Ben Drawer
- * @version 11 October 2018
+ * @version 20 October 2018
  *
  */
 class Message {
@@ -73,5 +73,10 @@ class Message {
 	 */
 	String getMessage() {
 		return message;
+	}
+	
+	public String toString() {
+		return "Timestamp: " + timestamp + ", Sender: " + sender + ", Recipient: " +
+			recipient + ", Message: " + message;
 	}
 }

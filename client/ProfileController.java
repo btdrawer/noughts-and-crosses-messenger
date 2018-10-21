@@ -123,8 +123,8 @@ public class ProfileController extends HomeController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				for (int i = 0; i < input.length; i += 4) {
-					messages.add(input[1] + " (" + input[0] + ") " + input[3]);
+				for (int i = 0; i < input.length; i += 3) {
+					messages.add(input[i+1] + " (" + input[i] + "): " + input[i+2]);
 				}
 				
 				messageList.setItems(messages);

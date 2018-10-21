@@ -43,17 +43,16 @@ class MessageActions {
 		String[] messages;
 		
 		if (messagesList.size() > 0) {
-			messages = new String[messagesList.size() * 4];
+			messages = new String[messagesList.size() * 3];
 			
 			int j = 0;
 			
-			for (int i = 0; i < messages.length; i += 4) {
+			for (int i = 0; i < messages.length && j < messagesList.size(); i += 3) {
 				Message m = messagesList.get(j);
 				
 				messages[i] = m.getTimestamp().toString();
 				messages[i+1] = m.getSender();
-				messages[i+2] = m.getRecipient();
-				messages[i+3] = m.getMessage();
+				messages[i+2] = m.getMessage();
 				
 				j += 1;
 			}
