@@ -16,7 +16,7 @@ import protocol.Constants;
  * Controller for the leaderboard pane.
  * 
  * @author Ben Drawer
- * @version 26 September 2018
+ * @version 21 October 2018
  *
  */
 public class LeaderboardController extends HomeController {
@@ -27,8 +27,7 @@ public class LeaderboardController extends HomeController {
 	private static Client client = Main.getClient();
 	@FXML protected ArrayList<Text> username, gross, net;
 	private static final String GET_LEADERBOARD = Constants.GET_LEADERBOARD,
-			GET_TIMED_LEADERBOARD = Constants.GET_TIMED_LEADERBOARD,
-			TRUE = Constants.TRUE;
+			GET_TIMED_LEADERBOARD = Constants.GET_TIMED_LEADERBOARD;
 	
 	/**
 	 * Initialize method.
@@ -43,11 +42,8 @@ public class LeaderboardController extends HomeController {
 		super.initialize();
 		
 		try {
-			String[] outArr = {6 + ""};
-			client.sendMessage(GET_LEADERBOARD, outArr);
-			
-			outArr[0] = 5 + "";
-			client.sendMessage(GET_TIMED_LEADERBOARD, outArr);
+			client.sendMessage(GET_LEADERBOARD, 6 + "");
+			client.sendMessage(GET_TIMED_LEADERBOARD, 5 + "");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -61,16 +57,16 @@ public class LeaderboardController extends HomeController {
 	 * @throws IOException
 	 */
 	@Override
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case GET_LEADERBOARD:
-				setLeaderboard(input);
+				setLeaderboard(result, input);
 				break;
 			case GET_TIMED_LEADERBOARD:
-				setTimedLeaderboard(input);
+				setTimedLeaderboard(result, input);
 				break;
 			default:
-				super.processInput(action, input);
+				super.processInput(action, result, input);
 		}
 	}
 	
@@ -79,14 +75,14 @@ public class LeaderboardController extends HomeController {
 	 * 
 	 * @param input user's usernames, gross and net wins to be displayed
 	 */
-	private void setLeaderboard(String[] input) {
+	private void setLeaderboard(boolean result, String[] input) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				if (input[0].equals(TRUE)) {
-					int j = 1;
+				if (result) {
+					int j = 0;
 					
-					for (int i = 1; i < input.length; i += 3) {
+					for (int i = 0; i < input.length; i += 3) {
 						leaderboard.add(new Text(input[i]), 0, j);
 						leaderboard.add(new Text(input[i+1]), 1, j);
 						leaderboard.add(new Text(input[i+2]), 2, j);
@@ -103,14 +99,14 @@ public class LeaderboardController extends HomeController {
 	 * 
 	 * @param input
 	 */
-	private void setTimedLeaderboard(String[] input) {
+	private void setTimedLeaderboard(boolean result, String[] input) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				if (input[0].equals(TRUE)) {
+				if (result) {
 					int j = 1;
 					
-					for (int i = 1; i < input.length; i += 2) {
+					for (int i = 0; i < input.length; i += 2) {
 						timedLeaderboard.add(new Text(input[i]), 0, j);
 						timedLeaderboard.add(new Text(input[i+1]), 1, j);
 						

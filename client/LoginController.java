@@ -15,7 +15,7 @@ import protocol.Constants;
  * Controller for the login pane.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 public class LoginController extends Controller {
@@ -24,7 +24,6 @@ public class LoginController extends Controller {
 	@FXML private Text responseText;
 	private static Client client = Main.getClient();
 	private static final String SIGN_IN = Constants.SIGN_IN,
-			FALSE = Constants.FALSE,
 			LEADERBOARD_PANEL = PanelConstants.LEADERBOARD_PANEL,
 			SIGN_UP_PANEL = PanelConstants.SIGN_UP_PANEL,
 			FORGOT_PASSWORD_PANEL = PanelConstants.FORGOT_PASSWORD_PANEL;
@@ -35,10 +34,10 @@ public class LoginController extends Controller {
 	 * @param action action to be undertaken
 	 * @param input information associated with action
 	 */
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		if (action.equals(SIGN_IN)) {
 			try {
-				signIn(input);
+				signIn(result, input);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -54,9 +53,9 @@ public class LoginController extends Controller {
 	 * @param input input from server saying whether the login details were correct
 	 * @throws IOException
 	 */
-	private void signIn(String[] input) throws IOException {
-		if (input[0].equals(FALSE)) {
-			responseText.setText(Main.twoLines(input[1]));
+	private void signIn(boolean result, String[] input) throws IOException {
+		if (!result) {
+			responseText.setText(Main.twoLines(input[0]));
 		} else {
 			client.setUsername(username.getText());
 			Main.changeScene(LEADERBOARD_PANEL);

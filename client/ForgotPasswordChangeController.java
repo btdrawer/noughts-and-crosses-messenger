@@ -26,7 +26,6 @@ public class ForgotPasswordChangeController extends Controller {
 	private static String[] data = Main.getData();
 	private static Protocol protocol = client.getProtocol();
 	private static final String FORGOT_PASSWORD_CHANGE = Constants.FORGOT_PASSWORD_CHANGE,
-			TRUE = Constants.TRUE,
 			SIGN_IN_PANEL = PanelConstants.SIGN_IN_PANEL;
 	
 	public void initialize() {
@@ -35,10 +34,10 @@ public class ForgotPasswordChangeController extends Controller {
 		this.username = data[0];
 	}
 	
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case FORGOT_PASSWORD_CHANGE:
-				forgotPasswordChangeHandler(input);
+				forgotPasswordChangeHandler(result, input);
 		}
 	}
 	
@@ -78,11 +77,10 @@ public class ForgotPasswordChangeController extends Controller {
 	 * 
 	 * @param input
 	 */
-	private void forgotPasswordChangeHandler(String[] input) {
-		if (input[0].equals(TRUE)) {
+	private void forgotPasswordChangeHandler(boolean result, String[] input) {
+		if (result)
 			Main.changeScene(SIGN_IN_PANEL);
-		} else {
-			responseText.setText(input[1]);
-		}
+		else
+			responseText.setText(input[0]);
 	}
 }

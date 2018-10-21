@@ -4,7 +4,7 @@ package client;
  * Abstract superclass for JavaFX controllers.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 11 October 2018
  *
  */
 abstract class Controller {
@@ -29,5 +29,5 @@ abstract class Controller {
 	 * @param action action to be undetaken (e.g., 'signin', 'signup', etc.)
 	 * @param input information associated with the action (e.g., login information)
 	 */
-	abstract void processInput(String action, String[] input);
+	abstract void processInput(String action, boolean result, String[] input);
 }

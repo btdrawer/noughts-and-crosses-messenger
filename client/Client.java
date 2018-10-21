@@ -13,7 +13,7 @@ import protocol.Protocol;
  * Manages Socket connection to server, and data input and output streams.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 11 October 2018
  *
  */
 class Client {
@@ -167,6 +167,19 @@ class Client {
 	 */
 	void sendMessage(String action, String input) throws IOException {
 		String toSend = protocol.transmit(action, input);
+		System.out.println("Output: " + toSend);
+		out.writeBytes(toSend);
+	}
+	
+	/**
+	 * Sends a message to the server and returns the response.
+	 * 
+	 * @param action action to be undertaken - e.g., 'signup', 'signin', etc.
+	 * @param input information associated with action
+	 * @throws IOException
+	 */
+	void sendMessage(String action, boolean result, String[] input) throws IOException {
+		String toSend = protocol.transmit(action, result, input);
 		System.out.println("Output: " + toSend);
 		out.writeBytes(toSend);
 	}

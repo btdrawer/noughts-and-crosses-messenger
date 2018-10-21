@@ -15,7 +15,7 @@ import protocol.Protocol;
  * Controller for pane where the user gives their security answer.
  * 
  * @author Ben Drawer
- * @version 20 September 2018
+ * @version 11 October 2018
  *
  */
 public class ForgotPasswordQuestionController extends Controller {
@@ -26,7 +26,6 @@ public class ForgotPasswordQuestionController extends Controller {
 	private static String[] data = Main.getData();
 	private Protocol protocol = client.getProtocol();
 	private static final String FORGOT_PASSWORD_ANSWER = Constants.FORGOT_PASSWORD_ANSWER,
-			TRUE = Constants.TRUE,
 			FORGOT_PASSWORD_PANEL = PanelConstants.FORGOT_PASSWORD_PANEL,
 			FORGOT_PASSWORD_CHANGE_PANEL = PanelConstants.FORGOT_PASSWORD_CHANGE_PANEL;
 	
@@ -37,10 +36,10 @@ public class ForgotPasswordQuestionController extends Controller {
 		question.setText(data[1]);
 	}
 	
-	void processInput(String action, String[] input) {
+	void processInput(String action, boolean result, String[] input) {
 		switch (action) {
 			case FORGOT_PASSWORD_ANSWER:
-				forgotPasswordAnswerHandler(input);
+				forgotPasswordAnswerHandler(result, input);
 		}
 	}
 	
@@ -71,19 +70,17 @@ public class ForgotPasswordQuestionController extends Controller {
 	/**
 	 * Handler for message from server.
 	 * 
-	 * [0] = true or false
-	 * [1] = username
-	 * [2] = error message if present
+	 * [0] = username
+	 * [1] = error message if present
 	 * 
 	 * @param input
 	 */
-	private void forgotPasswordAnswerHandler(String[] input) {
-		if (input[0].equals(TRUE)) {
+	private void forgotPasswordAnswerHandler(boolean result, String[] input) {
+		if (result) {
 			String[] data = {username};
 			Main.setData(data);
 			Main.changeScene(FORGOT_PASSWORD_CHANGE_PANEL);
-		} else {
-			responseText.setText(input[2]);
-		}
+		} else
+			responseText.setText(input[1]);
 	}
 }

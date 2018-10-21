@@ -9,7 +9,7 @@ import protocol.Protocol;
  * This class creates a thread that listens for messages from the server.
  * 
  * @author Ben Drawer
- * @version 21 June 2018
+ * @version 11 October 2018
  *
  */
 class Listener extends Thread {
@@ -50,9 +50,10 @@ class Listener extends Thread {
 				System.out.println("Input: " + s);
 				
 				String action = protocol.getAction(s);
+				boolean result = protocol.getResult(s);
 				input = protocol.receive(s);
 				
-				controller.processInput(action, input);
+				controller.processInput(action, result, input);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
