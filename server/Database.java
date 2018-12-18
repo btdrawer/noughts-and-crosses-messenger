@@ -12,7 +12,7 @@ import java.util.List;
  * Database functions for user management.
  * 
  * @author Ben Drawer
- * @version 21 October 2018
+ * @version 17 December 2018
  *
  */
 class Database {
@@ -28,7 +28,7 @@ class Database {
 	 */
 	static boolean setConnection(String url, String username, String password) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			System.out.println("Driver registered.");
 			
 			url = "jdbc:mysql://" + url + "/noughtsandcrosses";
@@ -37,10 +37,6 @@ class Database {
 			return true;
 		} catch (ClassNotFoundException e) {
 			System.out.println("Driver not found.");
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
