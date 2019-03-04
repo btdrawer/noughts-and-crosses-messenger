@@ -1,7 +1,6 @@
 # noughtsandcrosses
 A simple server-based Noughts and Crosses game and 1:1 messaging client.
-
-Required technologies:
+## Required technologies
 - Java
 - JavaFX (for the client)
 - A MySQL server
