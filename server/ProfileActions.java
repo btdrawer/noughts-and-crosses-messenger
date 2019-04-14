@@ -60,8 +60,6 @@ class ProfileActions {
 		
 		//TODO regex pattern for password
 		Pattern p = Pattern.compile("[a-zA-Z0-9]+");
-		
-		outArr = new String[2];
 		result = false;
 		
 		if (Database.usernameExists(username))
@@ -99,8 +97,6 @@ class ProfileActions {
 	String signin(String[] input) throws NoSuchAlgorithmException {
 		String username = input[0];
 		String password = input[1];
-		
-		outArr = new String[2];
 		
 		if (!Database.signIn(username, password)) {
 			result = false;
